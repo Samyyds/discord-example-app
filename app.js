@@ -86,6 +86,12 @@ app.post('/interactions', async function (req, res) {
         },
       });
     }
+
+    if (name === 'adventure') {
+      const storyContent = 'Welcome to Merfolk & Magic. In this game, you can explore, chat with your friends, go mining, craft weapons, and fight monsters. If you ever need help, type \'Help\' and press Enter. To Create a new account, type \'New\' and press Enter. To Login to an existing account, type \'Login\' and press Enter.';
+      sendStory(storyContent, req.body.token);
+      return res.send({ type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE });
+    }
   }
 
   if (type === InteractionType.MESSAGE_COMPONENT) {
@@ -164,6 +170,30 @@ app.post('/interactions', async function (req, res) {
     }
   }
 });
+
+async function sendStory(content, token) {
+  const sentences = content.split('.');
+
+  for (const sentence of sentences) {
+    if (sentence.trim() === '') continue;
+
+    try {
+      const endpoint = `webhooks/${process.env.APP_ID}/${token}`;
+      await DiscordRequest(endpoint, {
+        method: 'POST',
+        body: {
+          content: sentence.trim() + '.',
+          flags: InteractionResponseFlags.EPHEMERAL
+        }
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 2000));  // 2 seconds delay
+    } catch (err) {
+      console.error('Error sending message:', err);
+      break;
+    }
+  }
+}
 
 app.listen(PORT, () => {
   console.log('Listening on port', PORT);

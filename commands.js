@@ -40,6 +40,12 @@ const CHALLENGE_COMMAND = {
   type: 1,
 };
 
-const ALL_COMMANDS = [TEST_COMMAND, CHALLENGE_COMMAND];
+const START_ADVENTURE_COMMAND = {
+  name: 'adventure',
+  description: 'Start your Merfolk & Magic text adventure journey',
+  type: 1,
+}
+
+const ALL_COMMANDS = [TEST_COMMAND, CHALLENGE_COMMAND, START_ADVENTURE_COMMAND];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);
