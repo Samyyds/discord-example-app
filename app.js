@@ -10,6 +10,7 @@ import {
 import { VerifyDiscordRequest, getRandomEmoji, DiscordRequest } from './utils.js';
 import { getShuffledOptions, getResult } from './game.js';
 import fetch from 'node-fetch';
+import Web3Manager from './web3Manager.js'; 
 
 // Create an express app
 const app = express();
@@ -90,13 +91,20 @@ app.post('/interactions', async function (req, res) {
 
     if (name === 'register') {
       const userId = req.body.member.user.id;
-
-      await sendDirectMessage(userId, 'hello world');
-
-      return res.send({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: 'A private message has been sent to you',
+      const { mnemonic } = Web3Manager.createMnemonic();
+      //Discord API要求在接收到交互后的三秒内回复，否则会显示红色感叹号表示应用程序未响应 
+      //所以先发个延迟响应
+      await res.send({
+        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
+      });
+    
+      await sendDirectMessage(userId, mnemonic);
+    
+      //再更新响应消息
+      await DiscordRequest(`webhooks/${process.env.APP_ID}/${req.body.token}/messages/@original`, {
+        method: 'PATCH',
+        body: {
+          content: 'A 12 words seed has been sent to you',
           flags: InteractionResponseFlags.EPHEMERAL,
         },
       });
