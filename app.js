@@ -9,6 +9,7 @@ import {
 } from 'discord-interactions';
 import { VerifyDiscordRequest, getRandomEmoji, DiscordRequest } from './utils.js';
 import { getShuffledOptions, getResult } from './game.js';
+import fetch from 'node-fetch';
 
 // Create an express app
 const app = express();
@@ -87,10 +88,18 @@ app.post('/interactions', async function (req, res) {
       });
     }
 
-    if (name === 'adventure') {
-      const storyContent = 'Welcome to Merfolk & Magic. In this game, you can explore, chat with your friends, go mining, craft weapons, and fight monsters. If you ever need help, type \'Help\' and press Enter. To Create a new account, type \'New\' and press Enter. To Login to an existing account, type \'Login\' and press Enter.';
-      sendStory(storyContent, req.body.token);
-      return res.send({ type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE });
+    if (name === 'register') {
+      const userId = req.body.member.user.id;
+
+      await sendDirectMessage(userId, 'hello world');
+
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: 'A private message has been sent to you',
+          flags: InteractionResponseFlags.EPHEMERAL,
+        },
+      });
     }
   }
 
@@ -171,28 +180,33 @@ app.post('/interactions', async function (req, res) {
   }
 });
 
-async function sendStory(content, token) {
-  const sentences = content.split('.');
+async function sendDirectMessage(userId, message) {
+  const url = `https://discord.com/api/v10/users/@me/channels`;
+  const body = { recipient_id: userId };
 
-  for (const sentence of sentences) {
-    if (sentence.trim() === '') continue;
+  const channelResponse = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
 
-    try {
-      const endpoint = `webhooks/${process.env.APP_ID}/${token}`;
-      await DiscordRequest(endpoint, {
-        method: 'POST',
-        body: {
-          content: sentence.trim() + '.',
-          flags: InteractionResponseFlags.EPHEMERAL
-        }
-      });
-
-      await new Promise(resolve => setTimeout(resolve, 2000));  // 2 seconds delay
-    } catch (err) {
-      console.error('Error sending message:', err);
-      break;
-    }
+  if (!channelResponse.ok) {
+    throw new Error('Failed to create DM channel');
   }
+
+  const channel = await channelResponse.json();
+
+  await fetch(`https://discord.com/api/v10/channels/${channel.id}/messages`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ content: message }),
+  });
 }
 
 app.listen(PORT, () => {
