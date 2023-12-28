@@ -9,8 +9,17 @@ import {
 } from 'discord-interactions';
 import { VerifyDiscordRequest, getRandomEmoji, DiscordRequest } from './utils.js';
 import { getShuffledOptions, getResult } from './game.js';
-import fetch from 'node-fetch';
-import Web3Manager from './web3Manager.js'; 
+import Web3Manager from './web3Manager.js';
+import { Client, GatewayIntentBits, AttachmentBuilder } from 'discord.js';
+import fs from 'fs';
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages] });
+
+client.once('ready', () => {
+  console.log('Discord client ready!');
+});
+
+client.login(process.env.DISCORD_TOKEN);
 
 // Create an express app
 const app = express();
@@ -28,6 +37,10 @@ const activeGames = {};
 app.post('/interactions', async function (req, res) {
   // Interaction type and data
   const { type, id, data } = req.body;
+
+  const app = express();
+  const PORT = process.env.PORT || 3000;
+  app.use(express.json({ verify: VerifyDiscordRequest(process.env.PUBLIC_KEY) }));
 
   /**
    * Handle verification requests
@@ -97,9 +110,9 @@ app.post('/interactions', async function (req, res) {
       await res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
       });
-    
-      await sendDirectMessage(userId, mnemonic);
-    
+
+      await sendAttachment(userId, mnemonic);
+
       //再更新响应消息
       await DiscordRequest(`webhooks/${process.env.APP_ID}/${req.body.token}/messages/@original`, {
         method: 'PATCH',
@@ -188,33 +201,21 @@ app.post('/interactions', async function (req, res) {
   }
 });
 
-async function sendDirectMessage(userId, message) {
-  const url = `https://discord.com/api/v10/users/@me/channels`;
-  const body = { recipient_id: userId };
+async function sendAttachment(userId, message) {
+  if (!client.isReady()) return;
 
-  const channelResponse = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  let user = await client.users.fetch(userId);
+  if (!user) return;
 
-  if (!channelResponse.ok) {
-    throw new Error('Failed to create DM channel');
-  }
+  const filename = 'mnemo.txt';
+  fs.writeFileSync(filename, message);
 
-  const channel = await channelResponse.json();
+  const attachment = new AttachmentBuilder(fs.createReadStream(filename), filename);
 
-  await fetch(`https://discord.com/api/v10/channels/${channel.id}/messages`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ content: message }),
-  });
+  user.send({ files: [attachment] })
+    .then(() => console.log("Message sent!"))
+    .catch(console.error)
+    .finally(() => fs.unlinkSync(filename));
 }
 
 app.listen(PORT, () => {
