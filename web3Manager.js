@@ -6,12 +6,16 @@ class Web3Manager {
         this.Web3 = new Web3('https://staging-v3.skalenodes.com/v1/staging-utter-unripe-menkar');
     }
 
-    createMnemonic() {
+    createAccount() {
         const wallet = ethers.Wallet.createRandom();
+        const userAccount = wallet;
+        const seedphrase = wallet.mnemonic.phrase;
+        return { userAccount, seedphrase }
+    }
 
-        const mnemonic = wallet.mnemonic.phrase;
-
-        return { mnemonic };
+    processSeedphrase = async (seedphrase) => {
+        const wallet = ethers.Wallet.fromPhrase(seedphrase);
+        return { wallet }
     }
 }
 export default new Web3Manager();

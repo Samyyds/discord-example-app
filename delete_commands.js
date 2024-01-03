@@ -6,7 +6,7 @@ const clientId = process.env.APP_ID;
 
 const token = process.env.DISCORD_TOKEN;
 
-const commandId = '1188513124068888668';
+const commandId = '1191742729462497381';
 
 const rest = new REST({ version: '9' }).setToken(token);
 
