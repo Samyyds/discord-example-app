@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
-import { commands } from './commands_account.js';
+import { accountCommands } from './commands_account.js';
 const { Client, GatewayIntentBits } = pkg;
 
 // Create and configure the Discord client
@@ -16,15 +16,19 @@ client.once('ready', () => {
     if (!interaction.isCommand()) return;
 
     const commandName = interaction.commandName;
-    const commandHandler = commands[commandName];
+    if (commandName === 'account') {
+      const subCommandName = interaction.options.getSubcommand();
+      const commandHandler = accountCommands[subCommandName];
 
-    if (commandHandler) {
-      await commandHandler(interaction);
+      if (commandHandler) {
+        await commandHandler(interaction);
+      } else {
+        console.log(`Command ${commandName} not found.`);
+      }
     } else {
       console.log(`Command ${commandName} not found.`);
     }
   });
-
 });
 
 

@@ -6,16 +6,18 @@ const clientId = process.env.APP_ID;
 
 const token = process.env.DISCORD_TOKEN;
 
-const commandId = '1191742729462497381';
+const guildId = process.env.GUILD_ID;
+
+const commandId = '1194277388440326175';
 
 const rest = new REST({ version: '9' }).setToken(token);
 
 (async () => {
   try {
-    console.log('Start to delete global command...');
-    await rest.delete(Routes.applicationCommand(clientId, commandId));
-    console.log('Global command is deleted');
+    console.log('Start to delete guild command...');
+    await rest.delete(Routes.applicationGuildCommand(clientId, guildId, commandId));
+    console.log('Guild command is deleted');
   } catch (error) {
-    console.error('Cannot delete global command:', error);
+    console.error('Cannot delete guild command:', error);
   }
 })();
