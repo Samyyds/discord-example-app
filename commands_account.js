@@ -57,7 +57,9 @@ const loginCommand = async (interaction) => {
         const seedphrase = interaction.options.getString('seedphrase');
         Web3Manager.setProviderForUser(interaction.user.id);
         const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
+        console.log('Before processing seedphrase');
         const { userAccount } = await web3Provider.processSeedphrase(seedphrase);
+        console.log('After processing seedphrase', userAccount);
         userAccounts.set(interaction.user.id, userAccount);
         web3Provider.setCurrentAccount(interaction.user.id);
 

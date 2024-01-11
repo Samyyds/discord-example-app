@@ -1,10 +1,16 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 import { accountCommands } from './commands_account.js';
+import { charactercommands } from './commands_character.js';
 const { Client, GatewayIntentBits } = pkg;
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+
+const commandMap = {
+  account: accountCommands,
+  character: charactercommands,
+};
 
 client.login(process.env.DISCORD_TOKEN);
 
@@ -16,17 +22,14 @@ client.once('ready', () => {
     if (!interaction.isCommand()) return;
 
     const commandName = interaction.commandName;
-    if (commandName === 'account') {
-      const subCommandName = interaction.options.getSubcommand();
-      const commandHandler = accountCommands[subCommandName];
+    const subCommandName = interaction.options.getSubcommand();
 
-      if (commandHandler) {
-        await commandHandler(interaction);
-      } else {
-        console.log(`Command ${commandName} not found.`);
-      }
+    const commandHandler = commandMap[commandName]?.[subCommandName];
+
+    if (commandHandler) {
+      await commandHandler(interaction);
     } else {
-      console.log(`Command ${commandName} not found.`);
+      console.log(`Command or subcommand '${subCommandName}' not found for '${commandName}'.`);
     }
   });
 });

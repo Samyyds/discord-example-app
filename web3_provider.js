@@ -23,11 +23,16 @@ class Web3Provider {
     }
 
     processSeedphrase = async (seedphrase) => {
-        const wallet = ethers.Wallet.fromPhrase(seedphrase);
-        return { wallet }
+        try {
+            const wallet = ethers.Wallet.fromPhrase(seedphrase);
+            return { wallet };
+        } catch (error) {
+            console.error('Error processing seedphrase:', error);
+            throw error;
+        }
     }
 
-    getAddressByName(name) {
+    getAddressByContractName(name) {
         const address = addresses[name];
         if (address) {
             return address;
@@ -36,7 +41,7 @@ class Web3Provider {
         }
     }
 
-    getABI(name) {
+    getABIByContractName(name) {
         try {
             const abiPath = path.join(path.resolve(), 'abi', `${name}.json`);
             const abiContent = fs.readFileSync(abiPath, 'utf8');
@@ -49,8 +54,8 @@ class Web3Provider {
 
     sendTransaction = async (contractName, methodName, params, value = '0x0') => {
         try {
-            const abi = this.getABI(contractName);
-            const contract = new this.web3.eth.Contract(abi, this.getAddressByName(contractName));
+            const abi = this.getABIByContractName(contractName);
+            const contract = new this.web3.eth.Contract(abi, this.getAddressByContractName(contractName));
 
             if (!this.currentAccount || !this.currentAccount.privateKey) {
                 throw new Error('Current account does not have a private key set.');
@@ -73,6 +78,20 @@ class Web3Provider {
             return receipt;
         } catch (error) {
             console.error(`Error in sendTransaction: ${error.message}`);
+            throw error;
+        }
+    }
+
+    queryContract = async (contractName, methodName, params = []) => {
+        try {
+            const abi = this.getABIByContractName(contractName);
+            const contractAddress = this.getAddressByContractName(contractName);
+            const contract = new this.web3.eth.Contract(abi, contractAddress);
+
+            const result = await contract.methods[methodName](...params).call();
+            return result;
+        } catch (error) {
+            console.error(`Error in queryContract: ${error.message}`);
             throw error;
         }
     }

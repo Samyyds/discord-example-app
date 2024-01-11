@@ -55,16 +55,44 @@ class Character {
     }
 }
 
-const characters = new Map();
+class CharatcerRepository {
+    constructor() {
+        if (CharacterRepository.instance) {
+            return CharacterRepository.instance;
+        }
 
-function addCharacter(character) {
-    if (!this.character.has(userId)) {
-        characters.set(userId, character);
+        this.characters = new Map();
+        this.activeCharacters = new Map();
+        CharacterRepository.instance = this;
+    }
+
+    static getInstance() {
+        if (!CharacterRepository.instance) {
+            CharacterRepository.instance = new CharacterRepository();
+        }
+        return CharacterRepository.instance;
+    }
+
+    addCharacter(userId, character) {
+        if (!this.characters.has(userId)) {
+            this.characters.set(userId, []);
+        }
+        this.characters.get(userId).push(character);
+    }
+
+    getCharactersByUserId(userId) {
+        return this.characters.get(userId) || [];
+    }
+
+    setActiveCharacter(userId, characterId) {
+        this.activeCharacters.set(userId, characterId);
+    }
+
+    getActiveCharacter(userId) {
+        const activeCharacterId = this.activeCharacters.get(userId);
+        const characters = this.getCharactersByUserId(userId);
+        return characters.find(character => character.id === activeCharacterId);
     }
 }
 
-function getCharacterByUserId(userId) {
-    return characters.get(userId);
-}
-
-export { Character, characters, addCharacter, getCharacterByUserId };
+export { Character, StatContainer, SkillContainer, CharatcerRepository };
