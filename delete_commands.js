@@ -8,7 +8,7 @@ const token = process.env.DISCORD_TOKEN;
 
 const guildId = process.env.GUILD_ID;
 
-const commandId = '1194277388440326175';
+const commandId = '1194288478570172426';
 
 const rest = new REST({ version: '9' }).setToken(token);
 
