@@ -43,7 +43,7 @@ class Web3Provider {
 
     getABIByContractName(name) {
         try {
-            const abiPath = path.join(path.resolve(), 'abi', `${name}.json`);
+            const abiPath = path.join(path.resolve(), 'abi', `${name}.abi`);
             const abiContent = fs.readFileSync(abiPath, 'utf8');
             return JSON.parse(abiContent);
         } catch (error) {
