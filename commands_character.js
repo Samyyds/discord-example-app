@@ -9,9 +9,9 @@ const createCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
 
-        const charName = interaction.options.getString('character_name');
-        const className = interaction.options.getString('class_name').toUpperCase();
-        const raceName = interaction.options.getString('race_name').toUpperCase();
+        const charName = interaction.options.getString('character-name');
+        const className = interaction.options.getString('class-name').toUpperCase();
+        const raceName = interaction.options.getString('race-name').toUpperCase();
 
         const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
 
@@ -28,7 +28,7 @@ const createCommand = async (interaction) => {
 
         //create character
         const status = await web3Provider.sendTransaction('CharacterProperties', 'createCharacter', [charName, classId, raceId]);
-        const embed = new EmbedBuilder();
+        let embed = new EmbedBuilder();
 
         if (status === 1n) {
             embed.setTitle(`Congratulations! Your character has been created!`);
@@ -67,23 +67,10 @@ const createCommand = async (interaction) => {
             characterRepo.setActiveCharacter(interaction.user.id, charId);
 
             const activeChar = characterRepo.getActiveCharacter(interaction.user.id);
-            convertBigInt(activeChar);
+            const coveredChar = convertBigInt(activeChar);
             embed.setTitle("Your active character's info is: ");
 
-            for (const key in activeChar) {
-                let value;
-                if (typeof activeChar[key] === 'object') {
-                    value = formatCharacterInfo(activeChar[key]);
-                } else {
-                    value = activeChar[key].toString();
-                }
-
-                if (value === '') {
-                    value = 'N/A'; 
-                }
-
-                embed.addFields({ name: key, value: value, inline: true });
-            }
+            embed = addCharacterInfoToEmbed(coveredChar, embed);
             await interaction.followUp({ embeds: [embed], ephemeral: true });
         } else {
             embed.setTitle(`fail`);
@@ -128,9 +115,21 @@ const statusCommand = async (interaction) => {
             throw new Error('No Web3 provider found for this user.');
         }
 
-        const characterId = 1;
+        const charRepo = CharacterRepository.getInstance();
+        const characters = charRepo.getCharactersByUserId(interaction.user.id);
+        if (!characters || characters.length === 0) {
+            await interaction.editReply({ content: 'No characters found for this user.', ephemeral: true });
+            return;
+        }
 
-        const charInfo = await web3Provider.queryContract('CharacterProperties', 'getCharacterInfo', [characterId]);
+        const activeChar = charRepo.getActiveCharacter(interaction.user.id);
+        if (!activeChar || !activeChar.id) {
+            await interaction.editReply({ content: 'No active character found.', ephemeral: true });
+            return;
+        }
+
+        const activeId = activeChar.id;
+        const charInfo = await web3Provider.queryContract('CharacterProperties', 'getCharacterInfo', [Number(activeId)]);
 
         const stats = new StatContainer(
             charInfo.stats.hpMax, charInfo.stats.mpMax, charInfo.stats.hp, charInfo.stats.mp,
@@ -147,12 +146,16 @@ const statusCommand = async (interaction) => {
         );
 
         const character = new Character(
-            characterId, charInfo.name, charInfo.level, charInfo.xp, stats, skills,
+            activeId, charInfo.name, charInfo.level, charInfo.xp, stats, skills,
             charInfo.battleBar, charInfo.lootQuality
         );
 
-        convertBigInt(character);
-        await interaction.editReply({ content: `Character Info: ${JSON.stringify(character)}`, ephemeral: true });
+        let embed = new EmbedBuilder();
+        const coveredChar = convertBigInt(character);
+        embed = addCharacterInfoToEmbed(coveredChar, embed);
+
+        embed.setTitle("Your active character's info is: ");
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
     } catch (error) {
         console.error('Error in statusCommand:', error);
         await interaction.editReply({ content: `An error occurred: ${error.message}`, ephemeral: true });
@@ -166,15 +169,20 @@ export const charactercommands = {
 };
 
 function convertBigInt(obj) {
+    let newObj = {};
     for (let key in obj) {
         if (typeof obj[key] === 'bigint') {
-            // Convert BigInt to String
-            obj[key] = obj[key].toString();
+            // Convert BigInt to String for the new object
+            newObj[key] = obj[key].toString();
         } else if (typeof obj[key] === 'object' && obj[key] !== null) {
             // Recursive call for nested objects
-            convertBigInt(obj[key]);
+            newObj[key] = convertBigInt(obj[key]);
+        } else {
+            // Copy other values as is
+            newObj[key] = obj[key];
         }
     }
+    return newObj;
 }
 
 function formatCharacterInfo(character) {
@@ -188,3 +196,22 @@ function formatCharacterInfo(character) {
     }
     return formattedString;
 }
+
+function addCharacterInfoToEmbed(activeChar, embed) {
+    for (const key in activeChar) {
+        let value;
+        if (typeof activeChar[key] === 'object') {
+            value = formatCharacterInfo(activeChar[key]);
+        } else {
+            value = activeChar[key].toString();
+        }
+
+        if (value === '') {
+            value = 'N/A';
+        }
+
+        embed.addFields({ name: key, value: value, inline: true });
+    }
+    return embed;
+}
+

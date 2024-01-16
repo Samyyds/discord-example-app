@@ -89,10 +89,13 @@ class CharacterRepository {
     }
 
     getActiveCharacter(userId) {
-        const activeCharacterId = this.activeCharacters.get(userId);
+        const activeCharacterId = this.activeCharacters.get(userId); 
         const characters = this.getCharactersByUserId(userId);
+        console.log(`Active character ID for user ${userId}:`, activeCharacterId, typeof activeCharacterId);
+        console.log(`Characters for user ${userId}:`, characters);  
+    
         return characters.find(character => character.id === activeCharacterId);
-    }
+    }    
 }
 
 export { Character, StatContainer, SkillContainer, CharacterRepository };
