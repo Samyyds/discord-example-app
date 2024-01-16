@@ -55,7 +55,7 @@ class Character {
     }
 }
 
-class CharatcerRepository {
+class CharacterRepository {
     constructor() {
         if (CharacterRepository.instance) {
             return CharacterRepository.instance;
@@ -95,4 +95,4 @@ class CharatcerRepository {
     }
 }
 
-export { Character, StatContainer, SkillContainer, CharatcerRepository };
+export { Character, StatContainer, SkillContainer, CharacterRepository };

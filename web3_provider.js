@@ -12,7 +12,10 @@ class Web3Provider {
     }
 
     setCurrentAccount(userId) {
-        this.currentAccount = userAccounts[userId];
+        this.currentAccount = userAccounts.get(userId);
+        if (!this.currentAccount) {
+            throw new Error('No account data found for user.');
+        }
     }
 
     createAccount() {
@@ -30,6 +33,10 @@ class Web3Provider {
             console.error('Error processing seedphrase:', error);
             throw error;
         }
+    }
+
+    toBigN(number) {
+        return this.web3.utils.toBigInt(number);
     }
 
     getAddressByContractName(name) {
@@ -62,25 +69,31 @@ class Web3Provider {
             }
 
             const fromAddress = this.currentAccount.address;
-            const txParams = {
-                from: fromAddress,
-                to: contract.options.address,
-                data: contract.methods[methodName](...params).encodeABI(),
-                value: value
-            };
-            // Estimate gas for the transaction
-            const gasEstimate = await this.web3.eth.estimateGas(txParams);
-            // Set gas limit slightly higher than estimated gas
-            txParams.gas = Math.floor(gasEstimate * 1.2);
+            const query = contract.methods[methodName](...params);
 
-            const signedTx = await this.web3.eth.accounts.signTransaction(txParams, this.currentAccount.privateKey);
+            const gasPrice = await this.web3.eth.getGasPrice();
+            const gasEstimate = 3000000;
+            //const gasEstimate = await query.estimateGas({ from: fromAddress });
+
+            const nonce = await this.web3.eth.getTransactionCount(fromAddress, 'pending');
+
+            const signedTx = await this.web3.eth.accounts.signTransaction({
+                to: contract.options.address,
+                from: fromAddress,
+                data: query.encodeABI(),
+                value: value,
+                gasPrice: gasPrice,
+                gas: Math.round(gasEstimate * 1.2),
+                nonce: nonce
+            }, this.currentAccount.privateKey);
             const receipt = await this.web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-            return receipt;
+            return receipt.status;
         } catch (error) {
             console.error(`Error in sendTransaction: ${error.message}`);
             throw error;
         }
     }
+
 
     queryContract = async (contractName, methodName, params = []) => {
         try {

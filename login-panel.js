@@ -38,7 +38,6 @@ class AccountManagementView {
         try {
             await interaction.deferReply({ ephemeral: true });
 
-            let signupEmbed = new EmbedBuilder();
             if (userAccounts.has(interaction.user.id)) {
                 signupEmbed.setTitle('You already have an account');
                 await interaction.editReply({ embeds: [signupEmbed], ephemeral: true });
@@ -53,6 +52,7 @@ class AccountManagementView {
             web3Provider.setCurrentAccount(interaction.user.id);
 
             const seedphraseFile = new AttachmentBuilder(Buffer.from(seedphrase), { name: 'RecoveryPhrase.txt' });
+            let signupEmbed = new EmbedBuilder();
             signupEmbed = new EmbedBuilder()
                 .setTitle('Signup Success')
                 .setDescription(descriptions.SIGNUP_MESSAGE);
@@ -93,10 +93,8 @@ class AccountManagementView {
 
     async handleModalSubmit(interaction) {
         const seedphrase = interaction.fields.getTextInputValue('recovery-phrase');
-        console.log(seedphrase);
         await interaction.deferReply({ ephemeral: true });
 
-        let loginEmbed = new EmbedBuilder();
         if (userAccounts.has(interaction.user.id)) {
             loginEmbed.setTitle('You are already logged in');
             await interaction.editReply({ embeds: [loginEmbed], ephemeral: true });
@@ -106,16 +104,18 @@ class AccountManagementView {
         try {
             Web3Manager.setProviderForUser(interaction.user.id);
             const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
-            const { userAccount } = await web3Provider.processSeedphrase(seedphrase);
-            userAccounts.set(interaction.user.id, userAccount);
-            web3Provider.setCurrentAccount(interaction.user.id);
+            const { wallet } = await web3Provider.processSeedphrase(seedphrase);
 
-            loginEmbed = new EmbedBuilder()
-                .setTitle('Login Success')
-                .setDescription(descriptions.SIGNUP_MESSAGE);
+            if (wallet) {
+                userAccounts.set(interaction.user.id, wallet);
+                web3Provider.setCurrentAccount(interaction.user.id);
+                let loginEmbed = new EmbedBuilder();
+                loginEmbed = new EmbedBuilder()
+                    .setTitle('Login Success')
+                    .setDescription(descriptions.SIGNUP_MESSAGE);
 
-            await interaction.editReply({ embeds: [loginEmbed], ephemeral: true });
-
+                await interaction.editReply({ embeds: [loginEmbed], ephemeral: true });
+            }
         } catch (error) {
             console.error('Error in handleModalSubmit:', error);
             await interaction.reply({ content: 'An error occurred during the login process', ephemeral: true });
@@ -124,7 +124,6 @@ class AccountManagementView {
 
     async handleLogOut(interaction) {
         try {
-            let logoutEmbed = new EmbedBuilder();
             if (!userAccounts.has(interaction.user.id)) {
                 logoutEmbed.setTitle('You are not logged in');
                 await interaction.reply({ embeds: [logoutEmbed], ephemeral: true });
@@ -133,6 +132,8 @@ class AccountManagementView {
 
             userAccounts.delete(interaction.user.id);
             Web3Manager.removeProviderForUser(interaction.user.id);
+
+            let logoutEmbed = new EmbedBuilder();
             logoutEmbed = new EmbedBuilder()
                 .setTitle('You have logged out');
 

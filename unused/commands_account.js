@@ -8,8 +8,6 @@ const registerCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
 
-        const signupEmbed = new EmbedBuilder();
-
         if (userAccounts.has(interaction.user.id)) {
             signupEmbed.setTitle('You are already registered');
             await interaction.editReply({ embeds: [signupEmbed], ephemeral: true });
@@ -27,6 +25,7 @@ const registerCommand = async (interaction) => {
         web3Provider.setCurrentAccount(interaction.user.id);
 
         const seedphraseFile = new AttachmentBuilder(Buffer.from(seedphrase), { name: 'RecoveryPhrase.txt' });
+        const signupEmbed = new EmbedBuilder();
         signupEmbed.setTitle('Signup Success').setDescription(descriptions.SIGNUP_MESSAGE);
 
         await interaction.editReply({
@@ -46,8 +45,6 @@ const loginCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
 
-        const loginEmbed = new EmbedBuilder();
-
         if (userAccounts.has(interaction.user.id)) {
             loginEmbed.setTitle('You are already logged in');
             await interaction.editReply({ embeds: [loginEmbed], ephemeral: true });
@@ -57,12 +54,15 @@ const loginCommand = async (interaction) => {
         const seedphrase = interaction.options.getString('seedphrase');
         Web3Manager.setProviderForUser(interaction.user.id);
         const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
-        const { userAccount } = await web3Provider.processSeedphrase(seedphrase);
-        userAccounts.set(interaction.user.id, userAccount);
-        web3Provider.setCurrentAccount(interaction.user.id);
+        const { wallet } = await web3Provider.processSeedphrase(seedphrase);
+        if (wallet) {
+            userAccounts.set(interaction.user.id, wallet);
+            web3Provider.setCurrentAccount(interaction.user.id);
 
-        loginEmbed.setTitle('Logged in successfully');
-        await interaction.editReply({ embeds: [loginEmbed], ephemeral: true });
+            const loginEmbed = new EmbedBuilder();
+            loginEmbed.setTitle('Logged in successfully');
+            await interaction.editReply({ embeds: [loginEmbed], ephemeral: true });
+        }
     }
     catch (error) {
         console.error('Login command failed:', error);
@@ -75,8 +75,6 @@ const loginCommand = async (interaction) => {
 
 const logoutCommand = async (interaction) => {
     try {
-        const logoutEmbed = new EmbedBuilder();
-
         if (!userAccounts.has(interaction.user.id)) {
             logoutEmbed.setTitle('You are not logged in');
             await interaction.reply({ embeds: [logoutEmbed], ephemeral: true });
@@ -86,6 +84,7 @@ const logoutCommand = async (interaction) => {
         userAccounts.delete(interaction.user.id);
         Web3Manager.removeProviderForUser(interaction.user.id);
 
+        const logoutEmbed = new EmbedBuilder();
         logoutEmbed.setTitle('Logged out successfully');
         await interaction.reply({ embeds: [logoutEmbed], ephemeral: true });
 
