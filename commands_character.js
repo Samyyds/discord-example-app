@@ -3,7 +3,7 @@ import { Class, Race } from './enums.js';
 import { ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
 import { Character, StatContainer, SkillContainer, CharacterRepository } from './character_repository.js';
 import pkg from 'discord.js';
-const { EmbedBuilder } = pkg;
+const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
 
 const createCommand = async (interaction) => {
     try {
@@ -58,7 +58,7 @@ const createCommand = async (interaction) => {
             );
 
             const character = new Character(
-                charId, charInfo.name, charInfo.level, charInfo.xp, stats, skills,
+                charId, charInfo.name, charInfo.level, getKeyByValue(Class, web3Provider.toNumber(charInfo.classId)), getKeyByValue(Race, web3Provider.toNumber(charInfo.raceId)), charInfo.personalityId, charInfo.xp, stats, skills,
                 charInfo.battleBar, charInfo.lootQuality
             );
 
@@ -87,21 +87,35 @@ const switchCommand = async (interaction) => {
 
     const charRepo = CharacterRepository.getInstance();
     const allCharacters = charRepo.getCharactersByUserId(interaction.user.id);
-    const activeCharacterId = charRepo.getActiveCharacter(interaction.user.id)?.id;
-
-    const otherCharacters = allCharacters.filter(character => character.id !== activeCharacterId);
+    const activeCharacter = charRepo.getActiveCharacter(interaction.user.id);
+    const otherCharacters = allCharacters.filter(character => character.id !== activeCharacter.id);
 
     if (otherCharacters.length === 0) {
         await interaction.editReply({ content: 'No other characters to switch to', ephemeral: true });
         return;
     }
 
-    const buttons = otherCharacters.map(character => new ButtonBuilder()
-        .setCustomId(`switch-character:${character.id}`)
-        .setLabel(character.name)
-        .setStyle(ButtonStyle.Primary));
+    const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId('switch-character')
+        .setPlaceholder('Switch a character');
 
-    const actionRow = new ActionRowBuilder().addComponents(buttons);
+    if (activeCharacter) {
+        selectMenu.addOptions({
+            label: `${activeCharacter.name} (Active)`,
+            description: `Level: ${activeCharacter.level}, Class: ${activeCharacter.classId}, Race: ${activeCharacter.raceId} `,
+            value: activeCharacter.id.toString()
+        });
+    }
+
+    otherCharacters.forEach(character => {
+        selectMenu.addOptions({
+            label: `${character.name} (Inactive)`,
+            description: `Level: ${activeCharacter.level}, Class: ${activeCharacter.classId}, Race: ${activeCharacter.raceId} `,
+            value: character.id.toString()
+        });
+    });
+
+    const actionRow = new ActionRowBuilder().addComponents(selectMenu);
 
     await interaction.editReply({ content: 'Choose a character:', components: [actionRow] });
 }
@@ -146,14 +160,13 @@ const statusCommand = async (interaction) => {
         );
 
         const character = new Character(
-            activeId, charInfo.name, charInfo.level, charInfo.xp, stats, skills,
+            activeId, charInfo.name, charInfo.level, getKeyByValue(Class, web3Provider.toNumber(charInfo.classId)), getKeyByValue(Race, web3Provider.toNumber(charInfo.raceId)), charInfo.personalityId, charInfo.xp, stats, skills,
             charInfo.battleBar, charInfo.lootQuality
         );
 
         let embed = new EmbedBuilder();
         const coveredChar = convertBigInt(character);
         embed = addCharacterInfoToEmbed(coveredChar, embed);
-
         embed.setTitle("Your active character's info is: ");
         await interaction.editReply({ embeds: [embed], ephemeral: true });
     } catch (error) {
@@ -213,5 +226,9 @@ function addCharacterInfoToEmbed(activeChar, embed) {
         embed.addFields({ name: key, value: value, inline: true });
     }
     return embed;
+}
+
+function getKeyByValue(enumObj, value) {
+    return Object.keys(enumObj).find(key => enumObj[key] === value);
 }
 

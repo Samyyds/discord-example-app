@@ -39,6 +39,10 @@ class Web3Provider {
         return this.web3.utils.toBigInt(number);
     }
 
+    toNumber(bigint){
+        return this.web3.utils.toNumber(bigint);
+    }
+
     getAddressByContractName(name) {
         const address = addresses[name];
         if (address) {

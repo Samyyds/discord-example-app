@@ -36,6 +36,9 @@ class Character {
      * Creates a new Character instance.
      * @param {number} id - The id of the character.
      * @param {string} name - The name of the character.
+     * @param {number} classType - The class of the character.
+     * @param {number} raceId - The race of the character.
+     * @param {number} personalityId - The personality of the character.
      * @param {number} level - The level of the character.
      * @param {number} xp - The experience points of the character.
      * @param {StatContainer} stats - The stats container for the character.
@@ -43,9 +46,12 @@ class Character {
      * @param {number[]} battleBar - The battle bar array.
      * @param {number} lootQuality - The loot quality value.
      */
-    constructor(id, name, level, xp, stats, skills, battleBar, lootQuality) {
+    constructor(id, name, level, classId, raceId, personalityId, xp, stats, skills, battleBar, lootQuality) {
         this.id = id;
         this.name = name;
+        this.classId = classId;
+        this.raceId = raceId;
+        this.personalityId = personalityId;
         this.level = level;
         this.xp = xp;
         this.stats = stats; //instance of StatContainer
@@ -85,15 +91,14 @@ class CharacterRepository {
     }
 
     setActiveCharacter(userId, characterId) {
-        this.activeCharacters.set(userId, characterId);
+        this.activeCharacters.set(userId, BigInt(characterId));
     }
 
     getActiveCharacter(userId) {
+        console.log(`User ID for user ${userId}:`, typeof userId);
         const activeCharacterId = this.activeCharacters.get(userId); 
-        const characters = this.getCharactersByUserId(userId);
-        console.log(`Active character ID for user ${userId}:`, activeCharacterId, typeof activeCharacterId);
-        console.log(`Characters for user ${userId}:`, characters);  
-    
+        console.log(`Active character ID for user ${activeCharacterId}:`, typeof activeCharacterId);
+        const characters = this.getCharactersByUserId(userId);       
         return characters.find(character => character.id === activeCharacterId);
     }    
 }

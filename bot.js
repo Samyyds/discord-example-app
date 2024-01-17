@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 import { charactercommands } from './commands_character.js';
-const { Client, GatewayIntentBits } = pkg;
+const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
 import AccountManagementView from './login-panel.js';
+import { CharacterRepository } from './character_repository.js';
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
@@ -53,16 +54,44 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on(Events.InteractionCreate, async interaction => {
   console.log('Interaction created:', interaction);
-  if (!interaction.isCommand()) return;
 
-  const commandName = interaction.commandName;
-  const subCommandName = interaction.options.getSubcommand();
+  if (interaction.isStringSelectMenu()) {
+    const userId = interaction.user.id;
+    const charRepo = CharacterRepository.getInstance();
+    const selectedCharacterId = interaction.values[0];
 
-  const commandHandler = commandMap[commandName]?.[subCommandName];
+    const customId = interaction.customId;
+    if (customId === 'switch-character') {
+      const activeChar = charRepo.getActiveCharacter(userId);
 
-  if (commandHandler) {
-    await commandHandler(interaction);
-  } else {
-    console.log(`Command or subcommand '${subCommandName}' not found for '${commandName}'.`);
+      if (activeChar && activeChar.id.toString() === selectedCharacterId) {
+        await interaction.reply({ content: "You can't select your current active character.", ephemeral: true });
+      } else {
+        console.log(`selectedCharacterId: ${selectedCharacterId}`,typeof selectedCharacterId);
+        charRepo.setActiveCharacter(userId, selectedCharacterId);
+
+        const newActiveChar = charRepo.getActiveCharacter(userId);
+        //console.log(`newActiveChar: ${newActiveChar}`);
+        const embed = new EmbedBuilder()
+          .setTitle(`Character Switched`)
+          .setDescription(`You have switched to character: **${newActiveChar.name}**`)
+          .setColor(0x00AE86);
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+      }
+    }
+    return;
+  }
+
+  if (interaction.isCommand()) {
+    const commandName = interaction.commandName;
+    const subCommandName = interaction.options.getSubcommand();
+
+    const commandHandler = commandMap[commandName]?.[subCommandName];
+
+    if (commandHandler) {
+      await commandHandler(interaction);
+    } else {
+      console.log(`Command or subcommand '${subCommandName}' not found for '${commandName}'.`);
+    }
   }
 });
