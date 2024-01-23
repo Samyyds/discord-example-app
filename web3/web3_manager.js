@@ -1,5 +1,5 @@
 import Web3Provider from './web3_provider.js';
-import userAccounts from './user_accounts.js';
+import userAccounts from '../data/user_accounts.js';
 
 class Web3Manager {
     constructor() {

@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, AttachmentBuilder } from 'discord.js';
-import Web3Manager from './web3_manager.js';
-import userAccounts from './user_accounts.js';
-import descriptions from './consts.js';
+import Web3Manager from '../web3/web3_manager.js';
+import userAccounts from '../data/user_accounts.js';
+import descriptions from '../data/consts.js';
 
 class AccountManagementView {
     constructor(bot) {
@@ -105,7 +105,7 @@ class AccountManagementView {
             Web3Manager.setProviderForUser(interaction.user.id);
             const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
             const { wallet } = await web3Provider.processSeedphrase(seedphrase);
-
+            console.log(wallet.address);
             if (wallet) {
                 userAccounts.set(interaction.user.id, wallet);
                 web3Provider.setCurrentAccount(interaction.user.id);

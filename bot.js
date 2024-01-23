@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
-import { charactercommands } from './commands_character.js';
+import { charactercommands } from './commands/commands_character.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
-import AccountManagementView from './login-panel.js';
-import { CharacterRepository } from './character_repository.js';
+import AccountManagementView from './commands/login-panel.js';
+import { CharacterRepository } from './data/repository_character.js';
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });

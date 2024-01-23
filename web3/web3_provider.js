@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import { ethers } from 'ethers';
-import userAccounts from './user_accounts.js';
-import addresses from './addresses.json' assert { type: 'json' };
+import userAccounts from '../data/user_accounts.js';
+import addresses from '../addresses.json' assert { type: 'json' };
 import fs from 'fs';
 import path from 'path';
 
