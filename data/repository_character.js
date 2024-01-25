@@ -95,9 +95,7 @@ class CharacterRepository {
     }
 
     getActiveCharacter(userId) {
-        console.log(`User ID for user ${userId}:`, typeof userId);
         const activeCharacterId = this.activeCharacters.get(userId); 
-        console.log(`Active character ID for user ${activeCharacterId}:`, typeof activeCharacterId);
         const characters = this.getCharactersByUserId(userId);       
         return characters.find(character => character.id === activeCharacterId);
     }    

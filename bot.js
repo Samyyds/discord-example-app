@@ -4,11 +4,12 @@ import { charactercommands } from './commands/commands_character.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
 import AccountManagementView from './commands/login-panel.js';
 import { CharacterRepository } from './data/repository_character.js';
+import { goCommands } from './commands/command_go.js';
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
-const commandMap = {
+const compoundCommand = {
   character: charactercommands,
 };
 
@@ -67,7 +68,7 @@ client.on(Events.InteractionCreate, async interaction => {
       if (activeChar && activeChar.id.toString() === selectedCharacterId) {
         await interaction.reply({ content: "You can't select your current active character.", ephemeral: true });
       } else {
-        console.log(`selectedCharacterId: ${selectedCharacterId}`,typeof selectedCharacterId);
+        console.log(`selectedCharacterId: ${selectedCharacterId}`, typeof selectedCharacterId);
         charRepo.setActiveCharacter(userId, selectedCharacterId);
 
         const newActiveChar = charRepo.getActiveCharacter(userId);
@@ -84,14 +85,20 @@ client.on(Events.InteractionCreate, async interaction => {
 
   if (interaction.isCommand()) {
     const commandName = interaction.commandName;
-    const subCommandName = interaction.options.getSubcommand();
+    let commandHandler;
 
-    const commandHandler = commandMap[commandName]?.[subCommandName];
-
+    if(commandName === "go"){
+      commandHandler = goCommands[commandName]; 
+    }else{
+      const subCommandName = interaction.options.getSubcommand();
+      commandHandler = compoundCommand[commandName]?.[subCommandName];
+    }
+  
     if (commandHandler) {
       await commandHandler(interaction);
     } else {
-      console.log(`Command or subcommand '${subCommandName}' not found for '${commandName}'.`);
+      console.log(`Command '${commandName}' with subcommand '${subCommandName}' not found.`);
+      await interaction.reply({ content: "Sorry, I didn't recognize that command.", ephemeral: true });
     }
   }
 });

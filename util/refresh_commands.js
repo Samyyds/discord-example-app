@@ -42,10 +42,23 @@ const characterCommand = new SlashCommandBuilder()
       .setName('switch')
       .setDescription('Switch your active character'));
 
+const goCommand = new SlashCommandBuilder()
+      .setName('go')
+      .setDescription('Where do you want to go?')
+      .addStringOption(option =>
+          option.setName('region')
+              .setDescription('The name of the region you want to move to')
+              .setRequired(true))
+      .addStringOption(option =>
+          option.setName('room')
+              .setDescription('The name of the room you want to move to')
+              .setRequired(true)); 
+
 const guildCommands =
   [
     //accountCommand.toJSON(),
-    characterCommand.toJSON()
+    characterCommand.toJSON(),
+    goCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

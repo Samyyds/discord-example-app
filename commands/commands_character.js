@@ -1,6 +1,6 @@
 import Web3Manager from '../web3/web3_manager.js';
 import { Class, Race } from '../data/enums.js';
-import { ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
+import { ActionRowBuilder } from 'discord.js';
 import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
 import pkg from 'discord.js';
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
