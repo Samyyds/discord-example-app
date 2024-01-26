@@ -4,6 +4,7 @@ import { ActionRowBuilder } from 'discord.js';
 import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
 import pkg from 'discord.js';
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
+import { LocationRepository } from '../data/repository_location.js';
 
 const createCommand = async (interaction) => {
     try {
@@ -68,6 +69,10 @@ const createCommand = async (interaction) => {
 
             const activeChar = characterRepo.getActiveCharacter(interaction.user.id);
             const coveredChar = convertBigInt(activeChar);
+
+            const locationRepo = LocationRepository.getInstance();
+            locationRepo.setLocation(interaction.user.id, activeChar.id, 0, 0);
+
             embed.setTitle("Your active character's info is: ");
 
             embed = addCharacterInfoToEmbed(coveredChar, embed);
