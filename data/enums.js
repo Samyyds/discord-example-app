@@ -87,4 +87,14 @@ export function getLocationFromInput(regionNameInput, roomNameInput) {
     return { regionId: region.index, roomId };
 }
 
+export function getRegionNameFromId(regionId) {
+    for (const key in LocationType) {
+        if (LocationType[key].index === regionId) {
+            return LocationType[key].name;
+        }
+    }
+    throw new Error(`Region with ID '${regionId}' not found.`);
+}
+
+
 

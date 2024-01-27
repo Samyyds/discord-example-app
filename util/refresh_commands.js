@@ -54,11 +54,16 @@ const goCommand = new SlashCommandBuilder()
               .setDescription('The name of the room you want to move to')
               .setRequired(true)); 
 
+const mapCommand = new SlashCommandBuilder()
+      .setName('map')
+      .setDescription('Shows the adventure map.');
+          
 const guildCommands =
   [
     //accountCommand.toJSON(),
     characterCommand.toJSON(),
-    goCommand.toJSON()
+    goCommand.toJSON(),
+    mapCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

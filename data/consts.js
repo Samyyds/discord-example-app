@@ -18,9 +18,23 @@ If you ever need help, use the /help command.
 
 To start, create a new account, or login to an existing account.`;
 
+const MAP_STRING = `
++----------------------------------------+
+|            +------------+              |
+|            |  Mountain  |              |
+|            +------------+              |
+|+----------+ +----------+ +-----------+ |
+||  Forest  | |   Mara   | | Graveyard | |
+|+----------+ +----------+ +-----------+ |
+|             +----------+               |
+|             |  Beach   |               |
+|             +----------+               |
++----------------------------------------+`;
+
 const descriptions = {
     SIGNUP_MESSAGE,
-    LOGIN_DES
+    LOGIN_DES,
+    MAP_STRING
 };
 
 export default descriptions;

@@ -5,6 +5,7 @@ const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
 import AccountManagementView from './commands/login-panel.js';
 import { CharacterRepository } from './data/repository_character.js';
 import { goCommands } from './commands/command_go.js';
+import { mapCommands } from './commands/command_map.js';
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
@@ -72,7 +73,7 @@ client.on(Events.InteractionCreate, async interaction => {
         charRepo.setActiveCharacter(userId, selectedCharacterId);
 
         const newActiveChar = charRepo.getActiveCharacter(userId);
-        //console.log(`newActiveChar: ${newActiveChar}`);
+
         const embed = new EmbedBuilder()
           .setTitle(`Character Switched`)
           .setDescription(`You have switched to character: **${newActiveChar.name}**`)
@@ -87,13 +88,19 @@ client.on(Events.InteractionCreate, async interaction => {
     const commandName = interaction.commandName;
     let commandHandler;
 
-    if(commandName === "go"){
-      commandHandler = goCommands[commandName]; 
-    }else{
-      const subCommandName = interaction.options.getSubcommand();
-      commandHandler = compoundCommand[commandName]?.[subCommandName];
-    }
-  
+    switch (commandName) {
+      case "go":
+          commandHandler = goCommands[commandName];
+          break;
+      case "map":
+          commandHandler = mapCommands[commandName];
+          break;
+      default:
+          const subCommandName = interaction.options.getSubcommand();
+          commandHandler = compoundCommand[commandName]?.[subCommandName];
+          break;
+  }
+
     if (commandHandler) {
       await commandHandler(interaction);
     } else {
