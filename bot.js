@@ -6,6 +6,7 @@ import AccountManagementView from './commands/login-panel.js';
 import { CharacterRepository } from './data/repository_character.js';
 import { goCommands } from './commands/command_go.js';
 import { mapCommands } from './commands/command_map.js';
+import { lookCommands } from "./commands/command_look.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
@@ -95,6 +96,9 @@ client.on(Events.InteractionCreate, async interaction => {
       case "map":
           commandHandler = mapCommands[commandName];
           break;
+      case "look":
+          commandHandler = lookCommands[commandName];
+          break;    
       default:
           const subCommandName = interaction.options.getSubcommand();
           commandHandler = compoundCommand[commandName]?.[subCommandName];

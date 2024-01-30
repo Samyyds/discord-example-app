@@ -57,13 +57,18 @@ const goCommand = new SlashCommandBuilder()
 const mapCommand = new SlashCommandBuilder()
       .setName('map')
       .setDescription('Shows the adventure map.');
+
+const lookCommand = new SlashCommandBuilder()
+      .setName('look')
+      .setDescription('Check out the enemies in your current location.');      
           
 const guildCommands =
   [
     //accountCommand.toJSON(),
     characterCommand.toJSON(),
     goCommand.toJSON(),
-    mapCommand.toJSON()
+    mapCommand.toJSON(),
+    lookCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

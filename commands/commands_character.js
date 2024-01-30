@@ -73,8 +73,8 @@ const createCommand = async (interaction) => {
             const locationRepo = LocationRepository.getInstance();
             locationRepo.setLocation(interaction.user.id, activeChar.id, 0, 0);
 
-            embed.setTitle("Your active character's info is: ");
-
+            embed.setTitle("Your active character's info is: ")
+                 .setColor(0x00AE86);
             embed = addCharacterInfoToEmbed(coveredChar, embed);
             await interaction.followUp({ embeds: [embed], ephemeral: true });
         } else {
@@ -172,7 +172,8 @@ const statusCommand = async (interaction) => {
         let embed = new EmbedBuilder();
         const coveredChar = convertBigInt(character);
         embed = addCharacterInfoToEmbed(coveredChar, embed);
-        embed.setTitle("Your active character's info is: ");
+        embed.setTitle("Your active character's info is: ")
+             .setColor(0x00AE86);
         await interaction.editReply({ embeds: [embed], ephemeral: true });
     } catch (error) {
         console.error('Error in statusCommand:', error);
