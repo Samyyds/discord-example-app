@@ -7,6 +7,7 @@ import { CharacterRepository } from './data/repository_character.js';
 import { goCommands } from './commands/command_go.js';
 import { mapCommands } from './commands/command_map.js';
 import { lookCommands } from "./commands/command_look.js";
+import { attackCommands } from "./commands/command_attack.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
@@ -91,19 +92,22 @@ client.on(Events.InteractionCreate, async interaction => {
 
     switch (commandName) {
       case "go":
-          commandHandler = goCommands[commandName];
-          break;
+        commandHandler = goCommands[commandName];
+        break;
       case "map":
-          commandHandler = mapCommands[commandName];
-          break;
+        commandHandler = mapCommands[commandName];
+        break;
       case "look":
-          commandHandler = lookCommands[commandName];
-          break;    
+        commandHandler = lookCommands[commandName];
+        break;
+      case "attack":
+        commandHandler = attackCommands[commandName];
+        break;
       default:
-          const subCommandName = interaction.options.getSubcommand();
-          commandHandler = compoundCommand[commandName]?.[subCommandName];
-          break;
-  }
+        const subCommandName = interaction.options.getSubcommand();
+        commandHandler = compoundCommand[commandName]?.[subCommandName];
+        break;
+    }
 
     if (commandHandler) {
       await commandHandler(interaction);

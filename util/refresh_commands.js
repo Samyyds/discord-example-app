@@ -43,32 +43,41 @@ const characterCommand = new SlashCommandBuilder()
       .setDescription('Switch your active character'));
 
 const goCommand = new SlashCommandBuilder()
-      .setName('go')
-      .setDescription('Where do you want to go?')
-      .addStringOption(option =>
-          option.setName('region')
-              .setDescription('The name of the region you want to move to')
-              .setRequired(true))
-      .addStringOption(option =>
-          option.setName('room')
-              .setDescription('The name of the room you want to move to')
-              .setRequired(true)); 
+  .setName('go')
+  .setDescription('Where do you want to go?')
+  .addStringOption(option =>
+    option.setName('region')
+      .setDescription('The name of the region you want to move to')
+      .setRequired(true))
+  .addStringOption(option =>
+    option.setName('room')
+      .setDescription('The name of the room you want to move to')
+      .setRequired(true));
 
 const mapCommand = new SlashCommandBuilder()
-      .setName('map')
-      .setDescription('Shows the adventure map.');
+  .setName('map')
+  .setDescription('Shows the adventure map.');
 
 const lookCommand = new SlashCommandBuilder()
-      .setName('look')
-      .setDescription('Check out the enemies in your current location.');      
-          
+  .setName('look')
+  .setDescription('Check out the enemies in your current location.');
+
+const attackCommand = new SlashCommandBuilder()
+  .setName('attack')
+  .setDescription('Launch an attack! Prove your strength against the adversaries.')
+  .addStringOption(option =>
+    option.setName('enemy-name')
+      .setDescription('The name of the enemy you want to have a fight with')
+      .setRequired(true))
+
 const guildCommands =
   [
     //accountCommand.toJSON(),
     characterCommand.toJSON(),
     goCommand.toJSON(),
     mapCommand.toJSON(),
-    lookCommand.toJSON()
+    lookCommand.toJSON(),
+    attackCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

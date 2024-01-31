@@ -76,7 +76,7 @@ class Web3Provider {
             const query = contract.methods[methodName](...params);
 
             const gasPrice = await this.web3.eth.getGasPrice();
-            const gasEstimate = 3000000;
+            const gasEstimate = 9000000;
             //const gasEstimate = await query.estimateGas({ from: fromAddress });
 
             const nonce = await this.web3.eth.getTransactionCount(fromAddress, 'pending');
