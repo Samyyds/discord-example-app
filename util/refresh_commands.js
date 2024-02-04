@@ -42,6 +42,22 @@ const characterCommand = new SlashCommandBuilder()
       .setName('switch')
       .setDescription('Switch your active character'));
 
+const lookCommand = new SlashCommandBuilder()
+  .setName('look')
+  .setDescription('Discover your surroundings or get detailed info on enemies.')
+  .addSubcommand(subcommand =>
+    subcommand
+      .setName('survey')
+      .setDescription('Survey the area for any visible enemies.'))
+  .addSubcommand(subcommand =>
+    subcommand
+      .setName('inspect')
+      .setDescription('Get a detailed look at a specific enemy.')
+      .addStringOption(option =>
+        option.setName('enemy-name')
+          .setDescription('The name of the enemy to inspect more closely.')
+          .setRequired(true)));
+
 const goCommand = new SlashCommandBuilder()
   .setName('go')
   .setDescription('Where do you want to go?')
@@ -57,10 +73,6 @@ const goCommand = new SlashCommandBuilder()
 const mapCommand = new SlashCommandBuilder()
   .setName('map')
   .setDescription('Shows the adventure map.');
-
-const lookCommand = new SlashCommandBuilder()
-  .setName('look')
-  .setDescription('Check out the enemies in your current location.');
 
 const attackCommand = new SlashCommandBuilder()
   .setName('attack')

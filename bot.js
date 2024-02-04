@@ -14,6 +14,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 const compoundCommand = {
   character: charactercommands,
+  look: lookCommands
 };
 
 client.login(process.env.DISCORD_TOKEN);
@@ -96,9 +97,6 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "map":
         commandHandler = mapCommands[commandName];
-        break;
-      case "look":
-        commandHandler = lookCommands[commandName];
         break;
       case "attack":
         commandHandler = attackCommands[commandName];
