@@ -61,6 +61,26 @@ class Character {
     }
 }
 
+class StatusContainer {
+    constructor(spdMult, phyDefBuffMag, phyDefBuffTimer, bleedMag, bleedTimer, poisonMag, poisonTimer) {
+        this.spdMult = spdMult;
+        this.phyDefBuffMag = phyDefBuffMag;
+        this.phyDefBuffTimer = phyDefBuffTimer;
+        this.bleedMag = bleedMag;
+        this.bleedTimer = bleedTimer;
+        this.poisonMag = poisonMag;
+        this.poisonTimer = poisonTimer;
+    }
+}
+
+class Combatant {
+    constructor(character, status, barIndex) {
+        this.character = character;
+        this.status = status;
+        this.barIndex = barIndex;
+    }
+}
+
 class CharacterRepository {
     constructor() {
         if (CharacterRepository.instance) {
@@ -95,10 +115,10 @@ class CharacterRepository {
     }
 
     getActiveCharacter(userId) {
-        const activeCharacterId = this.activeCharacters.get(userId); 
-        const characters = this.getCharactersByUserId(userId);       
+        const activeCharacterId = this.activeCharacters.get(userId);
+        const characters = this.getCharactersByUserId(userId);
         return characters.find(character => character.id === activeCharacterId);
-    }    
+    }
 }
 
-export { Character, StatContainer, SkillContainer, CharacterRepository };
+export { Character, StatContainer, SkillContainer, CharacterRepository, StatusContainer, Combatant };
