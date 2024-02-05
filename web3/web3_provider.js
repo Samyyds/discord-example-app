@@ -22,6 +22,7 @@ class Web3Provider {
         const wallet = ethers.Wallet.createRandom();
         const userAccount = wallet;
         const seedphrase = wallet.mnemonic.phrase;
+        console.log(userAccount.address);
         return { userAccount, seedphrase }
     }
 

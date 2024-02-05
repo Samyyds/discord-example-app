@@ -23,6 +23,10 @@ const attackCommand = async (interaction) => {
 
         const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
         const enemiesInfo = await web3Provider.queryContract('Combat', 'viewEnemies', [web3Provider.toBigN(activeCharId)]);
+        if (enemiesInfo.length <= 0) {
+            await interaction.editReply({ content: 'The air is still, no enemies lurk in the shadows...', ephemeral: true });
+            return;
+        }
         let chosenEnemyIndex = enemiesInfo.findIndex(enemy => enemy.name.toLowerCase() === enemyName);
 
         if (chosenEnemyIndex !== -1) {
