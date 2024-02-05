@@ -20,7 +20,15 @@ const goCommand = async (interaction) => {
         const { regionId, roomId } = getLocationFromInput(regionName, roomName);
 
         const locationRepo = LocationRepository.getInstance();
-        const { regionId: curRegionId, roomId: curRoomId} = locationRepo.getLocation(interaction.user.id, activeCharId);
+        const { regionId: curRegionId, roomId: curRoomId } = locationRepo.getLocation(interaction.user.id, activeCharId);
+
+        if (regionId === curRegionId && roomId === curRoomId) {
+            let embed = new EmbedBuilder()
+                .setTitle('Hold Your Horse!')
+                .setDescription(`You're already at this location. Time to explore or embark on a new quest!`);
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
+            return;
+        }
 
         const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
 
@@ -49,6 +57,8 @@ const goCommand = async (interaction) => {
         let errorMessage = 'An error occurred.';
         if (error.message.includes('not found')) {
             errorMessage = "Whoops! You can't venture into the unknown like that. Try picking a place that's on the map!";
+        } else if (error.innerError && error.innerError.message.includes('_validateMoveRegion')) {
+            errorMessage = "To embark on a journey to another region, you must first navigate back to the starting room of your current region.";
         }
         await interaction.editReply({ content: errorMessage, ephemeral: true });
     }

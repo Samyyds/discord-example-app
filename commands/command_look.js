@@ -22,13 +22,17 @@ const surveyCommand = async (interaction) => {
         const enemyNames = enemiesInfo.map(enemy => enemy.name);
         const enemiesCount = enemyNames.length;
 
-        const enemyListString = enemyNames.join('\n');
-        const description = `You glance around and spot ${enemiesCount} creature(s):\n${enemyListString}\n\nFeeling brave? Use the \`/look inspect\` command for a closer look!`;
+        let embed = new EmbedBuilder().setColor(0x00AE86);
 
-        let embed = new EmbedBuilder()
-            .setTitle('Adventure Awaits!')
-            .setDescription(description)
-            .setColor(0x00AE86);
+        if (enemiesCount > 0) {
+            const enemyListString = enemyNames.join('\n');
+            const description = `You glance around and spot ${enemiesCount} creature(s):\n${enemyListString}\n\nFeeling brave? Use the \`/look inspect\` command for a closer look!`;
+            embed = new EmbedBuilder()
+                .setTitle('Adventure Awaits!')
+                .setDescription(description);
+        } else {
+            embed.setTitle('All Clear!').setDescription("The coast is clear, no threats lurk in the shadows. What will your next move be, brave adventurer?");
+        }
 
         await interaction.editReply({ embeds: [embed], ephemeral: true });
 
