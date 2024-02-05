@@ -32,10 +32,10 @@ const createCommand = async (interaction) => {
         let embed = new EmbedBuilder();
 
         if (status === 1n) {
-            embed.setTitle(`Congratulations! Your character has been created!`);
+            embed.setTitle(`Huzzah! Your hero has emerged into the realm, ready for adventure!`);
             await interaction.editReply({ embeds: [embed], ephemeral: true });
 
-            embed.setTitle("Querying blockchain...");
+            embed.setTitle("Peering into the annals of destiny, uncovering your fate...");
             await interaction.followUp({ embeds: [embed], ephemeral: true });
 
             //query character Id that just created
@@ -73,7 +73,7 @@ const createCommand = async (interaction) => {
             const locationRepo = LocationRepository.getInstance();
             locationRepo.setLocation(interaction.user.id, activeChar.id, 0, 0);
 
-            embed.setTitle("Your active character's info is: ")
+            embed.setTitle("Behold, the tale of your valiant hero unfolds: ")
                  .setColor(0x00AE86);
             embed = addCharacterInfoToEmbed(coveredChar, embed);
             await interaction.followUp({ embeds: [embed], ephemeral: true });
@@ -115,7 +115,7 @@ const switchCommand = async (interaction) => {
     otherCharacters.forEach(character => {
         selectMenu.addOptions({
             label: `${character.name} (Inactive)`,
-            description: `Level: ${activeCharacter.level}, Class: ${activeCharacter.classId}, Race: ${activeCharacter.raceId} `,
+            description: `Level: ${character.level}, Class: ${character.classId}, Race: ${character.raceId} `,
             value: character.id.toString()
         });
     });
