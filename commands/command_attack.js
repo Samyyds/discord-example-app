@@ -31,7 +31,7 @@ const attackCommand = async (interaction) => {
         } else {
             await interaction.editReply({ content: 'No enemy with that name found.', ephemeral: true });
         }
-
+        const result = await web3Provider.sendTransaction('Combat', 'fight', [web3Provider.toBigN(activeCharId), web3Provider.toBigN(chosenEnemyIndex)]);
     } catch (error) {
         console.error('Error in attackCommand:', error);
         await interaction.editReply({ content: `An error occurred: ${error.message}`, ephemeral: true });
@@ -60,10 +60,10 @@ function formatCombatRound(playerRound, enemyRound, roundNumber) {
     lastPlayerHp = curPlayerHp;
     lastEnemyHp = curEnemyHp;
     let roundDescription = `**Round ${roundNumber}**\n`;
-    
-    if(roundNumber === 1){
-        roundDescription += ` Locked in a fierce stare-down, you're ready with ${curPlayerHp} HP against your opponent's ${curEnemyHp} HP. Let the battle begin!`;     
-    }else{
+
+    if (roundNumber === 1) {
+        roundDescription += ` Locked in a fierce stare-down, you're ready with ${curPlayerHp} HP against your opponent's ${curEnemyHp} HP. Let the battle begin!`;
+    } else {
         roundDescription += `You [smash] ${enemyRound[0][0]} with <fists>, ${enemyRound[0][0]} ${enemyHpChange} HP\n`;
         roundDescription += `${enemyRound[0][0]} punches you, you ${playerHpChange} HP\n`;
     }
