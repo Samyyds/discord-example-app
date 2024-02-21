@@ -5,6 +5,7 @@ import { Character, StatContainer, SkillContainer, CharacterRepository } from '.
 import pkg from 'discord.js';
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
 import { LocationRepository } from '../data/repository_location.js';
+import { getKeyByValue, addCharacterInfoToEmbed, convertBigInt } from '../util/util.js';
 
 const createCommand = async (interaction) => {
     try {
@@ -185,56 +186,4 @@ export const charactercommands = {
     create: createCommand,
     status: statusCommand,
     switch: switchCommand
-};
-
-function convertBigInt(obj) {
-    let newObj = {};
-    for (let key in obj) {
-        if (typeof obj[key] === 'bigint') {
-            // Convert BigInt to String for the new object
-            newObj[key] = obj[key].toString();
-        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-            // Recursive call for nested objects
-            newObj[key] = convertBigInt(obj[key]);
-        } else {
-            // Copy other values as is
-            newObj[key] = obj[key];
-        }
-    }
-    return newObj;
 }
-
-function formatCharacterInfo(character) {
-    let formattedString = '';
-    for (const key in character) {
-        if (typeof character[key] === 'object') {
-            formattedString += `${key}:\n${formatCharacterInfo(character[key])}\n`;
-        } else {
-            formattedString += `${key}: ${character[key]}\n`;
-        }
-    }
-    return formattedString;
-}
-
-function addCharacterInfoToEmbed(activeChar, embed) {
-    for (const key in activeChar) {
-        let value;
-        if (typeof activeChar[key] === 'object') {
-            value = formatCharacterInfo(activeChar[key]);
-        } else {
-            value = activeChar[key].toString();
-        }
-
-        if (value === '') {
-            value = 'N/A';
-        }
-
-        embed.addFields({ name: key, value: value, inline: true });
-    }
-    return embed;
-}
-
-function getKeyByValue(enumObj, value) {
-    return Object.keys(enumObj).find(key => enumObj[key] === value);
-}
-

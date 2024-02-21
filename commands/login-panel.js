@@ -37,7 +37,8 @@ class AccountManagementView {
     async handleSignUp(interaction) {
         try {
             await interaction.deferReply({ ephemeral: true });
-
+            
+            let signupEmbed = new EmbedBuilder();
             if (userAccounts.has(interaction.user.id)) {
                 signupEmbed.setTitle('You already have an account');
                 await interaction.editReply({ embeds: [signupEmbed], ephemeral: true });
@@ -52,9 +53,7 @@ class AccountManagementView {
             web3Provider.setCurrentAccount(interaction.user.id);
 
             const seedphraseFile = new AttachmentBuilder(Buffer.from(seedphrase), { name: 'RecoveryPhrase.txt' });
-            let signupEmbed = new EmbedBuilder();
-            signupEmbed = new EmbedBuilder()
-                .setTitle('Signup Success')
+            signupEmbed.setTitle('Signup Success')
                 .setDescription(descriptions.SIGNUP_MESSAGE);
 
             await interaction.editReply({
@@ -64,7 +63,7 @@ class AccountManagementView {
             });
         } catch (error) {
             console.error('Error in handleSignUp:', error);
-            await interaction.reply({ content: 'An error occurred during the signup process', ephemeral: true });
+            await interaction.editReply({ content: 'An error occurred during the signup process', ephemeral: true });
         }
     }
 
@@ -118,7 +117,7 @@ class AccountManagementView {
             }
         } catch (error) {
             console.error('Error in handleModalSubmit:', error);
-            await interaction.reply({ content: 'An error occurred during the login process', ephemeral: true });
+            await interaction.editReply({ content: 'An error occurred during the login process', ephemeral: true });
         }
     }
 
