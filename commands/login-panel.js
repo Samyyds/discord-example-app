@@ -1,7 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, AttachmentBuilder } from 'discord.js';
 import Web3Manager from '../web3/web3_manager.js';
-import userAccounts from '../data/user_accounts.js';
+import {userAccounts} from '../data/user_accounts.js';
 import descriptions from '../data/consts.js';
+import { CharacterRepository } from '../data/repository_character.js';
 
 class AccountManagementView {
     constructor(bot) {
@@ -37,7 +38,7 @@ class AccountManagementView {
     async handleSignUp(interaction) {
         try {
             await interaction.deferReply({ ephemeral: true });
-            
+
             let signupEmbed = new EmbedBuilder();
             if (userAccounts.has(interaction.user.id)) {
                 signupEmbed.setTitle('You already have an account');
@@ -127,6 +128,12 @@ class AccountManagementView {
                 logoutEmbed.setTitle('You are not logged in');
                 await interaction.reply({ embeds: [logoutEmbed], ephemeral: true });
                 return;
+            }
+
+            const charRepo = CharacterRepository.getInstance();
+            const activeChar = charRepo.getActiveCharacter(interaction.user.id);
+            if (activeChar && activeChar.id) {
+                activeCharacters.set(interaction.user.id, activeChar.id);
             }
 
             userAccounts.delete(interaction.user.id);

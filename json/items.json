@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "name": "Copper Ore",
+        "location": "Mara, Blacksmith",
+        "type": "Raw Ingredient"
+    },
+    {
+        "id": 2,
+        "name": "Tin Ore",
+        "location": "Mountain, base",
+        "type": "Raw Ingredient"
+    }
+]

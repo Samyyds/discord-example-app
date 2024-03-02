@@ -2,17 +2,26 @@ import { EmbedBuilder } from 'discord.js';
 import { LocationRepository } from '../data/repository_location.js';
 import { CharacterRepository } from '../data/repository_character.js';
 import { LocationType, getLocationFromInput } from '../data/enums.js';
-import Web3Manager from '../web3/web3_manager.js';
+
+const regionRoomLimits = {
+    [LocationType.MARA.index]: Object.keys(LocationType.MARA.rooms).length,
+    [LocationType.STONESIDE_DUNGEON.index]: Object.keys(LocationType.STONESIDE_DUNGEON.rooms).length,
+    [LocationType.MOUNTAIN.index]: Object.keys(LocationType.MOUNTAIN.rooms).length,
+    [LocationType.FOREST.index]: Object.keys(LocationType.FOREST.rooms).length,
+    [LocationType.GRAVEYARD.index]: Object.keys(LocationType.GRAVEYARD.rooms).length,
+    [LocationType.BEACH.index]: Object.keys(LocationType.BEACH.rooms).length,
+};
 
 const goCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
 
         const characterRepo = CharacterRepository.getInstance();
-        const activeCharId = characterRepo.getActiveCharacter(interaction.user.id).id;
-        if (!activeCharId) {
+        const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
+        if (!activeCharacter) {
             throw new Error('You do not have an available character!');
         }
+        const activeCharId = activeCharacter.id;
 
         const regionName = interaction.options.getString('region').trim();
         const roomName = interaction.options.getString('room')?.trim() || '';
@@ -20,9 +29,9 @@ const goCommand = async (interaction) => {
         const { regionId, roomId } = getLocationFromInput(regionName, roomName);
 
         const locationRepo = LocationRepository.getInstance();
-        const { regionId: curRegionId, roomId: curRoomId } = locationRepo.getLocation(interaction.user.id, activeCharId);
+        const currentLocation = locationRepo.getLocation(interaction.user.id, activeCharId) || {};
 
-        if (regionId === curRegionId && roomId === curRoomId) {
+        if (regionId === currentLocation.regionId && roomId === currentLocation.roomId) {
             let embed = new EmbedBuilder()
                 .setTitle('Hold Your Horse!')
                 .setDescription(`You're already at this location. Time to explore or embark on a new quest!`);
@@ -30,17 +39,19 @@ const goCommand = async (interaction) => {
             return;
         }
 
-        const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
-
-        if (regionId !== curRegionId) {
-            await web3Provider.sendTransaction('Locations', 'moveRegion', [web3Provider.toBigN(activeCharId), web3Provider.toBigN(regionId)]);
+        if (regionId !== currentLocation.regionId) {
+            if (!locationRepo.canMoveRegion(interaction.user.id, activeCharId, regionId)) {
+                throw new Error("Cannot move to the target region from current location.");
+            }
+            locationRepo.moveRegion(interaction.user.id, activeCharId, regionId);
         }
 
-        if (roomId !== curRoomId) {
-            await web3Provider.sendTransaction('Locations', 'moveRoom', [web3Provider.toBigN(activeCharId), web3Provider.toBigN(roomId)]);
+        if (roomId !== currentLocation.roomId) {
+            if (!locationRepo.canMoveRoom(interaction.user.id, activeCharId, roomId, regionRoomLimits)) {
+                throw new Error("Cannot move to the target room from current location.");
+            }
+            locationRepo.moveRoom(interaction.user.id, activeCharId, roomId);
         }
-
-        locationRepo.setLocation(interaction.user.id, activeCharId, regionId, roomId);
 
         let embed = new EmbedBuilder()
             .setTitle('Adventure Awaits!')
@@ -57,12 +68,12 @@ const goCommand = async (interaction) => {
         let errorMessage = 'An error occurred.';
         if (error.message.includes('not found')) {
             errorMessage = "Whoops! You can't venture into the unknown like that. Try picking a place that's on the map!";
-        } else if (error.innerError && error.innerError.message.includes('_validateMoveRegion')) {
-            errorMessage = "To embark on a journey to another region, you must first navigate back to the starting room of your current region.";
+        } else if (error.message.includes('Cannot move')) {
+            errorMessage = error.message;
         }
         await interaction.editReply({ content: errorMessage, ephemeral: true });
     }
-}
+};
 
 export const goCommands = {
     go: goCommand

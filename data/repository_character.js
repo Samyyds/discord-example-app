@@ -111,13 +111,14 @@ class CharacterRepository {
     }
 
     setActiveCharacter(userId, characterId) {
-        this.activeCharacters.set(userId, BigInt(characterId));
+        console.log(`the active char id is: `+characterId);
+        this.activeCharacters.set(userId, characterId);
     }
 
     getActiveCharacter(userId) {
         const activeCharacterId = this.activeCharacters.get(userId);
         const characters = this.getCharactersByUserId(userId);
-        return characters.find(character => character.id === activeCharacterId);
+        return characters.find(character => character.id === Number(activeCharacterId));
     }
 }
 

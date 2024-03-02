@@ -1,3 +1,5 @@
-const userAccounts = new Map();
+const userAccounts = new Map();//user id => wallet
 
-export default userAccounts;
+const activeCharacters = new Map();//user id => active character used during the last login
+
+export { userAccounts, activeCharacters };

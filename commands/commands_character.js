@@ -1,103 +1,120 @@
-import Web3Manager from '../web3/web3_manager.js';
 import { Class, Race } from '../data/enums.js';
 import { ActionRowBuilder } from 'discord.js';
 import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
 import pkg from 'discord.js';
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
 import { LocationRepository } from '../data/repository_location.js';
-import { getKeyByValue, addCharacterInfoToEmbed, convertBigInt } from '../util/util.js';
+import { addCharacterInfoToEmbed } from '../util/util.js';
+
+const CLASS_BASE_STATS = {
+    'NO_CLASS': { hp: 100, mp: 100, spd: 100, physicalATK: 100, physicalDEF: 100, magicATK: 100, magicDEF: 100 },
+    'WARRIOR': { hp: 300, mp: 100, spd: 100, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
+    'ROGUE': { hp: 100, mp: 100, spd: 200, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
+    'MAGE': { hp: 100, mp: 200, spd: 100, physicalATK: 60, physicalDEF: 60, magicATK: 150, magicDEF: 120 },
+};
+
+const CLASS_BASE_STAT_MODIFIERS = {
+    'NO_CLASS': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'WARRIOR': { hp: 1.3, mp: 1, spd: 0.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
+    'ROGUE': { hp: 1.3, mp: 1, spd: 1.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
+    'MAGE': { hp: 1.3, mp: 2, spd: 1, physicalATK: 0.6, physicalDEF: 0.6, magicATK: 1.5, magicDEF: 1.2 },
+};
+
+const RACE_BASE_STAT_MODIFIERS = {
+    'HUMAN': { hp: 1.1, mp: 1, spd: 1, physicalATK: 1.1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'ELF': { hp: 0.9, mp: 1.2, spd: 1.2, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
+    'DWARF': { hp: 1.2, mp: 0.8, spd: 0.8, physicalATK: 1.2, physicalDEF: 1.3, magicATK: 0.8, magicDEF: 1 },
+};
+
+const PERSONALITY_BASE_STAT_MODIFIERS = {
+    'NO_PERSONALITY': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'BRAWNY': { hp: 1.1, mp: 0.9, spd: 0.9, physicalATK: 1.2, physicalDEF: 1.1, magicATK: 0.9, magicDEF: 0.9 },
+    'WISE': { hp: 0.9, mp: 1.1, spd: 1, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
+
+}
+
+let nextCharacterId = 1;
 
 const createCommand = async (interaction) => {
     try {
-        await interaction.deferReply({ ephemeral: true });
-
         const charName = interaction.options.getString('character-name');
         const className = interaction.options.getString('class-name').toUpperCase();
         const raceName = interaction.options.getString('race-name').toUpperCase();
 
-        const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
-
-        const classId = web3Provider.toBigN(Class[className]);
-        const raceId = web3Provider.toBigN(Race[raceName]);
-
-        if (classId === undefined || raceId === undefined) {
+        if (!(className in Class) || !(raceName in Race)) {
             throw new Error('Invalid class or race name.');
         }
 
-        if (!web3Provider) {
-            throw new Error('No Web3 provider found for this user.');
-        }
+        const userId = interaction.user.id;
 
-        //create character
-        const status = await web3Provider.sendTransaction('CharacterProperties', 'createCharacter', [charName, classId, raceId]);
-        let embed = new EmbedBuilder();
+        const character = createCharacter(userId, charName, className, raceName);
 
-        if (status === 1n) {
-            embed.setTitle(`Huzzah! Your hero has emerged into the realm, ready for adventure!`);
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
+        const characterRepo = CharacterRepository.getInstance();
+        characterRepo.addCharacter(userId, character);
+        characterRepo.setActiveCharacter(userId, character.id);
+        
+        let embed = new EmbedBuilder()
+        .setTitle("Huzzah! Your hero has emerged into the realm, ready for adventure!")
+        .setColor(0x00AE86)
+        .setDescription(`The tale of ${charName}, the valiant ${className} of the ${raceName} race begins!`);
+        await interaction.reply({ embeds: [embed], ephemeral: true });
 
-            embed.setTitle("Peering into the annals of destiny, uncovering your fate...");
-            await interaction.followUp({ embeds: [embed], ephemeral: true });
-
-            //query character Id that just created
-            const output = await web3Provider.queryContract('CharacterOwnership', 'tokensOfOwner', [web3Provider.currentAccount.address]);
-            const charId = output[output.length - 1];
-
-            //query character info by character Id
-            const charInfo = await web3Provider.queryContract('CharacterProperties', 'getCharacterInfo', [charId]);
-            const stats = new StatContainer(
-                charInfo.stats.hpMax, charInfo.stats.mpMax, charInfo.stats.hp, charInfo.stats.mp,
-                charInfo.stats.spd, charInfo.stats.physicalATK, charInfo.stats.physicalDEF,
-                charInfo.stats.magicATK, charInfo.stats.magicDEF, charInfo.stats.fireATK,
-                charInfo.stats.fireDEF, charInfo.stats.lightATK, charInfo.stats.lightDEF,
-                charInfo.stats.darkATK, charInfo.stats.darkDEF
-            );
-
-            const skills = new SkillContainer(
-                charInfo.skills.mining, charInfo.skills.smithing, charInfo.skills.crafting,
-                charInfo.skills.fishing, charInfo.skills.gathering, charInfo.skills.farming,
-                charInfo.skills.cooking, charInfo.skills.brewing
-            );
-
-            const character = new Character(
-                charId, charInfo.name, charInfo.level, getKeyByValue(Class, web3Provider.toNumber(charInfo.classId)), getKeyByValue(Race, web3Provider.toNumber(charInfo.raceId)), charInfo.personalityId, charInfo.xp, stats, skills,
-                charInfo.battleBar, charInfo.lootQuality
-            );
-
-            const characterRepo = CharacterRepository.getInstance();
-            characterRepo.addCharacter(interaction.user.id, character);
-            characterRepo.setActiveCharacter(interaction.user.id, charId);
-
-            const activeChar = characterRepo.getActiveCharacter(interaction.user.id);
-            const coveredChar = convertBigInt(activeChar);
-
-            const locationRepo = LocationRepository.getInstance();
-            locationRepo.setLocation(interaction.user.id, activeChar.id, 0, 0);
-
-            embed.setTitle("Behold, the tale of your valiant hero unfolds: ")
-                 .setColor(0x00AE86);
-            embed = addCharacterInfoToEmbed(coveredChar, embed);
-            await interaction.followUp({ embeds: [embed], ephemeral: true });
-        } else {
-            embed.setTitle(`fail`);
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
-        }
     } catch (error) {
         console.error('Error in createCharacterCommand:', error);
-        await interaction.editReply({ content: `An error occurred: ${error.message}`, ephemeral: true });
+        await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
 };
 
-const switchCommand = async (interaction) => {
-    await interaction.deferReply({ ephemeral: true });
+function createCharacter(userId, name, className, raceName, personalityId = 'NO_PERSONALITY') {
+    const baseStats = CLASS_BASE_STATS[className];
+    const statModifiers = CLASS_BASE_STAT_MODIFIERS[className];
+    const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
+    const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityId];
+    
+    const currentCharacterId = nextCharacterId;
+    nextCharacterId++;
 
+    const finalStats = {
+        hp: baseStats.hp * statModifiers.hp * raceModifiers.hp * personalityModifiers.hp,
+        mp: baseStats.mp * statModifiers.mp * raceModifiers.mp * personalityModifiers.mp,
+        spd: baseStats.spd * statModifiers.spd * raceModifiers.spd * personalityModifiers.spd,
+        physicalATK: baseStats.physicalATK * statModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK,
+        physicalDEF: baseStats.physicalDEF * statModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF,
+        magicATK: baseStats.magicATK * statModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK,
+        magicDEF: baseStats.magicDEF * statModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF,
+    };
+
+    const stats = new StatContainer(finalStats);
+    const skills = new SkillContainer({});
+
+    const character =  new Character(
+        currentCharacterId, 
+        name,
+        1,
+        Class[className],
+        Race[raceName],
+        personalityId,
+        0,
+        stats,
+        skills,
+        [], 
+        1  
+    );
+    
+    const locationRepo = LocationRepository.getInstance();
+    locationRepo.setLocation(userId, currentCharacterId);
+
+    return character;
+}
+
+const switchCommand = async (interaction) => {
     const charRepo = CharacterRepository.getInstance();
     const allCharacters = charRepo.getCharactersByUserId(interaction.user.id);
     const activeCharacter = charRepo.getActiveCharacter(interaction.user.id);
     const otherCharacters = allCharacters.filter(character => character.id !== activeCharacter.id);
 
     if (otherCharacters.length === 0) {
-        await interaction.editReply({ content: 'No other characters to switch to', ephemeral: true });
+        await interaction.reply({ content: 'No other characters to switch to', ephemeral: true });
         return;
     }
 
@@ -123,20 +140,14 @@ const switchCommand = async (interaction) => {
 
     const actionRow = new ActionRowBuilder().addComponents(selectMenu);
 
-    await interaction.editReply({ content: 'Choose a character:', components: [actionRow] });
+    await interaction.reply({ content: 'Choose a character:', components: [actionRow] });
 }
 
 const statusCommand = async (interaction) => {
-    await interaction.deferReply({ ephemeral: true });
-
     try {
-        const web3Provider = Web3Manager.getProviderForUser(interaction.user.id);
-        if (!web3Provider) {
-            throw new Error('No Web3 provider found for this user.');
-        }
-
         const charRepo = CharacterRepository.getInstance();
         const characters = charRepo.getCharactersByUserId(interaction.user.id);
+
         if (!characters || characters.length === 0) {
             await interaction.editReply({ content: 'No characters found for this user.', ephemeral: true });
             return;
@@ -144,41 +155,18 @@ const statusCommand = async (interaction) => {
 
         const activeChar = charRepo.getActiveCharacter(interaction.user.id);
         if (!activeChar || !activeChar.id) {
-            await interaction.editReply({ content: 'No active character found.', ephemeral: true });
+            await interaction.reply({ content: 'No active character found.', ephemeral: true });
             return;
         }
 
-        const activeId = activeChar.id;
-        const charInfo = await web3Provider.queryContract('CharacterProperties', 'getCharacterInfo', [Number(activeId)]);
-
-        const stats = new StatContainer(
-            charInfo.stats.hpMax, charInfo.stats.mpMax, charInfo.stats.hp, charInfo.stats.mp,
-            charInfo.stats.spd, charInfo.stats.physicalATK, charInfo.stats.physicalDEF,
-            charInfo.stats.magicATK, charInfo.stats.magicDEF, charInfo.stats.fireATK,
-            charInfo.stats.fireDEF, charInfo.stats.lightATK, charInfo.stats.lightDEF,
-            charInfo.stats.darkATK, charInfo.stats.darkDEF
-        );
-
-        const skills = new SkillContainer(
-            charInfo.skills.mining, charInfo.skills.smithing, charInfo.skills.crafting,
-            charInfo.skills.fishing, charInfo.skills.gathering, charInfo.skills.farming,
-            charInfo.skills.cooking, charInfo.skills.brewing
-        );
-
-        const character = new Character(
-            activeId, charInfo.name, charInfo.level, getKeyByValue(Class, web3Provider.toNumber(charInfo.classId)), getKeyByValue(Race, web3Provider.toNumber(charInfo.raceId)), charInfo.personalityId, charInfo.xp, stats, skills,
-            charInfo.battleBar, charInfo.lootQuality
-        );
-
         let embed = new EmbedBuilder();
-        const coveredChar = convertBigInt(character);
-        embed = addCharacterInfoToEmbed(coveredChar, embed);
+        embed = addCharacterInfoToEmbed(activeChar, embed);
         embed.setTitle("Your active character's info is: ")
              .setColor(0x00AE86);
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (error) {
         console.error('Error in statusCommand:', error);
-        await interaction.editReply({ content: `An error occurred: ${error.message}`, ephemeral: true });
+        await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
 };
 

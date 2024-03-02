@@ -36,38 +36,6 @@ const surveyCommand = async (interaction) => {
 
         await interaction.editReply({ embeds: [embed], ephemeral: true });
 
-        // enemiesInfo.forEach((enemy, index) => {
-        //     setTimeout(() => {
-        //         const stats = new StatContainer(
-        //             enemy.stats.hpMax, enemy.stats.mpMax, enemy.stats.hp, enemy.stats.mp,
-        //             enemy.stats.spd, enemy.stats.physicalATK, enemy.stats.physicalDEF,
-        //             enemy.stats.magicATK, enemy.stats.magicDEF, enemy.stats.fireATK,
-        //             enemy.stats.fireDEF, enemy.stats.lightATK, enemy.stats.lightDEF,
-        //             enemy.stats.darkATK, enemy.stats.darkDEF
-        //         );
-
-        //         const skills = new SkillContainer(
-        //             enemy.skills.mining, enemy.skills.smithing, enemy.skills.crafting,
-        //             enemy.skills.fishing, enemy.skills.gathering, enemy.skills.farming,
-        //             enemy.skills.cooking, enemy.skills.brewing
-        //         );
-
-        //         const enemyInfo = new Character(
-        //             index, enemy.name, enemy.level, getKeyByValue(Class, web3Provider.toNumber(enemy.classId)), getKeyByValue(Race, web3Provider.toNumber(enemy.raceId)), enemy.personalityId, enemy.xp, stats, skills,
-        //             enemy.battleBar, enemy.lootQuality
-        //         );
-
-        //         let embed = new EmbedBuilder();
-        //         const coveredEnemy = convertBigInt(enemyInfo);
-        //         embed = addCharacterInfoToEmbed(coveredEnemy, embed);
-
-        //         embed.setTitle(`Enemy Spotted: ${enemy.name}`)
-        //             .setDescription(`Details about enemy ${index + 1}`)
-        //             .setColor(0xff0000);
-        //         interaction.followUp({ embeds: [embed], ephemeral: true });
-        //     }, index * 2000);
-        //});
-
     } catch (error) {
         console.error('Error in lookCommand:', error);
         await interaction.editReply({ content: `An error occurred: ${error.message}`, ephemeral: true });
