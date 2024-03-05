@@ -1,62 +1,67 @@
 class Item {
-    constructor(id, name, location, type) {
+    constructor(id, name, type, source = [], detail = {}) {
         this.id = id;
         this.name = name;
-        this.location = location;
         this.type = type;
+        this.source = source;
+        this.detail = detail;
     }
 }
+//source ["harvest","battle","purchase"]
+//details {和source的index对应}
 
 class RawIngredient extends Item {
-    constructor(id, name, location) {
-        super(id, name, location, 'Raw Ingredient');
+    constructor(id, name, source, detail) {
+        super(id, name, 'Raw Ingredient', source, detail);
     }
 }
 
 class Potion extends Item {
-    constructor(id, name) {
-        super(id, name, null, 'Potion');
+    constructor(id, name, source, detail) {
+        super(id, name, 'Potion', source, detail);
     }
 }
 
 class Fish extends Item {
-    constructor(id, name, location) {
-        super(id, name, location, 'Fish');
+    constructor(id, name, source, detail) {
+        super(id, name, 'Fish', source, detail);
     }
 }
 
 class Gem extends Item {
-    constructor(id, name, location) {
-        super(id, name, location, 'Gem');
+    constructor(id, name, source, detail) {
+        super(id, name, 'Gem', source, detail);
     }
 }
 
 class Equipment extends Item {
-    constructor(id, name, location, type, slot, twoHanded, attributes) {
-        super(id, name, location, type);
+    constructor(id, name, source, detail, slot, twoHanded, attributes) {
+        super(id, name, 'Equipment', source, detail);
         this.slot = slot;
         this.twoHanded = twoHanded;
         this.attributes = createEquipmentAttributes(attributes);
     }
 
-    static createEquipmentAttributes({
-        hpBonus = 0, mpBonus = 0, spdBonus = 0,
-        physicalATKBonus = 0, physicalDEFBonus = 0,
-        magicATKBonus = 0, magicDEFBonus = 0,
-        fireATKBonus = 0, fireDEFBonus = 0,
-        lightATKBonus = 0, lightDEFBonus = 0,
-        darkATKBonus = 0, darkDEFBonus = 0,
-        bleedResistBonus = 0, poisonResistBonus = 0
-    }) {
-        return {
-            hpBonus, mpBonus, spdBonus,
-            physicalATKBonus, physicalDEFBonus,
-            magicATKBonus, magicDEFBonus,
-            fireATKBonus, fireDEFBonus,
-            lightATKBonus, lightDEFBonus,
-            darkATKBonus, darkDEFBonus,
-            bleedResistBonus, poisonResistBonus
+    static createEquipmentAttributes(attributes) {
+        const validAttributes = {
+            hpBonus: 0, mpBonus: 0, spdBonus: 0,
+            physicalATKBonus: 0, physicalDEFBonus: 0,
+            magicATKBonus: 0, magicDEFBonus: 0,
+            fireATKBonus: 0, fireDEFBonus: 0,
+            lightATKBonus: 0, lightDEFBonus: 0,
+            darkATKBonus: 0, darkDEFBonus: 0,
+            bleedResistBonus: 0, poisonResistBonus: 0
         };
+
+        for (const key in attributes) {
+            if (key in validAttributes) {
+                validAttributes[key] = attributes[key];
+            } else {
+                console.error(`Invalid attribute: ${key}`);
+            }
+        }
+
+        return validAttributes;
     }
 
     static combineEquipmentAttributes(...attributes) {
@@ -155,12 +160,12 @@ class Inventory {
         if ((item.type === 'Weapon' || item.type === 'Shield') && this.items[item.id] && this.items[item.id].quantity > 0) {
             const currentEquipped = this.equipped[item.type.toLowerCase()];
             if (currentEquipped) {
-                this.addItem(currentEquipped, 1); 
+                this.addItem(currentEquipped, 1);
             }
-    
+
             this.equipped[item.type.toLowerCase()] = item;
-            this.removeItem(item, 1); 
-    
+            this.removeItem(item, 1);
+
             const equippedItemsAttributes = Object.values(this.equipped).filter(i => i).map(i => i.attributes);
             const totalAttributes = combineEquipmentAttributes(...equippedItemsAttributes);
             console.log('Equipped', item.name, 'New total attributes:', totalAttributes);
@@ -168,7 +173,7 @@ class Inventory {
             console.log('This item cannot be equipped.');
         }
     }
-    
+
 }
 
 export { RawIngredient, Potion, Gem, InventoryRepository };

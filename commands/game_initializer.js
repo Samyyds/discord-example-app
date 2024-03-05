@@ -1,29 +1,40 @@
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { LocationRepository } from '../data/repository_location.js';
 import { RawIngredient, Potion, Gem } from '../data/repository_inventory.js';
-
+import { parseLocationJson } from '../util/util.js';
 
 function initializeItems() {
+    const locationRepo = LocationRepository.getInstance();
+
     const items = itemsData.map(itemData => {
+        let item;
         switch (itemData.type) {
             case 'Raw Ingredient':
-                return new RawIngredient(itemData.id, itemData.name, itemData.location);
+                item = new RawIngredient(itemData.id, itemData.name, itemData.source, itemData.details);
+                break;
             case 'Potion':
-                return new Potion(itemData.id, itemData.name);
+                item = new Potion(itemData.id, itemData.name, itemData.source, itemData.details);
+                break;
             case 'Gem':
-                return new Gem(itemData.id, itemData.name, itemData.location);
-            // TODO: add equipments  
+                item = new Gem(itemData.id, itemData.name, itemData.source, itemData.details);
+                break;
+            // case 'Equipment':
+            //     item = new Equipment(itemData.id, itemData.name, itemData.source, itemData.details, itemData.slot, itemData.twoHanded, itemData.attributes);
+            //     break;
             default:
-                return new Item(itemData.id, itemData.name, itemData.location, itemData.type);
+                item = new Item(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details);
+                break;
         }
-    });
 
-    const locationRepo = LocationRepository.getInstance();
-    items.forEach(item => {
-        if(item.location) {
-            locationRepo.addItemToLocation(item.location.regionId, item.location.roomId, item);
+        if (itemData.source.includes("harvest")) {
+            const { regionId, roomId } = parseLocationJson(itemData.details.locations);
+            if ({ regionId, roomId }) {
+                locationRepo.addItemToLocation(regionId, roomId, item);
+            }
         }
-    });
-}
+    })
+
+    console.log(items.length);
+};
 
 export { initializeItems };

@@ -2,13 +2,15 @@
     {
         "id": 1,
         "name": "Copper Ore",
-        "location": "Mara, Blacksmith",
-        "type": "Raw Ingredient"
+        "type": "Raw Ingredient",
+        "source": ["harvest"],
+        "details": {"locations": "Mara Blacksmith"}
     },
     {
         "id": 2,
         "name": "Tin Ore",
-        "location": "Mountain, base",
-        "type": "Raw Ingredient"
+        "type": "Raw Ingredient",
+        "source": ["harvest"],
+        "details": {"locations":"Mountain b1"}
     }
 ]

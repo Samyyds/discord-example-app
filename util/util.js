@@ -1,3 +1,5 @@
+import { LocationType } from '../data/enums.js';
+
 export function convertBigInt(obj) {
     let newObj = {};
     for (let key in obj) {
@@ -47,4 +49,12 @@ export function addCharacterInfoToEmbed(activeChar, embed) {
 
 export function getKeyByValue(enumObj, value) {
     return Object.keys(enumObj).find(key => enumObj[key] === value);
+}
+
+export function parseLocationJson(locationString) {
+    const [regionName, roomName] = locationString.split(' ');
+    const region = Object.values(LocationType).find(region => region.name.toLowerCase() === regionName.toLowerCase());
+    if (!region) return null;
+    const room = Object.values(region.rooms).find(room => room.name.toLowerCase() === roomName.toLowerCase());
+    return { regionId: region.index, roomId: room ? room.index : 0 };
 }
