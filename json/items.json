@@ -3,14 +3,22 @@
         "id": 1,
         "name": "Copper Ore",
         "type": "Raw Ingredient",
-        "source": ["harvest"],
-        "details": {"locations": "Mara Blacksmith"}
+        "source": [
+            "harvest"
+        ],
+        "details": {
+            "locations": "Mara Blacksmith, 5"
+        }
     },
     {
         "id": 2,
         "name": "Tin Ore",
         "type": "Raw Ingredient",
-        "source": ["harvest"],
-        "details": {"locations":"Mountain b1"}
+        "source": [
+            "harvest"
+        ],
+        "details": {
+            "locations": "Mountain b1, 10"
+        }
     }
 ]

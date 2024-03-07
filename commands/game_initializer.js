@@ -1,10 +1,10 @@
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { LocationRepository } from '../data/repository_location.js';
-import { RawIngredient, Potion, Gem } from '../data/repository_inventory.js';
+import { Item, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository } from '../data/respository_item.js';
 import { parseLocationJson } from '../util/util.js';
 
 function initializeItems() {
-    const locationRepo = LocationRepository.getInstance();
+    const itemRepo = ItemRepository.getInstance();
 
     const items = itemsData.map(itemData => {
         let item;
@@ -27,14 +27,13 @@ function initializeItems() {
         }
 
         if (itemData.source.includes("harvest")) {
-            const { regionId, roomId } = parseLocationJson(itemData.details.locations);
+            const { regionId, roomId, quantity } = parseLocationJson(itemData.details.locations);
             if ({ regionId, roomId }) {
-                locationRepo.addItemToLocation(regionId, roomId, item);
+                itemRepo.addItemToLocation(regionId, roomId, item, quantity);
+                itemRepo.getItemsInLocation(regionId, roomId);
             }
         }
     })
-
-    console.log(items.length);
 };
 
 export { initializeItems };

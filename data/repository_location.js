@@ -5,7 +5,6 @@ class LocationRepository {
         }
 
         this.locations = new Map(); // user ID -> Map(character ID -> location)
-        this.itemLocations = new Map();// location -> items
         LocationRepository.instance = this;
     }
 
@@ -62,19 +61,6 @@ class LocationRepository {
         const location = this.getLocation(userId, characterId);
         if (!location) return;
         this.setLocation(userId, characterId, location.regionId, roomId);
-    }
-
-    addItemToLocation(regionId, roomId, item) {
-        const locationKey = `${regionId}_${roomId}`;
-        if (!this.itemLocations.has(locationKey)) {
-            this.itemLocations.set(locationKey, []);
-        }
-        this.itemLocations.get(locationKey).push(item);
-    }
-    
-    getItemsInLocation(regionId, roomId) {
-        const locationKey = `${regionId}_${roomId}`; 
-        return this.itemLocations.get(locationKey) || [];
     }
 }
 
