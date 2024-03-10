@@ -50,12 +50,3 @@ export function addCharacterInfoToEmbed(activeChar, embed) {
 export function getKeyByValue(enumObj, value) {
     return Object.keys(enumObj).find(key => enumObj[key] === value);
 }
-
-export function parseLocationJson(locationString) {
-    const [location, quantity] = locationString.split(',');
-    const [regionName, roomName] = location.split(' ');
-    const region = Object.values(LocationType).find(region => region.name.toLowerCase() === regionName.toLowerCase());
-    if (!region) return null;
-    const room = Object.values(region.rooms).find(room => room.name.toLowerCase() === roomName.toLowerCase());
-    return { regionId: region.index, roomId: room ? room.index : 0, quantity: quantity};
-}

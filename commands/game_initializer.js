@@ -1,7 +1,6 @@
 import itemsData from '../json/items.json' assert { type: 'json' };
-import { LocationRepository } from '../data/repository_location.js';
+import { LocationType } from '../data/enums.js';
 import { Item, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository } from '../data/respository_item.js';
-import { parseLocationJson } from '../util/util.js';
 
 function initializeItems() {
     const itemRepo = ItemRepository.getInstance();
@@ -35,5 +34,14 @@ function initializeItems() {
         }
     })
 };
+
+function parseLocationJson(locationString) {
+    const [location, quantity] = locationString.split(',');
+    const [regionName, roomName] = location.split(' ');
+    const region = Object.values(LocationType).find(region => region.name.toLowerCase() === regionName.toLowerCase());
+    if (!region) return null;
+    const room = Object.values(region.rooms).find(room => room.name.toLowerCase() === roomName.toLowerCase());
+    return { regionId: region.index, roomId: room ? room.index : 0, quantity: quantity };
+}
 
 export { initializeItems };

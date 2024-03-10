@@ -44,19 +44,12 @@ const characterCommand = new SlashCommandBuilder()
 
 const lookCommand = new SlashCommandBuilder()
   .setName('look')
-  .setDescription('Discover your surroundings or get detailed info on enemies.')
-  .addSubcommand(subcommand =>
-    subcommand
-      .setName('survey')
-      .setDescription('Survey the area for any visible enemies.'))
-  .addSubcommand(subcommand =>
-    subcommand
-      .setName('inspect')
-      .setDescription('Get a detailed look at a specific enemy.')
-      .addStringOption(option =>
-        option.setName('enemy-name')
-          .setDescription('The name of the enemy to inspect more closely.')
-          .setRequired(true)));
+  .setDescription('Look around or inspect an object/person.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The object/person you want to inspect')
+      .setRequired(false)//optional
+  );
 
 const goCommand = new SlashCommandBuilder()
   .setName('go')
