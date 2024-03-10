@@ -14,8 +14,6 @@ const regionRoomLimits = {
 
 const goCommand = async (interaction) => {
     try {
-        await interaction.deferReply({ ephemeral: true });
-
         const characterRepo = CharacterRepository.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
@@ -35,7 +33,7 @@ const goCommand = async (interaction) => {
             let embed = new EmbedBuilder()
                 .setTitle('Hold Your Horse!')
                 .setDescription(`You're already at this location. Time to explore or embark on a new quest!`);
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
+            await interaction.reply({ embeds: [embed], ephemeral: true });
             return;
         }
 
@@ -61,7 +59,7 @@ const goCommand = async (interaction) => {
                 { name: 'Room', value: String(roomName), inline: true }
             );
 
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
         console.error('Error in goCommand:', error);
@@ -71,7 +69,7 @@ const goCommand = async (interaction) => {
         } else if (error.message.includes('Cannot move')) {
             errorMessage = error.message;
         }
-        await interaction.editReply({ content: errorMessage, ephemeral: true });
+        await interaction.reply({ content: errorMessage, ephemeral: true });
     }
 };
 

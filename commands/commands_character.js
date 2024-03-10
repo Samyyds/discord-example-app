@@ -149,7 +149,7 @@ const statusCommand = async (interaction) => {
         const characters = charRepo.getCharactersByUserId(interaction.user.id);
 
         if (!characters || characters.length === 0) {
-            await interaction.editReply({ content: 'No characters found for this user.', ephemeral: true });
+            await interaction.reply({ content: 'No characters found for this user.', ephemeral: true });
             return;
         }
 

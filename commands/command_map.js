@@ -6,8 +6,6 @@ import descriptions from '../data/consts.js';
 
 const mapCommand = async (interaction) => {
     try {
-        //await interaction.deferReply({ ephemeral: true });
-
         const characterRepo = CharacterRepository.getInstance();
         const activeCharId = characterRepo.getActiveCharacter(interaction.user.id).id;
         if (!activeCharId) {
