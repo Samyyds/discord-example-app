@@ -105,6 +105,29 @@ class ItemRepository {
         }
     }
 
+    removeItemFromLocation(regionId, roomId, item) {
+        const locationKey = `${regionId}_${roomId}`;
+        if (this.itemsByLocations.has(locationKey)) {
+            const itemsMap = this.itemsByLocations.get(locationKey);
+            if (itemsMap.has(item) && itemsMap.get(item) > 0) {
+                itemsMap.set(item, itemsMap.get(item) - 1);
+            }
+        }
+    }
+
+    getItemCountByName(regionId, roomId, itemName) {
+        const locationKey = `${regionId}_${roomId}`;
+        if (this.itemsByLocations.has(locationKey)) {
+            const itemsMap = this.itemsByLocations.get(locationKey);
+            for (let [item, quantity] of itemsMap.entries()) {
+                if (item.name.toLowerCase() === itemName.toLowerCase()) {
+                    return quantity;
+                }
+            }
+        }
+        return 0; 
+    }
+
     getItemsInLocation(regionId, roomId) {
         const locationKey = `${regionId}_${roomId}`;
         if(this.itemsByLocations.has(locationKey)){

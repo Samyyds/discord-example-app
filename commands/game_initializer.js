@@ -1,6 +1,6 @@
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { LocationType } from '../data/enums.js';
-import { Item, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository } from '../data/respository_item.js';
+import { Item, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository } from '../data/repository_item.js';
 
 function initializeItems() {
     const itemRepo = ItemRepository.getInstance();

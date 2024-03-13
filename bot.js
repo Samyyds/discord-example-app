@@ -70,13 +70,7 @@ client.on(Events.InteractionCreate, async interaction => {
         commandHandler = attackCommands[commandName];
         break;
       case "look":
-        const object = interaction.options.getString('object');
-        if (object) {
-          commandHandler = lookCommands[commandName][object];
-        }
-        else {
-          commandHandler = lookCommands[commandName];
-        }
+        commandHandler = lookCommands[commandName];
         break;
       default:
         const subCommandName = interaction.options.getSubcommand();
