@@ -52,11 +52,11 @@ const createCommand = async (interaction) => {
         const characterRepo = CharacterRepository.getInstance();
         characterRepo.addCharacter(userId, character);
         characterRepo.setActiveCharacter(userId, character.id);
-        
+
         let embed = new EmbedBuilder()
-        .setTitle("Huzzah! Your hero has emerged into the realm, ready for adventure!")
-        .setColor(0x00AE86)
-        .setDescription(`The tale of ${charName}, the valiant ${className} of the ${raceName} race begins!`);
+            .setTitle("Huzzah! Your hero has emerged into the realm, ready for adventure!")
+            .setColor(0x00AE86)
+            .setDescription(`The tale of ${charName}, the valiant ${className} of the ${raceName} race begins!`);
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
@@ -70,7 +70,7 @@ function createCharacter(userId, name, className, raceName, personalityId = 'NO_
     const statModifiers = CLASS_BASE_STAT_MODIFIERS[className];
     const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
     const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityId];
-    
+
     const currentCharacterId = nextCharacterId;
     nextCharacterId++;
 
@@ -87,8 +87,8 @@ function createCharacter(userId, name, className, raceName, personalityId = 'NO_
     const stats = new StatContainer(finalStats);
     const skills = new SkillContainer({});
 
-    const character =  new Character(
-        currentCharacterId, 
+    const character = new Character(
+        currentCharacterId,
         name,
         1,
         Class[className],
@@ -97,10 +97,10 @@ function createCharacter(userId, name, className, raceName, personalityId = 'NO_
         0,
         stats,
         skills,
-        [], 
-        1  
+        [],
+        1
     );
-    
+
     const locationRepo = LocationRepository.getInstance();
     locationRepo.setLocation(userId, currentCharacterId);
 
@@ -140,7 +140,7 @@ const switchCommand = async (interaction) => {
 
     const actionRow = new ActionRowBuilder().addComponents(selectMenu);
 
-    await interaction.reply({ content: 'Choose a character:', components: [actionRow] });
+    await interaction.reply({ content: 'Choose a character:', components: [actionRow], ephemeral: true });
 }
 
 const statusCommand = async (interaction) => {
@@ -162,7 +162,7 @@ const statusCommand = async (interaction) => {
         let embed = new EmbedBuilder();
         embed = addCharacterInfoToEmbed(activeChar, embed);
         embed.setTitle("Your active character's info is: ")
-             .setColor(0x00AE86);
+            .setColor(0x00AE86);
         await interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (error) {
         console.error('Error in statusCommand:', error);
