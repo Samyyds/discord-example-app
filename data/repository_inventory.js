@@ -16,7 +16,7 @@ class InventoryRepository {
 
     getInventory(userId, characterId) {
         if (!this.inventories.has(userId)) {
-            this.inventories.set(userId, new Inventory());
+            this.inventories.set(userId, new Map());
         }
         const characterInventories = this.inventories.get(userId);
         if (!characterInventories.has(characterId)) {

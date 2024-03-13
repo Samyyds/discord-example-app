@@ -115,6 +115,19 @@ class ItemRepository {
         }
     }
 
+    getItemByName(regionId, roomId, itemName){
+        const locationKey = `${regionId}_${roomId}`;
+        if (this.itemsByLocations.has(locationKey)) {
+            const itemsMap = this.itemsByLocations.get(locationKey);
+            for (let [item,] of itemsMap.entries()) {
+                if (item.name.toLowerCase() === itemName.toLowerCase()) {
+                    return item;
+                }
+            }
+        }
+        return null; 
+    }
+
     getItemCountByName(regionId, roomId, itemName) {
         const locationKey = `${regionId}_${roomId}`;
         if (this.itemsByLocations.has(locationKey)) {

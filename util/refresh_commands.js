@@ -51,6 +51,15 @@ const lookCommand = new SlashCommandBuilder()
       .setRequired(false)//optional
   );
 
+const takeCommand = new SlashCommandBuilder()
+  .setName('take')
+  .setDescription('Pick up a specific object in the room')
+  .addStringOption(option =>
+    option.setName('item')
+      .setDescription('The name of the item you want to pick up')
+      .setRequired(true)
+  );
+
 const goCommand = new SlashCommandBuilder()
   .setName('go')
   .setDescription('Where do you want to go?')
@@ -82,7 +91,8 @@ const guildCommands =
     goCommand.toJSON(),
     mapCommand.toJSON(),
     lookCommand.toJSON(),
-    attackCommand.toJSON()
+    attackCommand.toJSON(),
+    takeCommand.toJSON(),
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

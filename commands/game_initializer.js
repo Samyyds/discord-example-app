@@ -29,7 +29,6 @@ function initializeItems() {
             const { regionId, roomId, quantity } = parseLocationJson(itemData.details.locations);
             if ({ regionId, roomId }) {
                 itemRepo.addItemToLocation(regionId, roomId, item, quantity);
-                itemRepo.getItemsInLocation(regionId, roomId);
             }
         }
     })

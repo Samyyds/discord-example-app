@@ -6,7 +6,7 @@ import { CharacterRepository } from './data/repository_character.js';
 import { goCommands } from './commands/command_go.js';
 import { mapCommands } from './commands/command_map.js';
 import { lookCommands } from './commands/command_look.js';
-//import { attackCommands } from './commands/command_attack.js';
+import { takeCommands } from './commands/command_take.js';
 import { initializeItems } from './commands/game_initializer.js';
 
 // Create and configure the Discord client
@@ -71,6 +71,9 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "look":
         commandHandler = lookCommands[commandName];
+        break;
+      case "take":
+        commandHandler = takeCommands[commandName];
         break;
       default:
         const subCommandName = interaction.options.getSubcommand();

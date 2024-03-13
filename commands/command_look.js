@@ -48,7 +48,7 @@ const lookCommand = async (interaction) => {
     }
 
     catch (error) {
-        console.error('Error in inspectCommand:', error);
+        console.error('Error in lookCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
 }
