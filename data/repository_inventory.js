@@ -99,6 +99,23 @@ class Inventory {
         }
     }
 
+    getItemsGroupedByType() {
+        const groupedItems = {
+            'Equipment': [],
+            'Gem': [],
+            'Potion': [],
+            'Raw Ingredient': [],
+        };
+
+        Object.values(this.items).forEach(({item, quantity}) => {
+            if (groupedItems.hasOwnProperty(item.type)) {
+                groupedItems[item.type].push({ ...item, quantity });
+            }
+        });
+
+        return groupedItems;
+    }
+
 }
 
 export { InventoryRepository };

@@ -8,6 +8,8 @@ import { mapCommands } from './commands/command_map.js';
 import { lookCommands } from './commands/command_look.js';
 import { takeCommands } from './commands/command_take.js';
 import { initializeItems } from './commands/game_initializer.js';
+import {inventoryCommands} from './commands/command_inventory.js';
+import { handleInventoryInteraction } from './handler/InventoryHandler.js';
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
@@ -75,6 +77,9 @@ client.on(Events.InteractionCreate, async interaction => {
       case "take":
         commandHandler = takeCommands[commandName];
         break;
+      case "inventory":
+        commandHandler = inventoryCommands[commandName];
+        break;
       default:
         const subCommandName = interaction.options.getSubcommand();
         commandHandler = compoundCommand[commandName]?.[subCommandName];
@@ -86,6 +91,13 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       console.log(`Command '${commandName}' with subcommand '${subCommandName}' not found.`);
       await interaction.reply({ content: "Sorry, I didn't recognize that command.", ephemeral: true });
+    }
+  }
+
+  if (interaction.isButton()) {
+    const result = await handleInventoryInteraction(interaction);
+    if (!result) {
+
     }
   }
 });
