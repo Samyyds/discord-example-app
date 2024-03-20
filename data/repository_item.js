@@ -1,42 +1,48 @@
 class Item {
-    constructor(id, name, type, source = [], detail = {}) {
+    constructor(id, name, type, source = [], details = {}) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.source = source;
-        this.detail = detail;
+        this.details = details;
     }
 }
 //source ["harvest","battle","purchase"]
 //details {和source的index对应}
+class Ore extends Item {
+    constructor(id, name, source, details, transformed) {
+        super(id, name, 'Ore', source, details);
+        this.transformed = transformed;
+    }
+}
 
 class RawIngredient extends Item {
-    constructor(id, name, source, detail) {
-        super(id, name, 'Raw Ingredient', source, detail);
+    constructor(id, name, source, details) {
+        super(id, name, 'Raw Ingredient', source, details);
     }
 }
 
 class Potion extends Item {
-    constructor(id, name, source, detail) {
-        super(id, name, 'Potion', source, detail);
+    constructor(id, name, source, details) {
+        super(id, name, 'Potion', source, details);
     }
 }
 
 class Fish extends Item {
-    constructor(id, name, source, detail) {
-        super(id, name, 'Fish', source, detail);
+    constructor(id, name, source, details) {
+        super(id, name, 'Fish', source, details);
     }
 }
 
 class Gem extends Item {
-    constructor(id, name, source, detail) {
-        super(id, name, 'Gem', source, detail);
+    constructor(id, name, source, details) {
+        super(id, name, 'Gem', source, details);
     }
 }
 
 class Equipment extends Item {
-    constructor(id, name, source, detail, slot, twoHanded, attributes) {
-        super(id, name, 'Equipment', source, detail);
+    constructor(id, name, source, details, slot, twoHanded, attributes) {
+        super(id, name, 'Equipment', source, details);
         this.slot = slot;
         this.twoHanded = twoHanded;
         this.attributes = createEquipmentAttributes(attributes);
@@ -92,6 +98,24 @@ class ItemRepository {
         return ItemRepository.instance;
     }
 
+    createItem(type, itemData) {
+        switch (type) {
+            case 'Raw Ingredient':
+                return new RawIngredient(itemData.name, itemData.source, itemData.details);
+            case 'Potion':
+                return new Potion(itemData.name, itemData.source, itemData.details);
+            case 'Fish':
+                return new Fish(itemData.name, itemData.source, itemData.details);
+            case 'Gem':
+                return new Gem(itemData.name, itemData.source, itemData.details);
+            case 'Equipment':
+                return new Equipment(itemData.name, itemData.source, itemData.details, itemData.slot, itemData.twoHanded, itemData.attributes);
+            default:
+                console.error(`Unknown item type: ${type}`);
+                return null;
+        }
+    }
+
     addItemToLocation(regionId, roomId, item, quantity) {
         const locationKey = `${regionId}_${roomId}`;
         if (!this.itemsByLocations.has(locationKey)) {
@@ -115,7 +139,7 @@ class ItemRepository {
         }
     }
 
-    getItemByName(regionId, roomId, itemName){
+    getItemByName(regionId, roomId, itemName) {
         const locationKey = `${regionId}_${roomId}`;
         if (this.itemsByLocations.has(locationKey)) {
             const itemsMap = this.itemsByLocations.get(locationKey);
@@ -125,7 +149,7 @@ class ItemRepository {
                 }
             }
         }
-        return null; 
+        return null;
     }
 
     getItemCountByName(regionId, roomId, itemName) {
@@ -138,18 +162,18 @@ class ItemRepository {
                 }
             }
         }
-        return 0; 
+        return 0;
     }
 
     getItemsInLocation(regionId, roomId) {
         const locationKey = `${regionId}_${roomId}`;
-        if(this.itemsByLocations.has(locationKey)){
+        if (this.itemsByLocations.has(locationKey)) {
             const itemsMap = this.itemsByLocations.get(locationKey);
-            return Array.from(itemsMap).map(([item, quantity]) => ({item, quantity}));
+            return Array.from(itemsMap).map(([item, quantity]) => ({ item, quantity }));
         }
         return [];
     }
 }
 
-export { Item, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository };
+export { Item, Ore, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository };
 

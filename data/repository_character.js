@@ -19,7 +19,7 @@ class StatContainer {
 }
 
 class SkillContainer {
-    constructor(mining, smithing, crafting, fishing, gathering, farming, cooking, brewing) {
+    constructor(mining = { level: 0, xp: 0 }, smithing, crafting, fishing, gathering, farming, cooking, brewing) {
         this.mining = mining;
         this.smithing = smithing;
         this.crafting = crafting;
@@ -28,6 +28,14 @@ class SkillContainer {
         this.farming = farming;
         this.cooking = cooking;
         this.brewing = brewing;
+    }
+
+    increaseMiningXp(amount) {
+        this.mining.xp += amount;
+        while (this.mining.xp >= 10) { //每10经验升一级
+            this.mining.xp -= 10;
+            this.mining.level += 1;
+        }
     }
 }
 
@@ -111,7 +119,7 @@ class CharacterRepository {
     }
 
     setActiveCharacter(userId, characterId) {
-        console.log(`the active char id is: `+characterId);
+        console.log(`the active char id is: ` + characterId);
         this.activeCharacters.set(userId, characterId);
     }
 

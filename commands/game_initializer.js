@@ -1,6 +1,6 @@
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { LocationType } from '../data/enums.js';
-import { Item, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository } from '../data/repository_item.js';
+import { Item, Ore, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository } from '../data/repository_item.js';
 
 function initializeItems() {
     const itemRepo = ItemRepository.getInstance();
@@ -8,6 +8,10 @@ function initializeItems() {
     const items = itemsData.map(itemData => {
         let item;
         switch (itemData.type) {
+            case 'Ore':
+                console.log(itemData.details.level);
+                item = new Ore(itemData.id, itemData.name, itemData.source, itemData.details, itemData.transformed);
+                break;
             case 'Raw Ingredient':
                 item = new RawIngredient(itemData.id, itemData.name, itemData.source, itemData.details);
                 break;
@@ -21,7 +25,7 @@ function initializeItems() {
             //     item = new Equipment(itemData.id, itemData.name, itemData.source, itemData.details, itemData.slot, itemData.twoHanded, itemData.attributes);
             //     break;
             default:
-                item = new Item(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details);
+                item = new Item(itemData.id, itemData.name, itemData.source, itemData.details);
                 break;
         }
 

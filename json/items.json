@@ -2,18 +2,30 @@
     {
         "id": 1,
         "name": "Copper Ore",
-        "type": "Raw Ingredient",
+        "type": "Ore",
         "source": ["harvest"],
-        "details": {"locations": "Mara outside, 5"},
-        "description": "Essential for crafting sturdy equipment with a metallic sheen."
+        "details": {"locations": "Mara outside, 5", "level": 1},
+        "description": "Essential for crafting sturdy equipment with a metallic sheen.",
+        "transformed": {
+            "id": 11,
+            "name": "Copper",
+            "type": "Raw Ingredient",
+            "description": "Obtained by mining and processing Copper Ore. Used in various crafting recipes."
+        }
     },
     {
         "id": 2,
         "name": "Tin Ore",
-        "type": "Raw Ingredient",
+        "type": "Ore",
         "source": ["harvest"],
-        "details": {"locations": "Mara blacksmith, 3"},
-        "description": "Valuable for creating strong alloys and beautiful tin items."
+        "details": {"locations": "Mara blacksmith, 3", "level": 2},
+        "description": "Valuable for creating strong alloys and beautiful tin items.",
+        "transformed": {
+            "id": 22,
+            "name": "Tin",
+            "type": "Raw Ingredient",
+            "description": "Obtained by mining and processing Tin Ore. Used in various crafting recipes."
+        }
     },
     {
         "id": 3,

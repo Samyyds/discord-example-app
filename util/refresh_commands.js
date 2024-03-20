@@ -80,6 +80,14 @@ const inventoryCommand = new SlashCommandBuilder()
   .setName('inventory')
   .setDescription('Display your inventory.');  
 
+const mineCommand = new SlashCommandBuilder()
+  .setName('mine')
+  .setDescription('Embark on a mining expedition to extract valuable ores.')
+  .addStringOption(option =>
+    option.setName('ore')
+      .setDescription('The name of the ore you want to mine.')
+      .setRequired(true));
+
 const attackCommand = new SlashCommandBuilder()
   .setName('attack')
   .setDescription('Launch an attack! Prove your strength against the adversaries.')
@@ -97,7 +105,8 @@ const guildCommands =
     lookCommand.toJSON(),
     attackCommand.toJSON(),
     takeCommand.toJSON(),
-    inventoryCommand.toJSON()
+    inventoryCommand.toJSON(),
+    mineCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

@@ -38,7 +38,10 @@ const lookCommand = async (interaction) => {
 
             const itemsInLocation = itemRepo.getItemsInLocation(regionId, roomId);
             if (itemsInLocation.length > 0) {
-                const itemsDescription = itemsInLocation.map(({ item, quantity }) => `You see ${item.name}*${quantity}`).join("\n");
+                const itemsDescription = itemsInLocation.map(({ item, quantity }) => {
+                    const toBeMinedText = item.type === "Ore" ? " to be mined" : "";
+                    return `You see ${item.name}*${quantity}${toBeMinedText}`;
+                }).join("\n");
                 description += `\n${itemsDescription}`;
             }
         }
