@@ -2,7 +2,7 @@ import { EmbedBuilder } from 'discord.js';
 import { CharacterRepository } from '../data/repository_character.js';
 import { LocationRepository } from '../data/repository_location.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
-import { Item, ItemRepository } from '../data/repository_item.js';
+import { Ingredient, ItemRepository } from '../data/repository_item.js';
 
 const oreTierThreshold = 10;
 
@@ -40,13 +40,13 @@ const mineCommand = async (interaction) => {
         activeCharacter.skills.increaseMiningXp(5);
         itemRepo.removeItemFromLocation(regionId, roomId, oreItem);
 
-        const inventoryRepo = InventoryRepository.getInstance();
-        const transformedData = { ...oreItem.transformed, quantity: Math.round(quantity) };
-        const newItem = new Item(transformedData.id, transformedData.name, 'Raw Ingredient');
+        const transformedData = itemRepo.getItemDataById(oreItem.transformed.id);
+        const newItem = new Ingredient(transformedData);
 
         if(newItem){
-            inventoryRepo.addItem(interaction.user.id, activeCharId, newItem, transformedData.quantity);
-            const embed = new EmbedBuilder().setDescription(`You successfully mined ${transformedData.quantity} ${newItem.name}. Your mining skill has increased.`);
+            const inventoryRepo = InventoryRepository.getInstance();
+            inventoryRepo.addItem(interaction.user.id, activeCharId, newItem, Math.round(quantity));
+            const embed = new EmbedBuilder().setDescription(`You successfully mined ${Math.round(quantity)} ${newItem.name}. Your mining skill has increased.`);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         }else {
             throw new Error("Failed to create a new item.");

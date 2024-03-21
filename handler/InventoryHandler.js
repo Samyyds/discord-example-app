@@ -36,10 +36,10 @@ export async function handleInventoryInteraction(interaction) {
                 ? groupedItems['Potion'].map(item => `${item.name} x${item.quantity}`).join('\n')
                 : 'No potion items in your inventory.';
             break;
-        case 'Raw Ingredient':
-            description = groupedItems['Raw Ingredient'].length > 0
-                ? groupedItems['Raw Ingredient'].map(item => `${item.name} x${item.quantity}`).join('\n')
-                : 'No raw ingredient items in your inventory.';
+        case 'Ingredient':
+            description = groupedItems['Ingredient'].length > 0
+                ? groupedItems['Ingredient'].map(item => `${item.name} x${item.quantity}`).join('\n')
+                : 'No ingredient items in your inventory.';
             break;
     }
 

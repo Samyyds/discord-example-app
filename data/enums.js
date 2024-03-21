@@ -12,6 +12,16 @@ export const Race = {
     "ELF": 3
 };
 
+export const ItemType = {
+    "NONE": 0,
+    "ORE": 1,
+    "INGREDIENT": 2,
+    "Potion": 3,
+    "GEM": 4,
+    "Equipment": 5,
+    "FISH": 6
+}
+
 export const LocationType = {
     MARA: {
         name: "Mara",

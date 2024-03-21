@@ -3,52 +3,93 @@
         "id": 1,
         "name": "Copper Ore",
         "type": "Ore",
-        "source": ["harvest"],
-        "details": {"locations": "Mara outside, 5", "level": 1},
+        "source": [
+            "harvest"
+        ],
+        "details": {
+            "locations": "Mara outside, 5",
+            "level": 1
+        },
         "description": "Essential for crafting sturdy equipment with a metallic sheen.",
         "transformed": {
-            "id": 11,
-            "name": "Copper",
-            "type": "Raw Ingredient",
-            "description": "Obtained by mining and processing Copper Ore. Used in various crafting recipes."
+            "id": 101
         }
+    },
+    {
+        "id": 101,
+        "name": "Copper",
+        "type": "Ingredient",
+        "source": [
+            "ore"
+        ],
+        "details": {
+            "locations": "Mara outside, 5"
+        },
+        "description": "Obtained by mining and processing Copper Ore. Used in various crafting recipes."
     },
     {
         "id": 2,
         "name": "Tin Ore",
         "type": "Ore",
-        "source": ["harvest"],
-        "details": {"locations": "Mara blacksmith, 3", "level": 2},
+        "source": [
+            "harvest"
+        ],
+        "details": {
+            "locations": "Mara blacksmith, 3",
+            "level": 2
+        },
         "description": "Valuable for creating strong alloys and beautiful tin items.",
         "transformed": {
-            "id": 22,
-            "name": "Tin",
-            "type": "Raw Ingredient",
-            "description": "Obtained by mining and processing Tin Ore. Used in various crafting recipes."
+            "id": 102
         }
     },
     {
-        "id": 3,
+        "id": 102,
+        "name": "Tin",
+        "type": "Ingredient",
+        "source": [
+            "ore"
+        ],
+        "details": {
+            "locations": "Mara blacksmith, 3",
+            "level": 2
+        },
+        "description": "Obtained by mining and processing Tin Ore. Used in various crafting recipes."
+    },
+    {
+        "id": 201,
         "name": "Mushroom",
-        "type": "Raw Ingredient",
-        "source": ["harvest"],
-        "details": {"locations": "Mara alchemist, 2"},
+        "type": "Ingredient",
+        "source": [
+            "harvest"
+        ],
+        "details": {
+            "locations": "Mara alchemist, 2"
+        },
         "description": "Crucial component in concocting powerful potions and elixirs."
     },
     {
-        "id": 4,
+        "id": 202,
         "name": "Tea",
-        "type": "Raw Ingredient",
-        "source": ["harvest"],
-        "details": {"locations": "Mara magetower, 7"},
+        "type": "Ingredient",
+        "source": [
+            "harvest"
+        ],
+        "details": {
+            "locations": "Mara magetower, 7"
+        },
         "description": "Known for its restorative properties and enhancing magical brews."
     },
     {
-        "id": 5,
+        "id": 203,
         "name": "Twig",
-        "type": "Raw Ingredient",
-        "source": ["harvest"],
-        "details": {"locations": "Mara outside, 3"},
+        "type": "Ingredient",
+        "source": [
+            "harvest"
+        ],
+        "details": {
+            "locations": "Mara outside, 3"
+        },
         "description": "Surprisingly useful for crafting simple magical implements or kindling."
     }
 ]

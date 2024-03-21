@@ -104,7 +104,7 @@ class Inventory {
             'Equipment': [],
             'Gem': [],
             'Potion': [],
-            'Raw Ingredient': [],
+            'Ingredient': [],
         };
 
         Object.values(this.items).forEach(({item, quantity}) => {

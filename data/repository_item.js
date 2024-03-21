@@ -1,51 +1,53 @@
+import itemsData from '../json/items.json' assert { type: 'json' };
+
 class Item {
-    constructor(id, name, type, source = [], details = {}) {
+    constructor(id, name, type, source, details, description, transformed = null, attributes = null) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.source = source;
         this.details = details;
-    }
-}
-//source ["harvest","battle","purchase"]
-//details {和source的index对应}
-class Ore extends Item {
-    constructor(id, name, source, details, transformed) {
-        super(id, name, 'Ore', source, details);
+        this.description = description;
         this.transformed = transformed;
+        this.attributes = attributes;
     }
 }
 
-class RawIngredient extends Item {
-    constructor(id, name, source, details) {
-        super(id, name, 'Raw Ingredient', source, details);
+class Ore extends Item {
+    constructor(itemData) {
+        super(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details, itemData.description, itemData.transformed, itemData.attributes);
+    }
+}
+
+class Ingredient extends Item {
+    constructor(itemData) {
+        super(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details, itemData.description, itemData.transformed, itemData.attributes);
     }
 }
 
 class Potion extends Item {
-    constructor(id, name, source, details) {
-        super(id, name, 'Potion', source, details);
+    constructor(itemData) {
+        super(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details, itemData.description, itemData.transformed, itemData.attributes);
     }
 }
 
 class Fish extends Item {
-    constructor(id, name, source, details) {
-        super(id, name, 'Fish', source, details);
+    constructor(itemData) {
+        super(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details, itemData.description, itemData.transformed, itemData.attributes);
     }
 }
 
 class Gem extends Item {
-    constructor(id, name, source, details) {
-        super(id, name, 'Gem', source, details);
+    constructor(itemData) {
+        super(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details, itemData.description, itemData.transformed, itemData.attributes);
     }
 }
 
 class Equipment extends Item {
-    constructor(id, name, source, details, slot, twoHanded, attributes) {
-        super(id, name, 'Equipment', source, details);
-        this.slot = slot;
-        this.twoHanded = twoHanded;
-        this.attributes = createEquipmentAttributes(attributes);
+    constructor(itemData) {
+        super(itemData.id, itemData.name, itemData.type, itemData.source, itemData.details, itemData.description, itemData.transformed, itemData.attributes);
+        this.slot = itemData.slot;
+        this.twoHanded = itemData.twoHanded;
     }
 
     static createEquipmentAttributes(attributes) {
@@ -100,8 +102,8 @@ class ItemRepository {
 
     createItem(type, itemData) {
         switch (type) {
-            case 'Raw Ingredient':
-                return new RawIngredient(itemData.name, itemData.source, itemData.details);
+            case 'Ingredient':
+                return new Ingredient(itemData.name, itemData.source, itemData.details);
             case 'Potion':
                 return new Potion(itemData.name, itemData.source, itemData.details);
             case 'Fish':
@@ -152,6 +154,12 @@ class ItemRepository {
         return null;
     }
 
+    getItemDataById(itemId) {
+        const itemData = itemsData.find(item => item.id === itemId);
+        if (!itemData) return null;
+        return itemData;
+    }
+
     getItemCountByName(regionId, roomId, itemName) {
         const locationKey = `${regionId}_${roomId}`;
         if (this.itemsByLocations.has(locationKey)) {
@@ -175,5 +183,5 @@ class ItemRepository {
     }
 }
 
-export { Item, Ore, RawIngredient, Potion, Fish, Gem, Equipment, ItemRepository };
+export { Item, Ore, Ingredient, Potion, Fish, Gem, Equipment, ItemRepository };
 

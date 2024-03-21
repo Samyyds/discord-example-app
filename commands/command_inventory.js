@@ -34,8 +34,8 @@ const inventoryCommand = async (interaction) => {
                     .setLabel('Potion')
                     .setStyle(ButtonStyle.Secondary),
                 new ButtonBuilder()
-                    .setCustomId('Raw Ingredient')
-                    .setLabel('Raw Ingredient')
+                    .setCustomId('Ingredient')
+                    .setLabel('Ingredient')
                     .setStyle(ButtonStyle.Danger),
             );
 
