@@ -38,7 +38,7 @@ const mineCommand = async (interaction) => {
         quality /= oreTierThreshold;
 
         activeCharacter.skills.increaseMiningXp(5);
-        itemRepo.removeItemFromLocation(regionId, roomId, oreItem);
+        itemRepo.removeItemFromLocation(regionId, roomId, oreItem.id, 1);
 
         const transformedData = itemRepo.getItemDataById(oreItem.transformed.id);
         const newItem = new Ingredient(transformedData);

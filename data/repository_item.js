@@ -89,7 +89,7 @@ class ItemRepository {
             return ItemRepository.Instance = new ItemRepository();
         }
 
-        this.itemsByLocations = new Map();//location -> (item -> quantity)
+        this.itemsByLocations = new Map();//location -> (item.id -> [item,quantity])
         ItemRepository.Instance = this;
     }
 
@@ -123,20 +123,27 @@ class ItemRepository {
         if (!this.itemsByLocations.has(locationKey)) {
             this.itemsByLocations.set(locationKey, new Map());
         }
+    
         const itemsMap = this.itemsByLocations.get(locationKey);
-        if (itemsMap.has(item)) {
-            itemsMap.set(item, itemsMap.get(item) + quantity);
+        if (itemsMap.has(item.id)) {
+            const currentItemInfo = itemsMap.get(item.id);
+            currentItemInfo.quantity += quantity;
         } else {
-            itemsMap.set(item, quantity);
+            itemsMap.set(item.id, { item, quantity });
         }
     }
+    
 
-    removeItemFromLocation(regionId, roomId, item) {
+    removeItemFromLocation(regionId, roomId, itemId, quantity) {
         const locationKey = `${regionId}_${roomId}`;
         if (this.itemsByLocations.has(locationKey)) {
             const itemsMap = this.itemsByLocations.get(locationKey);
-            if (itemsMap.has(item) && itemsMap.get(item) > 0) {
-                itemsMap.set(item, itemsMap.get(item) - 1);
+            if (itemsMap.has(itemId)) {
+                const itemInfo = itemsMap.get(itemId);
+                itemInfo.quantity -= quantity;
+                if (itemInfo.quantity <= 0) {
+                    itemsMap.delete(itemId);
+                }
             }
         }
     }
@@ -145,14 +152,21 @@ class ItemRepository {
         const locationKey = `${regionId}_${roomId}`;
         if (this.itemsByLocations.has(locationKey)) {
             const itemsMap = this.itemsByLocations.get(locationKey);
-            for (let [item,] of itemsMap.entries()) {
+
+            let itemId = null;
+            for (let [id, { item }] of itemsMap.entries()) {
                 if (item.name.toLowerCase() === itemName.toLowerCase()) {
-                    return item;
+                    itemId = id;
+                    break;
                 }
+            }
+            if (itemId) {
+                return itemsMap.get(itemId).item;
             }
         }
         return null;
     }
+
 
     getItemDataById(itemId) {
         const itemData = itemsData.find(item => item.id === itemId);
@@ -164,10 +178,10 @@ class ItemRepository {
         const locationKey = `${regionId}_${roomId}`;
         if (this.itemsByLocations.has(locationKey)) {
             const itemsMap = this.itemsByLocations.get(locationKey);
-            for (let [item, quantity] of itemsMap.entries()) {
-                if (item.name.toLowerCase() === itemName.toLowerCase()) {
-                    return quantity;
-                }
+
+            const itemId = itemsData.find(item => item.name.toLowerCase() === itemName.toLowerCase())?.id;
+            if (itemId && itemsMap.has(itemId)) {
+                return itemsMap.get(itemId).quantity;
             }
         }
         return 0;
@@ -175,11 +189,18 @@ class ItemRepository {
 
     getItemsInLocation(regionId, roomId) {
         const locationKey = `${regionId}_${roomId}`;
+        const itemsList = [];
         if (this.itemsByLocations.has(locationKey)) {
             const itemsMap = this.itemsByLocations.get(locationKey);
-            return Array.from(itemsMap).map(([item, quantity]) => ({ item, quantity }));
+            itemsMap.forEach((value, key) => {
+                itemsList.push({
+                    id: key,
+                    item: value.item,
+                    quantity: value.quantity
+                });
+            });
         }
-        return [];
+        return itemsList;
     }
 }
 

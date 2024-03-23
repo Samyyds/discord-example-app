@@ -18,7 +18,6 @@ const lookCommand = async (interaction) => {
 
         const locationRepo = LocationRepository.getInstance();
         const { regionId, roomId } = locationRepo.getLocation(interaction.user.id, activeCharId);
-        console.log(`region: ${regionId}, room: ${roomId}`);
 
         let description = '';
         const itemRepo = ItemRepository.getInstance();
@@ -26,7 +25,8 @@ const lookCommand = async (interaction) => {
         if (objectName) {
             const itemCount = itemRepo.getItemCountByName(regionId, roomId, objectName);
             if (itemCount > 0) {
-                const itemDes = getItemDescriptionByName(objectName, itemCount);
+                // const itemDes = getItemDescriptionByName(objectName, itemCount);
+                const itemDes = itemRepo.getItemByName(regionId, roomId, objectName).description;
                 description += `\n${itemDes}`;
             } else {
                 description += "\nItem not found or not available in this location.";
@@ -58,12 +58,6 @@ const lookCommand = async (interaction) => {
 function getRoomDescriptionById(regionId, roomId) {
     const room = rooms.find(room => room.regionId === regionId && room.roomId === roomId);
     return room ? room.description : null;
-}
-
-function getItemDescriptionByName(objectName, quantity) {
-    const itemNameLower = objectName.toLowerCase();
-    const item = items.find(item => item.name.toLowerCase() === itemNameLower);
-    return item ? item.description.replace("{quantity}", `*${quantity}`) : "Item not found or not available in this location.";
 }
 
 export const lookCommands = {

@@ -1,10 +1,9 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { CharacterRepository } from '../data/repository_character.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
 import { LocationRepository } from '../data/repository_location.js';
 import { ItemRepository } from '../data/repository_item.js';
 import { Items } from "../data/enums.js";
-import itemsData from '../json/items.json' assert { type: 'json' };
 
 const dropCommand = async (interaction) => {
     try {
@@ -28,7 +27,7 @@ const dropCommand = async (interaction) => {
         inventoryRepo.removeItem(interaction.user.id, activeCharId, item, 1);
 
         const itemRepo = ItemRepository.getInstance();
-        const itemData = itemsData.find(item => item.id === Items[object]);
+        const itemData = itemRepo.getItemDataById(Items[object]);
         const itemInstance = itemRepo.createItem(itemData);
 
         const locationRepo = LocationRepository.getInstance();

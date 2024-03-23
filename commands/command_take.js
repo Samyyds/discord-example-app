@@ -27,7 +27,7 @@ const takeCommand = async (interaction) => {
             const item = itemRepo.getItemByName(regionId, roomId, itemName);
             const inventoryRepo = InventoryRepository.getInstance();
             inventoryRepo.addItem(interaction.user.id, activeCharId, item, 1);
-            itemRepo.removeItemFromLocation(regionId, roomId, item);
+            itemRepo.removeItemFromLocation(regionId, roomId, item.id, 1);
 
             description += `${item.name.toLowerCase()} added to your inventory.`;
         }
