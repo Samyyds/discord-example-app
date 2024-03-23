@@ -16,10 +16,20 @@ export const ItemType = {
     "NONE": 0,
     "ORE": 1,
     "INGREDIENT": 2,
-    "Potion": 3,
+    "POTION": 3,
     "GEM": 4,
-    "Equipment": 5,
+    "EQUIPMENT": 5,
     "FISH": 6
+}
+
+export const Items = {
+    "COPPER ORE": 1,
+    "COPPER": 101,
+    "TIN ORE": 2,
+    "TIN": 102,
+    "MUSHROOM": 201,
+    "TEA": 202,
+    "TWIG": 203
 }
 
 export const LocationType = {

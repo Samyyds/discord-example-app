@@ -7,7 +7,7 @@
             "harvest"
         ],
         "details": {
-            "locations": "Mara outside, 5",
+            "locations": "Mara outside, 1",
             "level": 1
         },
         "description": "Essential for crafting sturdy equipment with a metallic sheen.",
@@ -35,7 +35,7 @@
             "harvest"
         ],
         "details": {
-            "locations": "Mara blacksmith, 3",
+            "locations": "Mara blacksmith, 1",
             "level": 2
         },
         "description": "Valuable for creating strong alloys and beautiful tin items.",

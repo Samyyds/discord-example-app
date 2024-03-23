@@ -25,6 +25,16 @@ class InventoryRepository {
 
         return characterInventories.get(characterId);
     }
+    
+    hasItem(userId, characterId, itemId) {
+        const inventory = this.getInventory(userId, characterId);
+        return inventory.hasItem(itemId);
+    }
+
+    getItem(userId, characterId, itemId) {
+        const inventory = this.getInventory(userId, characterId);
+        return inventory.getItem(itemId);
+    }
 
     addItem(userId, characterId, item, quantity) {
         const inventory = this.getInventory(userId, characterId);
@@ -51,6 +61,18 @@ class Inventory {
     constructor() {
         this.items = {}; // itemID -> { item, quantity }
         this.equipped = {}; // slot -> item
+    }
+
+    hasItem(itemId) {
+        return this.items[itemId] && this.items[itemId].quantity > 0;
+    }
+
+    getItem(itemId) {
+        if (this.items[itemId]) {
+            return this.items[itemId];
+        } else {
+            return null;
+        }
     }
 
     addItem(item, quantity = 1) {

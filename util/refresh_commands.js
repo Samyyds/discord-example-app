@@ -78,7 +78,7 @@ const mapCommand = new SlashCommandBuilder()
 
 const inventoryCommand = new SlashCommandBuilder()
   .setName('inventory')
-  .setDescription('Display your inventory.');  
+  .setDescription('Display your inventory.');
 
 const mineCommand = new SlashCommandBuilder()
   .setName('mine')
@@ -86,6 +86,14 @@ const mineCommand = new SlashCommandBuilder()
   .addStringOption(option =>
     option.setName('ore')
       .setDescription('The name of the ore you want to mine.')
+      .setRequired(true));
+
+const dropCommand = new SlashCommandBuilder()
+  .setName('drop')
+  .setDescription('Drop item from inventory onto the floor.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The name of the item you want to drop.')
       .setRequired(true));
 
 const attackCommand = new SlashCommandBuilder()
@@ -106,7 +114,8 @@ const guildCommands =
     attackCommand.toJSON(),
     takeCommand.toJSON(),
     inventoryCommand.toJSON(),
-    mineCommand.toJSON()
+    mineCommand.toJSON(),
+    dropCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

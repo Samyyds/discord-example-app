@@ -7,7 +7,6 @@ import items from '../json/items.json' assert {type: 'json'};
 
 const lookCommand = async (interaction) => {
     try {
-
         const objectName = interaction.options.getString('object');
 
         const characterRepo = CharacterRepository.getInstance();
@@ -25,7 +24,7 @@ const lookCommand = async (interaction) => {
         const itemRepo = ItemRepository.getInstance();
 
         if (objectName) {
-            const itemCount = itemRepo.getItemCountByName(regionId, roomId, objectName); // Assume this function exists
+            const itemCount = itemRepo.getItemCountByName(regionId, roomId, objectName);
             if (itemCount > 0) {
                 const itemDes = getItemDescriptionByName(objectName, itemCount);
                 description += `\n${itemDes}`;
@@ -36,7 +35,7 @@ const lookCommand = async (interaction) => {
             const roomDes = getRoomDescriptionById(regionId, roomId) || 'You find yourself in an unremarkable location.';
             description = roomDes;
 
-            const itemsInLocation = itemRepo.getItemsInLocation(regionId, roomId);
+            const itemsInLocation = itemRepo.getItemsInLocation(regionId, roomId).filter(({ quantity }) => quantity > 0);
             if (itemsInLocation.length > 0) {
                 const itemsDescription = itemsInLocation.map(({ item, quantity }) => {
                     const toBeMinedText = item.type === "Ore" ? " to be mined" : "";

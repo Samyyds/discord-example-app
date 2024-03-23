@@ -100,18 +100,18 @@ class ItemRepository {
         return ItemRepository.instance;
     }
 
-    createItem(type, itemData) {
-        switch (type) {
+    createItem(itemData) {
+        switch (itemData.type) {
             case 'Ingredient':
-                return new Ingredient(itemData.name, itemData.source, itemData.details);
+                return new Ingredient(itemData);
             case 'Potion':
-                return new Potion(itemData.name, itemData.source, itemData.details);
+                return new Potion(itemData);
             case 'Fish':
-                return new Fish(itemData.name, itemData.source, itemData.details);
+                return new Fish(itemData);
             case 'Gem':
-                return new Gem(itemData.name, itemData.source, itemData.details);
+                return new Gem(itemData);
             case 'Equipment':
-                return new Equipment(itemData.name, itemData.source, itemData.details, itemData.slot, itemData.twoHanded, itemData.attributes);
+                return new Equipment(itemData);
             default:
                 console.error(`Unknown item type: ${type}`);
                 return null;

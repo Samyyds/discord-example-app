@@ -10,6 +10,7 @@ import { takeCommands } from './commands/command_take.js';
 import { mineCommands } from "./commands/command_mine.js";
 import { initializeItems } from './commands/game_initializer.js';
 import { inventoryCommands } from './commands/command_inventory.js';
+import { dropCommands } from './commands/command_drop.js';
 import { handleInventoryInteraction } from './handler/InventoryHandler.js';
 
 // Create and configure the Discord client
@@ -83,6 +84,9 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "mine":
         commandHandler = mineCommands[commandName];
+        break;
+      case "drop":
+        commandHandler = dropCommands[commandName];
         break;
       default:
         const subCommandName = interaction.options.getSubcommand();

@@ -46,7 +46,7 @@ const mineCommand = async (interaction) => {
         if(newItem){
             const inventoryRepo = InventoryRepository.getInstance();
             inventoryRepo.addItem(interaction.user.id, activeCharId, newItem, Math.round(quantity));
-            const embed = new EmbedBuilder().setDescription(`You successfully mined ${Math.round(quantity)} ${newItem.name}. Your mining skill has increased.`);
+            let embed = new EmbedBuilder().setDescription(`You successfully mined ${Math.round(quantity)} ${newItem.name}. Your mining skill has increased.`);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         }else {
             throw new Error("Failed to create a new item.");
