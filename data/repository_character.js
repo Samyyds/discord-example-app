@@ -1,3 +1,30 @@
+const CLASS_BASE_STATS = {
+    'NO_CLASS': { hp: 100, mp: 100, spd: 100, physicalATK: 100, physicalDEF: 100, magicATK: 100, magicDEF: 100 },
+    'WARRIOR': { hp: 300, mp: 100, spd: 100, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
+    'ROGUE': { hp: 100, mp: 100, spd: 200, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
+    'MAGE': { hp: 100, mp: 200, spd: 100, physicalATK: 60, physicalDEF: 60, magicATK: 150, magicDEF: 120 },
+};
+
+const CLASS_BASE_STAT_MODIFIERS = {
+    'NO_CLASS': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'WARRIOR': { hp: 1.3, mp: 1, spd: 0.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
+    'ROGUE': { hp: 1.3, mp: 1, spd: 1.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
+    'MAGE': { hp: 1.3, mp: 2, spd: 1, physicalATK: 0.6, physicalDEF: 0.6, magicATK: 1.5, magicDEF: 1.2 },
+};
+
+const RACE_BASE_STAT_MODIFIERS = {
+    'HUMAN': { hp: 1.1, mp: 1, spd: 1, physicalATK: 1.1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'ELF': { hp: 0.9, mp: 1.2, spd: 1.2, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
+    'DWARF': { hp: 1.2, mp: 0.8, spd: 0.8, physicalATK: 1.2, physicalDEF: 1.3, magicATK: 0.8, magicDEF: 1 },
+};
+
+const PERSONALITY_BASE_STAT_MODIFIERS = {
+    'NO_PERSONALITY': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'BRAWNY': { hp: 1.1, mp: 0.9, spd: 0.9, physicalATK: 1.2, physicalDEF: 1.1, magicATK: 0.9, magicDEF: 0.9 },
+    'WISE': { hp: 0.9, mp: 1.1, spd: 1, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
+
+}
+
 class StatContainer {
     constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF) {
         this.hpMax = hpMax;
@@ -19,7 +46,7 @@ class StatContainer {
 }
 
 class SkillContainer {
-    constructor(mining = { level: 0, xp: 0 }, smithing, crafting, fishing, gathering, farming, cooking, brewing) {
+    constructor(mining = { level: 1, xp: 0 }, smithing = { level: 1, xp: 0 }, crafting = { level: 1, xp: 0 }, fishing = { level: 1, xp: 0 }, gathering = { level: 1, xp: 0 }, farming = { level: 1, xp: 0 }, cooking = { level: 1, xp: 0 }, brewing = { level: 1, xp: 0 }) {
         this.mining = mining;
         this.smithing = smithing;
         this.crafting = crafting;
@@ -54,7 +81,12 @@ class Character {
      * @param {number[]} battleBar - The battle bar array.
      * @param {number} lootQuality - The loot quality value.
      */
-    constructor(id, name, level, classId, raceId, personalityId, xp, stats, skills, battleBar, lootQuality) {
+    constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality) {
+        const classStats = CLASS_BASE_STATS[classId];
+        const classModifiers = CLASS_BASE_STAT_MODIFIERS[classId];
+        const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceId];
+        const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityId];
+
         this.id = id;
         this.name = name;
         this.classId = classId;
@@ -62,8 +94,16 @@ class Character {
         this.personalityId = personalityId;
         this.level = level;
         this.xp = xp;
-        this.stats = stats; //instance of StatContainer
-        this.skills = skills; //instance of SkillContainer
+        this.stats = new StatContainer({
+            hpMax: Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
+            mpMax: Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
+            spd: Math.round(classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
+            physicalATK: Math.round(classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
+            physicalDEF: Math.round(classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
+            magicATK: Math.round(classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
+            magicDEF: Math.round(classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),
+        });
+        this.skills = new SkillContainer();
         this.battleBar = battleBar;
         this.lootQuality = lootQuality;
     }
