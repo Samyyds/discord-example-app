@@ -1,10 +1,9 @@
 import { Class, Race, Personality } from '../data/enums.js';
-import { ActionRowBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
 import pkg from 'discord.js';
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
 import { LocationRepository } from '../data/repository_location.js';
-import { addCharacterInfoToEmbed } from '../util/util.js';
 
 let nextCharacterId = 1;
 
@@ -29,7 +28,7 @@ const createCommand = async (interaction) => {
         let embed = new EmbedBuilder()
             .setTitle("Huzzah! Your hero has emerged into the realm, ready for adventure!")
             .setColor(0x00AE86)
-            .setDescription(`The tale of ${charName}, the valiant ${className} of the ${raceName} race begins!`);
+            .setDescription(`The tale of ${charName}, the valiant ${className.toLowerCase()} of the ${raceName.toLowerCase()} race begins!`);
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
@@ -45,7 +44,7 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
     const character = new Character(
         currentCharacterId,
         name,
-        1,
+        0,
         Class[className],
         Race[raceName],
         Personality[personality],
@@ -112,11 +111,28 @@ const statusCommand = async (interaction) => {
             return;
         }
 
-        let embed = new EmbedBuilder();
-        embed = addCharacterInfoToEmbed(activeChar, embed);
-        embed.setTitle("Your active character's info is: ")
-            .setColor(0x00AE86);
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        let embed = new EmbedBuilder()
+        .setColor(0x00AE86)
+        .setTitle("Character Information")
+        .setDescription("Click the buttons below to view detailed information about your character.");
+
+        const buttonRow = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('show_basic_info')
+                    .setLabel('Basic Info')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('show_stats')
+                    .setLabel('Stats')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('show_skills')
+                    .setLabel('Skills')
+                    .setStyle(ButtonStyle.Primary),
+            );
+
+        await interaction.reply({ embeds: [embed], components: [buttonRow], ephemeral: true });
     } catch (error) {
         console.error('Error in statusCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });

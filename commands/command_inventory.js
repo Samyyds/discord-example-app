@@ -22,19 +22,19 @@ const inventoryCommand = async (interaction) => {
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId('Equipment')
+                    .setCustomId('inventory_equipment')
                     .setLabel('Equipment')
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
-                    .setCustomId('Gem')
+                    .setCustomId('inventory_gem')
                     .setLabel('Gem')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
-                    .setCustomId('Potion')
+                    .setCustomId('inventory_potion')
                     .setLabel('Potion')
                     .setStyle(ButtonStyle.Secondary),
                 new ButtonBuilder()
-                    .setCustomId('Ingredient')
+                    .setCustomId('inventory_ingredient')
                     .setLabel('Ingredient')
                     .setStyle(ButtonStyle.Danger),
             );

@@ -12,6 +12,7 @@ import { initializeItems } from './commands/game_initializer.js';
 import { inventoryCommands } from './commands/command_inventory.js';
 import { dropCommands } from './commands/command_drop.js';
 import { handleInventoryInteraction } from './handler/InventoryHandler.js';
+import { handleCharacterInteraction } from "./handler/CharacterHandler.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
@@ -103,11 +104,15 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 
   if (interaction.isButton()) {
-    const result = await handleInventoryInteraction(interaction);
-    if (!result) {
-
+    if (interaction.customId.startsWith('inventory_')) {
+        await handleInventoryInteraction(interaction);
+    } else if (interaction.customId.startsWith('show_')) {
+        await handleCharacterInteraction(interaction);
+    } else {
+        console.log('Unrecognized button interaction:', interaction.customId);
+        await interaction.reply({ content: "I'm not sure what this button is for!", ephemeral: true });
     }
-  }
+}
 });
 
   // const accountManagementView = new AccountManagementView(client);
