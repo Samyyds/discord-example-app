@@ -12,6 +12,12 @@ export const Race = {
     "ELF": 3
 };
 
+export const Personality = {
+    "NO_PERSONALITY": 0,
+    "BRAWNY": 1,
+    "WISE": 2
+};
+
 export const ItemType = {
     "NONE": 0,
     "ORE": 1,

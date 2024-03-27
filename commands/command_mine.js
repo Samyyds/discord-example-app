@@ -37,7 +37,7 @@ const mineCommand = async (interaction) => {
         let quantity = (((quality % oreTierThreshold) * 20) / 100) + 1;
         quality /= oreTierThreshold;
 
-        activeCharacter.skills.increaseMiningXp(5);
+        activeCharacter.skills.increaseSkillXp('mining', 30);
         itemRepo.removeItemFromLocation(regionId, roomId, oreItem.id, 1);
 
         const transformedData = itemRepo.getItemDataById(oreItem.transformed.id);

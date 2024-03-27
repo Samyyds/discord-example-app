@@ -1,4 +1,4 @@
-import { Class, Race } from '../data/enums.js';
+import { Class, Race, Personality } from '../data/enums.js';
 import { ActionRowBuilder } from 'discord.js';
 import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
 import pkg from 'discord.js';
@@ -38,7 +38,7 @@ const createCommand = async (interaction) => {
     }
 };
 
-function createCharacter(userId, name, className, raceName, personalityId = 'NO_PERSONALITY') {
+function createCharacter(userId, name, className, raceName, personality = 'NO_PERSONALITY') {
     const currentCharacterId = nextCharacterId;
     nextCharacterId++;
 
@@ -48,7 +48,7 @@ function createCharacter(userId, name, className, raceName, personalityId = 'NO_
         1,
         Class[className],
         Race[raceName],
-        personalityId,
+        Personality[personality],
         0,
         [],
         1

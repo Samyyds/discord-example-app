@@ -1,3 +1,6 @@
+import { increaseXp } from '../util/util.js';
+import { Class, Race, Personality } from '../data/enums.js';
+
 const CLASS_BASE_STATS = {
     'NO_CLASS': { hp: 100, mp: 100, spd: 100, physicalATK: 100, physicalDEF: 100, magicATK: 100, magicDEF: 100 },
     'WARRIOR': { hp: 300, mp: 100, spd: 100, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
@@ -23,7 +26,7 @@ const PERSONALITY_BASE_STAT_MODIFIERS = {
     'BRAWNY': { hp: 1.1, mp: 0.9, spd: 0.9, physicalATK: 1.2, physicalDEF: 1.1, magicATK: 0.9, magicDEF: 0.9 },
     'WISE': { hp: 0.9, mp: 1.1, spd: 1, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
 
-}
+};
 
 class StatContainer {
     constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF) {
@@ -46,7 +49,7 @@ class StatContainer {
 }
 
 class SkillContainer {
-    constructor(mining = { level: 1, xp: 0 }, smithing = { level: 1, xp: 0 }, crafting = { level: 1, xp: 0 }, fishing = { level: 1, xp: 0 }, gathering = { level: 1, xp: 0 }, farming = { level: 1, xp: 0 }, cooking = { level: 1, xp: 0 }, brewing = { level: 1, xp: 0 }) {
+    constructor(mining = { level: 0, xp: 0 }, smithing = { level: 0, xp: 0 }, crafting = { level: 0, xp: 0 }, fishing = { level: 0, xp: 0 }, gathering = { level: 0, xp: 0 }, farming = { level: 0, xp: 0 }, cooking = { level: 0, xp: 0 }, brewing = { level: 0, xp: 0 }) {
         this.mining = mining;
         this.smithing = smithing;
         this.crafting = crafting;
@@ -57,12 +60,13 @@ class SkillContainer {
         this.brewing = brewing;
     }
 
-    increaseMiningXp(amount) {
-        this.mining.xp += amount;
-        while (this.mining.xp >= 10) { //每10经验升一级
-            this.mining.xp -= 10;
-            this.mining.level += 1;
-        }
+    increaseSkillXp(skillName, amount) {
+        if (!this[skillName]) return;
+
+        const { newLevel, newXp, xpForNextLevel } = increaseXp(this[skillName].xp, this[skillName].level, amount);
+
+        this[skillName].level = newLevel;
+        this[skillName].xp = newXp;
     }
 }
 
@@ -82,10 +86,14 @@ class Character {
      * @param {number} lootQuality - The loot quality value.
      */
     constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality) {
-        const classStats = CLASS_BASE_STATS[classId];
-        const classModifiers = CLASS_BASE_STAT_MODIFIERS[classId];
-        const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceId];
-        const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityId];
+        const className = Object.keys(Class).find(key => Class[key] === classId);
+        const raceName = Object.keys(Race).find(key => Race[key] === raceId);
+        const personalityName = Object.keys(Personality).find(key => Personality[key] === personalityId);
+
+        const classStats = CLASS_BASE_STATS[className];
+        const classModifiers = CLASS_BASE_STAT_MODIFIERS[className];
+        const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
+        const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
 
         this.id = id;
         this.name = name;
@@ -106,6 +114,13 @@ class Character {
         this.skills = new SkillContainer();
         this.battleBar = battleBar;
         this.lootQuality = lootQuality;
+    }
+
+    increaseCharacterXp(amount) {
+        const { newLevel, newXp, xpForNextLevel } = increaseXp(this.xp, this.level, amount);
+
+        this.level = newLevel;
+        this.xp = newXp;
     }
 }
 

@@ -1,20 +1,23 @@
 import { LocationType } from '../data/enums.js';
 
-export function convertBigInt(obj) {
-    let newObj = {};
-    for (let key in obj) {
-        if (typeof obj[key] === 'bigint') {
-            // Convert BigInt to String for the new object
-            newObj[key] = obj[key].toString();
-        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-            // Recursive call for nested objects
-            newObj[key] = convertBigInt(obj[key]);
-        } else {
-            // Copy other values as is
-            newObj[key] = obj[key];
-        }
+export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
+    const baseSkillRequirement = 100;
+    let xp = currentXp + amount;
+    let level = currentLevel;
+    
+    let xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
+    
+    while (xp >= xpNeededForNextLevel && level < levelCap) {
+        xp -= xpNeededForNextLevel;
+        level++;
+        xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
     }
-    return newObj;
+    
+    return {
+        newLevel: level,
+        newXp: xp,
+        xpForNextLevel: xpNeededForNextLevel
+    };
 }
 
 export function formatCharacterInfo(character) {
