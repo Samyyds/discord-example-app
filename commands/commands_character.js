@@ -1,9 +1,11 @@
-import { Class, Race, Personality } from '../data/enums.js';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
 import pkg from 'discord.js';
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { Class, Race, Personality } from '../data/enums.js';
+import itemsData from '../json/items.json' assert { type: 'json' };
 import { LocationRepository } from '../data/repository_location.js';
+import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
+import { Equipment } from '../data/repository_item.js';
 
 let nextCharacterId = 1;
 
@@ -52,6 +54,10 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
         [],
         1
     );
+     
+    const itemData = itemsData.find(item => item.id === "weap_001_shortsword");
+    const initSword = new Equipment(itemData);
+    character.equipItem(initSword);
 
     const locationRepo = LocationRepository.getInstance();
     locationRepo.setLocation(userId, currentCharacterId);

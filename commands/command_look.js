@@ -3,7 +3,6 @@ import { CharacterRepository } from '../data/repository_character.js';
 import { LocationRepository } from '../data/repository_location.js';
 import { ItemRepository } from '../data/repository_item.js';
 import rooms from '../json/rooms.json' assert { type: 'json' };
-import items from '../json/items.json' assert {type: 'json'};
 
 const lookCommand = async (interaction) => {
     try {

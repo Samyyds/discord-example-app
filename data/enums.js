@@ -29,13 +29,10 @@ export const ItemType = {
 }
 
 export const Items = {
-    "COPPER ORE": 1,
-    "COPPER": 101,
-    "TIN ORE": 2,
-    "TIN": 102,
-    "MUSHROOM": 201,
-    "TEA": 202,
-    "TWIG": 203
+    "COPPER ORE": "ore_001_cop",
+    "COPPER": "ing_001_cop",
+    "MUSHROOM": "ing_100_mushroom",
+    "SHORTSWORD": "weap_001_shortsword"
 }
 
 export const LocationType = {

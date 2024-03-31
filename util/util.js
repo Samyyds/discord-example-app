@@ -70,7 +70,11 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
             break;
         case 'stats':
             Object.keys(activeChar.stats).forEach(stat => {
-                description += `${stat}: ${activeChar.stats[stat]}\n`;
+                if (typeof activeChar.stats[stat] !== 'object' && activeChar.stats[stat] !== undefined) {
+                    description += `${stat}: ${activeChar.stats[stat]}\n`;
+                } else {
+                    description += `${stat}: Data not available\n`;
+                }
             });
             break;
         case 'skills':
@@ -86,7 +90,6 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
     embed.setDescription(description);
     return embed;
 }
-
 
 export function getKeyByValue(enumObj, value) {
     return Object.keys(enumObj).find(key => enumObj[key] === value);

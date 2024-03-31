@@ -1,10 +1,10 @@
 [
     {
-        "id": 1,
+        "id": "ore_001_cop",
         "name": "Copper Ore",
         "type": "Ore",
         "source": [
-            "harvest"
+            "Harvest"
         ],
         "details": {
             "locations": "Mara outside, 5",
@@ -12,15 +12,15 @@
         },
         "description": "Essential for crafting sturdy equipment with a metallic sheen.",
         "transformed": {
-            "id": 101
+            "id": "ing_001_cop"
         }
     },
     {
-        "id": 101,
+        "id": "ing_001_cop",
         "name": "Copper",
         "type": "Ingredient",
         "source": [
-            "ore"
+            "Ore"
         ],
         "details": {
             "locations": "Mara outside, 5"
@@ -28,68 +28,46 @@
         "description": "Obtained by mining and processing Copper Ore. Used in various crafting recipes."
     },
     {
-        "id": 2,
-        "name": "Tin Ore",
-        "type": "Ore",
-        "source": [
-            "harvest"
-        ],
-        "details": {
-            "locations": "Mara blacksmith, 1",
-            "level": 2
-        },
-        "description": "Valuable for creating strong alloys and beautiful tin items.",
-        "transformed": {
-            "id": 102
-        }
-    },
-    {
-        "id": 102,
-        "name": "Tin",
-        "type": "Ingredient",
-        "source": [
-            "ore"
-        ],
-        "details": {
-            "locations": "Mara blacksmith, 3",
-            "level": 2
-        },
-        "description": "Obtained by mining and processing Tin Ore. Used in various crafting recipes."
-    },
-    {
-        "id": 201,
+        "id": "ing_100_mushroom",
         "name": "Mushroom",
         "type": "Ingredient",
         "source": [
-            "harvest"
-        ],
-        "details": {
-            "locations": "Mara alchemist, 2"
-        },
-        "description": "Crucial component in concocting powerful potions and elixirs."
-    },
-    {
-        "id": 202,
-        "name": "Tea",
-        "type": "Ingredient",
-        "source": [
-            "harvest"
-        ],
-        "details": {
-            "locations": "Mara magetower, 7"
-        },
-        "description": "Known for its restorative properties and enhancing magical brews."
-    },
-    {
-        "id": 203,
-        "name": "Twig",
-        "type": "Ingredient",
-        "source": [
-            "harvest"
+            "Harvest"
         ],
         "details": {
             "locations": "Mara outside, 3"
         },
-        "description": "Surprisingly useful for crafting simple magical implements or kindling."
+        "description": "Crucial component in concocting powerful potions and elixirs."
+    },
+    {
+        "id": "weap_001_shortsword",
+        "name": "Short Sword",
+        "type": "Equipment",
+        "source": [
+            "initial"
+        ],
+        "details": {
+            "locations": "Mara outside, 3"
+        },
+        "description": "A sword that is given to you upon game initialization.",
+        "attributes": {
+            "hpBonus": 0,
+            "mpBonus": 0,
+            "spdBonus": 10,
+            "physicalATKBonus": 20,
+            "physicalDEFBonus": 5,
+            "magicATKBonus": 0,
+            "magicDEFBonus": 0,
+            "fireATKBonus": 0,
+            "fireDEFBonus": 0,
+            "lightATKBonus": 0,
+            "lightDEFBonus": 0,
+            "darkATKBonus": 0,
+            "darkDEFBonus": 0,
+            "bleedResistBonus": 0,
+            "poisonResistBonus": 0
+        },
+        "slot": "Weapon",
+        "twoHanded": true
     }
 ]

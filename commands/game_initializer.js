@@ -6,7 +6,7 @@ function initializeItems() {
     const itemRepo = ItemRepository.getInstance();
 
     itemsData.forEach(itemData => {
-        if (itemData.source.includes("harvest")) {
+        if (itemData.source.includes("Harvest")) {
             let item;
 
             switch (itemData.type) {

@@ -28,6 +28,24 @@ const PERSONALITY_BASE_STAT_MODIFIERS = {
 
 };
 
+const attributeMapping = {
+    hpBonus: 'hpMax',
+    mpBonus: 'mpMax',
+    spdBonus: 'spd',
+    physicalATKBonus: 'physicalATK',
+    physicalDEFBonus: 'physicalDEF',
+    magicATKBonus: 'magicATK',
+    magicDEFBonus: 'magicDEF',
+    fireATKBonus: 'fireATK',
+    fireDEFBonus: 'fireDEF',
+    lightATKBonus: 'lightATK',
+    lightDEFBonus: 'lightDEF',
+    darkATKBonus: 'darkATK',
+    darkDEFBonus: 'darkDEF',
+    bleedResistBonus: 'bleedMag',
+    poisonResistBonus: 'poisonMag'
+};
+
 class StatContainer {
     constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF) {
         this.hpMax = hpMax;
@@ -45,6 +63,24 @@ class StatContainer {
         this.lightDEF = lightDEF;
         this.darkATK = darkATK;
         this.darkDEF = darkDEF;
+    }
+
+    addAttributes(attributes) {
+        for (const key in attributes) {
+            console.log(`Adding attribute ${key}:`, this[key], '+', attributes[key]);
+
+            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
+                this[key] += attributes[key];
+            }
+        }
+    }
+
+    subtractAttributes(attributes) {
+        for (const key in attributes) {
+            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
+                this[key] -= attributes[key];
+            }
+        }
     }
 }
 
@@ -67,6 +103,36 @@ class SkillContainer {
 
         this[skillName].level = newLevel;
         this[skillName].xp = newXp;
+    }
+}
+
+class StatusContainer {
+    constructor(spdMult, phyDefBuffMag, phyDefBuffTimer, bleedMag, bleedTimer, poisonMag, poisonTimer) {
+        this.spdMult = spdMult;
+        this.phyDefBuffMag = phyDefBuffMag;
+        this.phyDefBuffTimer = phyDefBuffTimer;
+        this.bleedMag = bleedMag;
+        this.bleedTimer = bleedTimer;
+        this.poisonMag = poisonMag;
+        this.poisonTimer = poisonTimer;
+    }
+
+    addAttributes(attributes) {
+        for (const key in attributes) {
+            console.log(`Adding attribute ${key}:`, this[key], '+', attributes[key]);
+
+            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
+                this[key] += attributes[key];
+            }
+        }
+    }
+
+    subtractAttributes(attributes) {
+        for (const key in attributes) {
+            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
+                this[key] -= attributes[key];
+            }
+        }
     }
 }
 
@@ -102,18 +168,80 @@ class Character {
         this.personalityId = personalityId;
         this.level = level;
         this.xp = xp;
-        this.stats = new StatContainer({
-            hpMax: Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-            mpMax: Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-            spd: Math.round(classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
-            physicalATK: Math.round(classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
-            physicalDEF: Math.round(classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
-            magicATK: Math.round(classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
-            magicDEF: Math.round(classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),
-        });
+        this.stats = new StatContainer(
+            Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
+            Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
+            Math.round(classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
+            Math.round(classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
+            Math.round(classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
+            Math.round(classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
+            Math.round(classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),
+            0, // TODO fireATK
+            0, // TODO fireDEF
+            0, // lTODO ightATK
+            0, // TODO lightDEF
+            0, // TODO darkATK
+            0, // TODO darkDEF
+        );
+        console.log(this.stats);
         this.skills = new SkillContainer();
         this.battleBar = battleBar;
         this.lootQuality = lootQuality;
+        this.equippedItems = {};//eg: {"head": headItem,"body": bodyItem,"weapon": weaponItem}
+        this.status = new StatusContainer(); 
+    }
+
+    equipItem(item) {
+        if (item && item.slot && item.attributes) {
+            if (this.equippedItems[item.slot]) {
+                this.unequipItem(item.slot);
+            }
+            this.equippedItems[item.slot] = item;
+            this.updateAttributes(item.attributes, 'add');
+        }
+    }
+
+    unequipItem(slot) {
+        const item = this.equippedItems[slot];
+        if (item) {
+            this.updateAttributes(item.attributes, 'subtract');
+            delete this.equippedItems[slot];
+            return item;
+        }
+        return null;
+    }
+
+    updateAttributes(attributes, operation = 'add') {
+        const statAttributes = {};
+        const statusAttributes = {};
+
+        console.log('Updating attributes:', attributes);
+
+        for (const key in attributes) {
+            if (key in attributeMapping) {
+                const mappedKey = attributeMapping[key];
+                if (mappedKey in this.stats) {
+                    statAttributes[mappedKey] = attributes[key];
+                } else if (mappedKey in this.status) {
+                    statusAttributes[mappedKey] = attributes[key];
+                }
+            }
+        }
+
+        if (Object.keys(statAttributes).length > 0) {
+            if (operation === 'add') {
+                this.stats.addAttributes(statAttributes);
+            } else {
+                this.stats.subtractAttributes(statAttributes);
+            }
+        }
+        if (Object.keys(statusAttributes).length > 0) {
+            if (operation === 'add') {
+                this.status.addAttributes(statusAttributes);
+            } else {
+                this.status.subtractAttributes(statusAttributes);
+            }
+        }
     }
 
     increaseCharacterXp(amount) {
@@ -121,18 +249,6 @@ class Character {
 
         this.level = newLevel;
         this.xp = newXp;
-    }
-}
-
-class StatusContainer {
-    constructor(spdMult, phyDefBuffMag, phyDefBuffTimer, bleedMag, bleedTimer, poisonMag, poisonTimer) {
-        this.spdMult = spdMult;
-        this.phyDefBuffMag = phyDefBuffMag;
-        this.phyDefBuffTimer = phyDefBuffTimer;
-        this.bleedMag = bleedMag;
-        this.bleedTimer = bleedTimer;
-        this.poisonMag = poisonMag;
-        this.poisonTimer = poisonTimer;
     }
 }
 
