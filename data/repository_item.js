@@ -167,13 +167,6 @@ class ItemRepository {
         return null;
     }
 
-
-    getItemDataById(itemId) {
-        const itemData = itemsData.find(item => item.id === itemId);
-        if (!itemData) return null;
-        return itemData;
-    }
-
     getItemCountByName(regionId, roomId, itemName) {
         const locationKey = `${regionId}_${roomId}`;
         if (this.itemsByLocations.has(locationKey)) {

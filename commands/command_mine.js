@@ -3,6 +3,7 @@ import { CharacterRepository } from '../data/repository_character.js';
 import { LocationRepository } from '../data/repository_location.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
 import { Ingredient, ItemRepository } from '../data/repository_item.js';
+import { getItemDataById } from '../util/util.js';
 
 const oreTierThreshold = 10;
 
@@ -40,7 +41,7 @@ const mineCommand = async (interaction) => {
         activeCharacter.skills.increaseSkillXp('mining', 30);
         itemRepo.removeItemFromLocation(regionId, roomId, oreItem.id, 1);
 
-        const transformedData = itemRepo.getItemDataById(oreItem.transformed.id);
+        const transformedData = getItemDataById(oreItem.transformed.id);
         const newItem = new Ingredient(transformedData);
 
         if(newItem){

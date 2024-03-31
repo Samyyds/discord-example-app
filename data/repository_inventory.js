@@ -60,7 +60,6 @@ class InventoryRepository {
 class Inventory {
     constructor() {
         this.items = {}; // itemID -> { item, quantity }
-        this.equipped = {}; // slot -> item
     }
 
     hasItem(itemId) {
@@ -100,24 +99,6 @@ class Inventory {
             this.removeItem(item, 1);
         } else {
             console.log(`${item.name} cannot be used directly.`);
-        }
-    }
-
-    equipItem(item) {
-        if ((item.type === 'Weapon' || item.type === 'Shield') && this.items[item.id] && this.items[item.id].quantity > 0) {
-            const currentEquipped = this.equipped[item.type.toLowerCase()];
-            if (currentEquipped) {
-                this.addItem(currentEquipped, 1);
-            }
-
-            this.equipped[item.type.toLowerCase()] = item;
-            this.removeItem(item, 1);
-
-            const equippedItemsAttributes = Object.values(this.equipped).filter(i => i).map(i => i.attributes);
-            const totalAttributes = combineEquipmentAttributes(...equippedItemsAttributes);
-            console.log('Equipped', item.name, 'New total attributes:', totalAttributes);
-        } else {
-            console.log('This item cannot be equipped.');
         }
     }
 

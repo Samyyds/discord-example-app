@@ -67,8 +67,6 @@ class StatContainer {
 
     addAttributes(attributes) {
         for (const key in attributes) {
-            console.log(`Adding attribute ${key}:`, this[key], '+', attributes[key]);
-
             if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
                 this[key] += attributes[key];
             }
@@ -119,8 +117,6 @@ class StatusContainer {
 
     addAttributes(attributes) {
         for (const key in attributes) {
-            console.log(`Adding attribute ${key}:`, this[key], '+', attributes[key]);
-
             if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
                 this[key] += attributes[key];
             }
@@ -171,6 +167,8 @@ class Character {
         this.stats = new StatContainer(
             Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
             Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
+            Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
+            Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
             Math.round(classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
             Math.round(classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
             Math.round(classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
@@ -215,8 +213,6 @@ class Character {
         const statAttributes = {};
         const statusAttributes = {};
 
-        console.log('Updating attributes:', attributes);
-
         for (const key in attributes) {
             if (key in attributeMapping) {
                 const mappedKey = attributeMapping[key];
@@ -243,6 +239,17 @@ class Character {
             }
         }
     }
+
+    isEquipped(itemId) {
+        for (const slot in this.equippedItems) {
+            const item = this.equippedItems[slot];
+            if (item.id === itemId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     increaseCharacterXp(amount) {
         const { newLevel, newXp, xpForNextLevel } = increaseXp(this.xp, this.level, amount);

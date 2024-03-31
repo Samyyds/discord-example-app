@@ -32,7 +32,13 @@ export const Items = {
     "COPPER ORE": "ore_001_cop",
     "COPPER": "ing_001_cop",
     "MUSHROOM": "ing_100_mushroom",
-    "SHORTSWORD": "weap_001_shortsword"
+    "SHORT SWORD": "weap_001_shortsword"
+}
+
+export const Slot = {
+    "Head": 0,
+    "Body": 1,
+    "Weapon": 2
 }
 
 export const LocationType = {

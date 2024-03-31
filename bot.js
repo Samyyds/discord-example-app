@@ -11,6 +11,8 @@ import { mineCommands } from "./commands/command_mine.js";
 import { initializeItems } from './commands/game_initializer.js';
 import { inventoryCommands } from './commands/command_inventory.js';
 import { dropCommands } from './commands/command_drop.js';
+import { unequipCommands } from "./commands/command_unequip.js";
+import { equipCommands } from "./commands/command_equip.js";
 import { handleInventoryInteraction } from './handler/InventoryHandler.js';
 import { handleCharacterInteraction } from "./handler/CharacterHandler.js";
 
@@ -89,6 +91,12 @@ client.on(Events.InteractionCreate, async interaction => {
       case "drop":
         commandHandler = dropCommands[commandName];
         break;
+      case "unequip":
+        commandHandler = unequipCommands[commandName];
+        break;
+      case "equip":
+        commandHandler = equipCommands[commandName];
+        break;
       default:
         const subCommandName = interaction.options.getSubcommand();
         commandHandler = compoundCommand[commandName]?.[subCommandName];
@@ -105,14 +113,14 @@ client.on(Events.InteractionCreate, async interaction => {
 
   if (interaction.isButton()) {
     if (interaction.customId.startsWith('inventory_')) {
-        await handleInventoryInteraction(interaction);
+      await handleInventoryInteraction(interaction);
     } else if (interaction.customId.startsWith('show_')) {
-        await handleCharacterInteraction(interaction);
+      await handleCharacterInteraction(interaction);
     } else {
-        console.log('Unrecognized button interaction:', interaction.customId);
-        await interaction.reply({ content: "I'm not sure what this button is for!", ephemeral: true });
+      console.log('Unrecognized button interaction:', interaction.customId);
+      await interaction.reply({ content: "I'm not sure what this button is for!", ephemeral: true });
     }
-}
+  }
 });
 
   // const accountManagementView = new AccountManagementView(client);

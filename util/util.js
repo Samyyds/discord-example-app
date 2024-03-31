@@ -1,4 +1,5 @@
 import { Class, Race, Personality } from '../data/enums.js';
+import itemsData from '../json/items.json' assert { type: 'json' };
 
 export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
     const baseSkillRequirement = 100;
@@ -67,6 +68,17 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
             description += `Level : ${activeChar.level}\n`;
             const { newXp, xpForNextLevel } = increaseXp(activeChar.xp, activeChar.level, 0);
             description += `XP: ${createProgressBar(newXp, xpForNextLevel)}\n`;
+            description += "\n**Equipped Items:**\n";
+            let hasEquippedItems = false;
+            for (const slot in activeChar.equippedItems) {
+                if (activeChar.equippedItems.hasOwnProperty(slot) && activeChar.equippedItems[slot]) {
+                    description += `${slot.charAt(0).toUpperCase() + slot.slice(1)}: ${activeChar.equippedItems[slot].name}\n`;
+                    hasEquippedItems = true;
+                }
+            }
+            if (!hasEquippedItems) {
+                description += "No items equipped.\n";
+            }
             break;
         case 'stats':
             Object.keys(activeChar.stats).forEach(stat => {
@@ -93,4 +105,10 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
 
 export function getKeyByValue(enumObj, value) {
     return Object.keys(enumObj).find(key => enumObj[key] === value);
+}
+
+export function getItemDataById(itemId) {
+    const itemData = itemsData.find(item => item.id === itemId);
+    if (!itemData) return null;
+    return itemData;
 }

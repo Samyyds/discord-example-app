@@ -96,6 +96,22 @@ const dropCommand = new SlashCommandBuilder()
       .setDescription('The name of the item you want to drop.')
       .setRequired(true));
 
+const unequipCommand = new SlashCommandBuilder()
+  .setName('unequip')
+  .setDescription('Unequip an equipment.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The name of the equipment you want to unequip.')
+      .setRequired(true));
+
+const equipCommand = new SlashCommandBuilder()
+      .setName('equip')
+      .setDescription('equip an equipment.')
+      .addStringOption(option =>
+        option.setName('object')
+          .setDescription('The name of the equipment you want to equip.')
+          .setRequired(true));      
+
 const attackCommand = new SlashCommandBuilder()
   .setName('attack')
   .setDescription('Launch an attack! Prove your strength against the adversaries.')
@@ -115,7 +131,9 @@ const guildCommands =
     takeCommand.toJSON(),
     inventoryCommand.toJSON(),
     mineCommand.toJSON(),
-    dropCommand.toJSON()
+    dropCommand.toJSON(),
+    unequipCommand.toJSON(),
+    equipCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

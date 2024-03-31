@@ -4,6 +4,7 @@ import { InventoryRepository } from '../data/repository_inventory.js';
 import { LocationRepository } from '../data/repository_location.js';
 import { ItemRepository } from '../data/repository_item.js';
 import { Items } from "../data/enums.js";
+import { getItemDataById } from '../util/util.js';
 
 const dropCommand = async (interaction) => {
     try {
@@ -23,11 +24,11 @@ const dropCommand = async (interaction) => {
         if (!inventoryRepo.hasItem(interaction.user.id, activeCharId, Items[object])) {
             throw new Error('No such item in your inventory!');
         }
-        const { item, quantity } = inventoryRepo.getItem(interaction.user.id, activeCharId, Items[object]);
+        const { item: item, quantity } = inventoryRepo.getItem(interaction.user.id, activeCharId, Items[object]);
         inventoryRepo.removeItem(interaction.user.id, activeCharId, item, 1);
 
         const itemRepo = ItemRepository.getInstance();
-        const itemData = itemRepo.getItemDataById(Items[object]);
+        const itemData = getItemDataById(Items[object]);
         const itemInstance = itemRepo.createItem(itemData);
 
         const locationRepo = LocationRepository.getInstance();
