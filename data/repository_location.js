@@ -1,4 +1,4 @@
-class LocationRepository {
+class RegionsData {
     static Regions = {
         MOKUAH: {
             name: 'Moku\'ah',
@@ -47,29 +47,6 @@ class LocationRepository {
         }
     }
 
-    static getRegionById(targetRegionId) {
-        for (const regionKey in LocationRepository.Regions) {
-            const region = LocationRepository.Regions[regionKey];
-            if (region.id === targetRegionId) {
-                return region;
-            }
-        }
-        return null;
-    }
-
-    static getLocationById(regionId, locationId) {
-        const region = LocationRepository.getRegionById(regionId);
-        if (region && region.locations) {        
-            for (const locationKey in region.locations) {
-                const location = region.locations[locationKey];
-                if (location.id === locationId) {
-                    return location;
-                }
-            }
-        }
-        return null; 
-    }
-
     static changeRegionPaths = {
         0: { // Moku'ah ID
             4: [1, 3], // Moku'ah Dock (4) to Nyra Beach (1) and Trench Entrance (3)
@@ -85,6 +62,47 @@ class LocationRepository {
         }
     };
 
+    static getRegionById(targetRegionId) {
+        for (const regionKey in this.Regions) {
+            const region = this.Regions[regionKey];
+            if (region.id === targetRegionId) {
+                return region;
+            }
+        }
+        return null;
+    }
+
+    static getLocationById(regionId, locationId) {
+        const region = this.getRegionById(regionId);
+        if (region && region.locations) {
+            for (const locationKey in region.locations) {
+                const location = region.locations[locationKey];
+                if (location.id === locationId) {
+                    return location;
+                }
+            }
+        }
+        return null;
+    }
+
+    static getRoomCount(regionId, locationId) {
+        for (const regionKey in Regions) {
+            const region = Regions[regionKey];
+            if (region.id === regionId) {
+                for (const locationKey in region.locations) {
+                    const location = region.locations[locationKey];
+                    if (location.id === locationId) {
+                        return location.roomCount;
+                    }
+                }
+            }
+        }
+        console.error("Region or Location not found.");
+        return undefined;
+    }
+}
+
+class LocationRepository {
     constructor() {
         if (LocationRepository.instance) {
             return LocationRepository.instance;
@@ -135,12 +153,12 @@ class LocationRepository {
             return false;
         }
 
-        const currentRegionPaths = LocationRepository.changeRegionPaths[location.regionId];
+        const currentRegionPaths = RegionsData.changeRegionPaths[location.regionId];
 
         const currentLocationPaths = currentRegionPaths && currentRegionPaths[location.locationId];
 
         if (currentLocationPaths.includes(targetRegionId)) {
-            const targetLocation = LocationRepository.getLocationById(targetRegionId, targetLocationId);
+            const targetLocation = RegionsData.getLocationById(targetRegionId, targetLocationId);
             if (targetLocation) {
                 return true;
             } else {
@@ -162,7 +180,7 @@ class LocationRepository {
     moveRoom(userId, characterId, isUp) {
         const location = this.getLocation(userId, characterId);
         if (!location) return;
-        const region = LocationRepository.Regions[Object.keys(LocationRepository.Regions).find(key => LocationRepository.Regions[key].id === location.regionId)];
+        const region = RegionsData.Regions[Object.keys(RegionsData.Regions).find(key => RegionsData.Regions[key].id === location.regionId)];
         const locationData = region.locations[Object.keys(region.locations).find(key => region.locations[key].id === location.locationId)];
         const roomCount = locationData.roomCount;
 
@@ -180,29 +198,12 @@ class LocationRepository {
     canMoveDown(userId, characterId) {
         const location = this.getLocation(userId, characterId);
         if (!location) return false;
-        const region = LocationRepository.Regions[Object.keys(LocationRepository.Regions).find(key => LocationRepository.Regions[key].id === location.regionId)];
+        const region = RegionsData.Regions[Object.keys(Regions.Regions).find(key => Regions.Regions[key].id === location.regionId)];
         const locationData = region.locations[Object.keys(region.locations).find(key => region.locations[key].id === location.locationId)];
         const roomCount = locationData.roomCount;
 
         return location.roomId < roomCount;
     }
-
-    getRoomCount(regionId, locationId) {
-        for (const regionKey in LocationRepository.Regions) {
-            const region = LocationRepository.Regions[regionKey];
-            if (region.id === regionId) {
-                for (const locationKey in region.locations) {
-                    const location = region.locations[locationKey];
-                    if (location.id === locationId) {
-                        return location.roomCount;
-                    }
-                }
-            }
-        }
-        console.error("Region or Location not found.");
-        return undefined;
-    }
-
 }
 
-export { LocationRepository };
+export { RegionsData, LocationRepository };

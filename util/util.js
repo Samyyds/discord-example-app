@@ -1,6 +1,6 @@
 import { Class, Race, Personality } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
-import { LocationRepository } from "../data/repository_location.js";
+import { RegionsData } from "../data/repository_location.js";
 
 export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
     const baseSkillRequirement = 100;
@@ -86,7 +86,7 @@ export function getItemDataById(itemId) {
 
 export function convertNameToRegionId(name) {
     const lowerName = name.toLowerCase();
-    const Regions = LocationRepository.Regions;
+    const Regions = RegionsData.Regions;
     for (const regionKey in Regions) {
         if (Regions[regionKey].name.toLowerCase() === lowerName) {
             return Regions[regionKey].id;
@@ -98,7 +98,7 @@ export function convertNameToRegionId(name) {
 
 export function convertNameToLocationId(name, regionId) {
     const lowerName = name.toLowerCase();
-    const Regions = LocationRepository.Regions;
+    const Regions = RegionsData.Regions;
     const region = Regions[Object.keys(Regions).find(key => Regions[key].id === regionId)];
     if (region) {
         for (const locationKey in region.locations) {
