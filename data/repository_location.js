@@ -86,8 +86,8 @@ class RegionsData {
     }
 
     static getRoomCount(regionId, locationId) {
-        for (const regionKey in Regions) {
-            const region = Regions[regionKey];
+        for (const regionKey in this.Regions) {
+            const region = this.Regions[regionKey];
             if (region.id === regionId) {
                 for (const locationKey in region.locations) {
                     const location = region.locations[locationKey];
@@ -99,6 +99,10 @@ class RegionsData {
         }
         console.error("Region or Location not found.");
         return undefined;
+    }
+
+    static isValidRoom(regionId, locationId) {
+        return this.getRoomCount(regionId, locationId) > 1;
     }
 }
 
@@ -169,6 +173,7 @@ class LocationRepository {
     }
 
     moveLocation(userId, characterId, regionId, locationId) {
+        console.log(locationId);
         this.setLocation(userId, characterId, regionId, locationId, 0);
     }
 
@@ -185,7 +190,7 @@ class LocationRepository {
         const roomCount = locationData.roomCount;
 
         let newRoomId = location.roomId + (isUp ? -1 : 1);
-        if ((isUp && newRoomId > 0) || (!isUp && newRoomId <= roomCount)) {
+        if ((isUp && newRoomId >= 0) || (!isUp && newRoomId < roomCount)) {
             this.setLocation(userId, characterId, location.regionId, location.locationId, newRoomId);
         }
     }
@@ -198,10 +203,9 @@ class LocationRepository {
     canMoveDown(userId, characterId) {
         const location = this.getLocation(userId, characterId);
         if (!location) return false;
-        const region = RegionsData.Regions[Object.keys(Regions.Regions).find(key => Regions.Regions[key].id === location.regionId)];
+        const region = RegionsData.Regions[Object.keys(RegionsData.Regions).find(key => RegionsData.Regions[key].id === location.regionId)];
         const locationData = region.locations[Object.keys(region.locations).find(key => region.locations[key].id === location.locationId)];
         const roomCount = locationData.roomCount;
-
         return location.roomId < roomCount;
     }
 }

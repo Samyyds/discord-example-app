@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Worlds } from "../data/enums.js";
 
 const characterCommand = new SlashCommandBuilder()
   .setName('character')
@@ -66,12 +65,24 @@ const goCommand = new SlashCommandBuilder()
   .setDescription('Where do you want to go?')
   .addStringOption(option =>
     option.setName('region')
-      .setDescription('Enter the name of the region you want to move to.')
+      .setDescription('Enter the name of the region you want to go to.')
       .setRequired(true))
   .addStringOption(option =>
     option.setName('location')
-      .setDescription('Enter the name of the location you want to move to.')
+      .setDescription('Enter the name of the location you want to go to.')
       .setRequired(true));
+
+const moveCommand = new SlashCommandBuilder()
+  .setName('move')
+  .setDescription('Navigate between rooms in your current location.')
+  .addIntegerOption(option =>
+    option.setName('direction')
+      .setDescription('Select a direction to move.')
+      .setRequired(true)
+      .addChoices(
+        { name: 'up', value: 1 },
+        { name: 'down', value: 0 }
+      ));
 
 const mapCommand = new SlashCommandBuilder()
   .setName('map')
@@ -126,6 +137,7 @@ const guildCommands =
     //accountCommand.toJSON(),
     characterCommand.toJSON(),
     goCommand.toJSON(),
+    moveCommand.toJSON(),
     mapCommand.toJSON(),
     lookCommand.toJSON(),
     attackCommand.toJSON(),

@@ -4,6 +4,7 @@ import { charactercommands } from './commands/commands_character.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
 import { CharacterRepository } from './data/repository_character.js';
 import { goCommands } from './commands/command_go.js';
+import { moveCommands } from './commands/command_move.js';
 import { mapCommands } from './commands/command_map.js';
 import { lookCommands } from './commands/command_look.js';
 import { takeCommands } from './commands/command_take.js';
@@ -69,6 +70,9 @@ client.on(Events.InteractionCreate, async interaction => {
     switch (commandName) {
       case "go":
         commandHandler = goCommands[commandName];
+        break;
+      case "move":
+        commandHandler = moveCommands[commandName];
         break;
       case "map":
         commandHandler = mapCommands[commandName];
