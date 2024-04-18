@@ -1,3 +1,42 @@
+export const Worlds = {
+    'MOKUAH': 0,
+    'NYRA': 1,
+    'ISFJALL': 2,
+    'THE_TRENCH': 3
+}
+
+export const MokuahLocations = {
+    'VILLAGE CENTER': 0,
+    'BLACKSMITH': 1,
+    'FARM': 2,
+    'CLINIC': 3,
+    'DOCK': 4,
+    'JUNGLE': 5,
+    'VOLCANO': 6
+}
+
+export const NyraLocations = {
+    'TOWN': 0,
+    'CRAFTHOUSE': 1,
+    'TAVERN': 2,
+    'BEACH': 3,
+    'LABYRINTH': 4
+}
+
+export const IsfjallLocations = {
+    'CITY_CENTER': 0,
+    'BLACKSMITH': 1,
+    'DOCK': 2,
+    'TUNDRA': 3
+}
+
+export const TheTrenchLocations = {
+    'TRENCH_ENTRANCE': 0,
+    'THE_SHALLOWS': 1,
+    'THE_DEPTHS': 2,
+    'OBSIDIAN_CITY': 3
+}
+
 export const Class = {
     "NO_CLASS": 0,
     "WARRIOR": 1,
@@ -40,60 +79,6 @@ export const Slot = {
     "Body": 1,
     "Weapon": 2
 }
-
-export const LocationType = {
-    MARA: {
-        name: "Mara",
-        index: 0,
-        rooms: {
-            OUTSIDE: { name: "outside", index: 0 },
-            BLACKSMITH: { name: "blacksmith", index: 1 },
-            ALCHEMIST: { name: "alchemist", index: 2 },
-            MAGETOWER: { name: "magetower", index: 3 },
-            TOWNHALL: { name: "townhall", index: 4 },
-            MARKETPLACE: { name: "marketplace", index: 5 },
-            CLINIC: { name: "clinic", index: 6 }
-        }
-    },
-    STONESIDE_DUNGEON: {
-        name: "stoneside dungeon",
-        index: 1,
-        rooms: {
-            BASE: { name: "base", index: 0 }
-        }
-    },
-    MOUNTAIN: {
-        name: "Mountain",
-        index: 2,
-        rooms: {
-            BASE: { name: "base", index: 0 },
-            B1: { name: "b1", index: 1 },
-            B2: { name: "b2", index: 2 },
-            B3: { name: "b3", index: 3 }
-        }
-    },
-    FOREST: {
-        name: "Forest",
-        index: 3,
-        rooms: {
-            BASE: { name: "base", index: 0 }
-        }
-    },
-    GRAVEYARD: {
-        name: "Graveyard",
-        index: 4,
-        rooms: {
-            BASE: { name: "base", index: 0 }
-        }
-    },
-    BEACH: {
-        name: "Beach",
-        index: 5,
-        rooms: {
-            BASE: { name: "base", index: 0 }
-        }
-    }
-};
 
 export function getLocationFromInput(regionNameInput, roomNameInput) {
     const regionName = regionNameInput.trim().toUpperCase();

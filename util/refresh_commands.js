@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { Worlds } from "../data/enums.js";
 
 const characterCommand = new SlashCommandBuilder()
   .setName('character')
@@ -65,11 +66,11 @@ const goCommand = new SlashCommandBuilder()
   .setDescription('Where do you want to go?')
   .addStringOption(option =>
     option.setName('region')
-      .setDescription('The name of the region you want to move to.')
+      .setDescription('Enter the name of the region you want to move to.')
       .setRequired(true))
   .addStringOption(option =>
-    option.setName('room')
-      .setDescription('The name of the room you want to move to.')
+    option.setName('location')
+      .setDescription('Enter the name of the location you want to move to.')
       .setRequired(true));
 
 const mapCommand = new SlashCommandBuilder()
@@ -105,12 +106,12 @@ const unequipCommand = new SlashCommandBuilder()
       .setRequired(true));
 
 const equipCommand = new SlashCommandBuilder()
-      .setName('equip')
-      .setDescription('equip an equipment.')
-      .addStringOption(option =>
-        option.setName('object')
-          .setDescription('The name of the equipment you want to equip.')
-          .setRequired(true));      
+  .setName('equip')
+  .setDescription('equip an equipment.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The name of the equipment you want to equip.')
+      .setRequired(true));
 
 const attackCommand = new SlashCommandBuilder()
   .setName('attack')

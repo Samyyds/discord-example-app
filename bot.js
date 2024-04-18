@@ -8,7 +8,7 @@ import { mapCommands } from './commands/command_map.js';
 import { lookCommands } from './commands/command_look.js';
 import { takeCommands } from './commands/command_take.js';
 import { mineCommands } from "./commands/command_mine.js";
-import { initializeItems } from './commands/game_initializer.js';
+//import { initializeItems } from './commands/game_initializer.js';
 import { inventoryCommands } from './commands/command_inventory.js';
 import { dropCommands } from './commands/command_drop.js';
 import { unequipCommands } from "./commands/command_unequip.js";
@@ -27,7 +27,7 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
 
-  initializeItems();
+  //initializeItems();
 
   console.log('Bot is ready!');
 });

@@ -1,55 +1,26 @@
 import { Class, Race, Personality } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
+import { LocationRepository } from "../data/repository_location.js";
 
 export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
     const baseSkillRequirement = 100;
     let xp = currentXp + amount;
     let level = currentLevel;
-    
+
     let xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
-    
+
     while (xp >= xpNeededForNextLevel && level < levelCap) {
         xp -= xpNeededForNextLevel;
         level++;
         xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
     }
-    
+
     return {
         newLevel: level,
         newXp: xp,
         xpForNextLevel: xpNeededForNextLevel
     };
 }
-
-// export function formatCharacterInfo(character) {
-//     let formattedString = '';
-//     for (const key in character) {
-//         if (typeof character[key] === 'object') {
-//             formattedString += `${key}:\n${formatCharacterInfo(character[key])}\n`;
-//         } else {
-//             formattedString += `${key}: ${character[key]}\n`;
-//         }
-//     }
-//     return formattedString;
-// }
-
-// export function addCharacterInfoToEmbed(activeChar, embed) {
-//     for (const key in activeChar) {
-//         let value;
-//         if (typeof activeChar[key] === 'object') {
-//             value = formatCharacterInfo(activeChar[key]);
-//         } else {
-//             value = activeChar[key].toString();
-//         }
-
-//         if (value === '') {
-//             value = 'N/A';
-//         }
-
-//         embed.addFields({ name: key, value: value, inline: true });
-//     }
-//     return embed;
-// }
 
 function createProgressBar(currentXp, totalXpForNextLevel, barLength = 10) {
     const filledLength = Math.round((currentXp / totalXpForNextLevel) * barLength);
@@ -59,7 +30,7 @@ function createProgressBar(currentXp, totalXpForNextLevel, barLength = 10) {
 
 export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
     let description = '';
-    switch(infoType) {
+    switch (infoType) {
         case 'basic':
             description += `Name : ${activeChar.name}\n`;
             description += `Class : ${Object.keys(Class).find(key => Class[key] === activeChar.classId).toLowerCase()}\n`;
@@ -111,4 +82,31 @@ export function getItemDataById(itemId) {
     const itemData = itemsData.find(item => item.id === itemId);
     if (!itemData) return null;
     return itemData;
+}
+
+export function convertNameToRegionId(name) {
+    const lowerName = name.toLowerCase();
+    const Regions = LocationRepository.Regions;
+    for (const regionKey in Regions) {
+        if (Regions[regionKey].name.toLowerCase() === lowerName) {
+            return Regions[regionKey].id;
+        }
+    }
+    console.log(`No region found for the name: ${name}`);
+    return undefined;
+}
+
+export function convertNameToLocationId(name, regionId) {
+    const lowerName = name.toLowerCase();
+    const Regions = LocationRepository.Regions;
+    const region = Regions[Object.keys(Regions).find(key => Regions[key].id === regionId)];
+    if (region) {
+        for (const locationKey in region.locations) {
+            if (region.locations[locationKey].name.toLowerCase() === lowerName) {
+                return region.locations[locationKey].id;
+            }
+        }
+    }
+    console.log(`No location found for the name: ${name} in region ID: ${regionId}`);
+    return undefined;
 }
