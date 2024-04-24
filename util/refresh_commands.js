@@ -3,6 +3,10 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
+const subCommand = new SlashCommandBuilder()
+  .setName('sub')
+  .setDescription('Experience the full game.');
+
 const characterCommand = new SlashCommandBuilder()
   .setName('character')
   .setDescription('Character commands')
@@ -135,6 +139,7 @@ const attackCommand = new SlashCommandBuilder()
 const guildCommands =
   [
     //accountCommand.toJSON(),
+    subCommand.toJSON(),
     characterCommand.toJSON(),
     goCommand.toJSON(),
     moveCommand.toJSON(),

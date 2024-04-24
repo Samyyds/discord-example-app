@@ -2,6 +2,7 @@ import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 import { charactercommands } from './commands/commands_character.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
+import { subCommands } from "./commands/command_sub.js";
 import { CharacterRepository } from './data/repository_character.js';
 import { goCommands } from './commands/command_go.js';
 import { moveCommands } from './commands/command_move.js';
@@ -30,7 +31,7 @@ client.once('ready', async () => {
   //initializeItems();
   console.log('Bot is ready!');
 
-  // const channelId = '1232234558330765392';
+  // const channelId = '1232231036054667286';
   // const channel = client.channels.cache.get(channelId);
   // if (!channel) {
   //   console.error('Channel not found');
@@ -38,12 +39,14 @@ client.once('ready', async () => {
   // }
   // try {
   //   const message = await channel.send(
-  //     'Welcome to Merfolk & Magic!\n\n' +
-  //     'In this game, you can explore, chat with friends, mine for resources, craft weapons, and battle monsters.\n\n' +
-  //     'All game interactions are executed through slash commands.\n\n' +
-  //     'You can experience the game in the "free access" channel and subscribe in the "subscription" channel to unlock the rest of the game.\n\n' +
-  //     'Enjoy your adventure!'
+  //     '**Welcome to the Free Access Area of Merfolk & Magic!**\n\n' +
+  //     'This channel allows you to experience the trial version of our game.\n\n' +
+  //     '**Interacting in the Game:**\n' +
+  //     '👉 All gameplay interactions are performed via slash commands.\n' +
+  //     '👉 Type `/help` at any time to learn more about how to play.\n\n' +
+  //     'Enjoy your journey!'
   //   );
+
   //   await message.pin();
   //   console.log('Message pinned successfully.');
   // } catch (error) {
@@ -129,6 +132,9 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "equip":
         commandHandler = equipCommands[commandName];
+        break;
+      case "sub":
+        commandHandler = subCommands[commandName];
         break;
       default:
         const subCommandName = interaction.options.getSubcommand();
