@@ -18,7 +18,7 @@ import { handleInventoryInteraction } from './handler/InventoryHandler.js';
 import { handleCharacterInteraction } from "./handler/CharacterHandler.js";
 
 // Create and configure the Discord client
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
 
 const compoundCommand = {
   character: charactercommands,
@@ -27,10 +27,39 @@ const compoundCommand = {
 client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
-
   //initializeItems();
-
   console.log('Bot is ready!');
+
+  // const channelId = '1232234558330765392';
+  // const channel = client.channels.cache.get(channelId);
+  // if (!channel) {
+  //   console.error('Channel not found');
+  //   return;
+  // }
+  // try {
+  //   const message = await channel.send(
+  //     'Welcome to Merfolk & Magic!\n\n' +
+  //     'In this game, you can explore, chat with friends, mine for resources, craft weapons, and battle monsters.\n\n' +
+  //     'All game interactions are executed through slash commands.\n\n' +
+  //     'You can experience the game in the "free access" channel and subscribe in the "subscription" channel to unlock the rest of the game.\n\n' +
+  //     'Enjoy your adventure!'
+  //   );
+  //   await message.pin();
+  //   console.log('Message pinned successfully.');
+  // } catch (error) {
+  //   console.error('Failed to send or pin the message:', error);
+  // }
+});
+
+//assign "free member" role to new users
+client.on(Events.GuildMemberAdd, async (member) => {
+  const roleId = '1232243211846811658';
+  try {
+    await member.roles.add(roleId);
+    console.log(`Assigned role to new member: ${member.displayName}`);
+  } catch (error) {
+    console.error('Failed to assign role:', error);
+  }
 });
 
 client.on(Events.InteractionCreate, async interaction => {

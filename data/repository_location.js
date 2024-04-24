@@ -142,7 +142,6 @@ class LocationRepository {
     moveRegion(userId, characterId, targetRegionId, targetLocationId) {
         if (this.canMoveRegion(userId, characterId, targetRegionId, targetLocationId)) {
             this.setLocation(userId, characterId, targetRegionId, targetLocationId, 0);
-            console.log("Move successful: User has been moved to the new location.");
             return true;
         } else {
             console.error("Invalid movement path or region/location ID.");
