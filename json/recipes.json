@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 1
+            }
+        ],
+        "result": 4
+    },
+    {
+        "id": 2,
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 1
+            },
+            {
+                "item": 6,
+                "quantity": 1
+            }
+        ],
+        "result": 7
+    }
+]

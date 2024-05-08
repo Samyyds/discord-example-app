@@ -1,6 +1,7 @@
-import { Class, Race, Personality } from '../data/enums.js';
+import { Class, Race, Personality, Item } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { RegionsData } from "../data/repository_location.js";
+import recipesData from '../json/recipes.json' assert {type: 'json'};
 
 export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
     const baseSkillRequirement = 100;
@@ -109,4 +110,30 @@ export function convertNameToLocationId(name, regionId) {
     }
     console.log(`No location found for the name: ${name} in region ID: ${regionId}`);
     return undefined;
+}
+
+export function recipesParser(recipeIds, embed) {
+    if (!recipeIds.length) {
+        embed.addFields({ name: 'No Recipes Available', value: 'You currently do not have any recipes.', inline: false });
+        return embed;
+    }
+
+    const itemNames = Object.keys(Item).reduce((obj, key) => {
+        obj[Item[key]] = key.replace(/_/g, ' ').toLowerCase();
+        return obj;
+    }, {});
+
+    let description = '';
+    recipeIds.forEach(id => {
+        const recipe = recipesData.find(r => r.id === id);
+        if (recipe) {
+            description += `${itemNames[recipe.result]} recipe: `;
+            let ingredientTexts = recipe.ingredients.map(ing => `${itemNames[ing.item]}*${ing.quantity}`);
+            description += ingredientTexts.join(', ') + '\n';
+        }
+    });
+
+    embed.addFields({ name: 'Your available recipes are:\n', value: description.trim(), inline: false });
+
+    return embed;
 }

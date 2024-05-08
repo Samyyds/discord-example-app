@@ -58,21 +58,47 @@ export const Personality = {
 };
 
 export const ItemType = {
-    "NONE": 0,
-    "ORE": 1,
-    "INGREDIENT": 2,
-    "POTION": 3,
-    "GEM": 4,
-    "EQUIPMENT": 5,
-    "FISH": 6
+    "MATERIAL": 0,
+    "GEAR": 1,
+    "CONSUMABLE": 2,
+    "KEY": 3
 }
 
-export const Items = {
-    "COPPER ORE": "ore_001_cop",
-    "COPPER": "ing_001_cop",
-    "MUSHROOM": "ing_100_mushroom",
-    "SHORT SWORD": "weap_001_shortsword"
+export const Rarity = {
+    "RUSTED_JUNK": 0,
+    "STANDARD": 1,
+    "VALUABLE": 2,
+    "FABLED": 3,
+    "ENIGMATA": 4,
+    "DELPHIC": 5,
+    "ENTHEAT": 6,
+    "HALLOWED": 7,
+    "APOCRYPHAL": 8
 }
+
+export const Skill = {
+    "BREWING": 0,
+    "COOKING": 1,
+    "FARMING": 2,
+    "FISHING": 3,
+    "GATHERING": 4,
+    "MINING": 5,
+    "SMITHING": 6,
+    "WATERBREATHING": 7
+}
+
+export const Item = {
+    "SALVAGE": 0,
+    "SHELL": 1,
+    "CORAL": 2,
+    "BONE": 3,
+    "KELP_BROTH": 4,
+    "KELP": 5,
+    "CRAB": 6,
+    "BOILED_CRAB_W/_DICED_KELP": 7
+}
+
+export const Items = {}
 
 export const Slot = {
     "Head": 0,

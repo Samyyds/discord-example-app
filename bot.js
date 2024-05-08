@@ -15,6 +15,7 @@ import { inventoryCommands } from './commands/command_inventory.js';
 import { dropCommands } from './commands/command_drop.js';
 import { unequipCommands } from "./commands/command_unequip.js";
 import { equipCommands } from "./commands/command_equip.js";
+import {recipeCommands} from "./commands/command_recipe.js";
 import { handleInventoryInteraction } from './handler/InventoryHandler.js';
 import { handleCharacterInteraction } from "./handler/CharacterHandler.js";
 
@@ -135,6 +136,9 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "sub":
         commandHandler = subCommands[commandName];
+        break;
+      case "recipe":
+        commandHandler = recipeCommands[commandName];
         break;
       default:
         const subCommandName = interaction.options.getSubcommand();

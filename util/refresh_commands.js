@@ -134,7 +134,12 @@ const attackCommand = new SlashCommandBuilder()
   .addStringOption(option =>
     option.setName('enemy-name')
       .setDescription('The name of the enemy you want to have a fight with')
-      .setRequired(true))
+      .setRequired(true));
+
+
+const recipeCommand = new SlashCommandBuilder()
+      .setName('recipe')
+      .setDescription('Displays recipes available to your character.');
 
 const guildCommands =
   [
@@ -151,7 +156,8 @@ const guildCommands =
     mineCommand.toJSON(),
     dropCommand.toJSON(),
     unequipCommand.toJSON(),
-    equipCommand.toJSON()
+    equipCommand.toJSON(),
+    recipeCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
