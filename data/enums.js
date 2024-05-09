@@ -92,6 +92,12 @@ export const Skill = {
     "WATERBREATHING": 7
 }
 
+export const NodeType = {
+    "MINING": 0,
+    "GATHERING": 1,
+    "FISHING": 2
+}
+
 export const Item = {
     "SALVAGE": 0,
     "SHELL": 1,
