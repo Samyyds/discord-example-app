@@ -24,7 +24,6 @@ const characterCommand = new SlashCommandBuilder()
           .setRequired(true)
           .addChoices(
             { name: 'Warrior', value: 'WARRIOR' },
-            { name: 'Rogue', value: 'ROGUE' },
             { name: 'Mage', value: 'MAGE' }
           ))
       .addStringOption(option =>

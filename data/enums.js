@@ -38,10 +38,15 @@ export const TheTrenchLocations = {
 }
 
 export const Class = {
-    "NO_CLASS": 0,
-    "WARRIOR": 1,
-    "ROGUE": 2,
-    "MAGE": 3
+    "WARRIOR": 0,
+    "MAGE": 1,
+    "Ranger": 2,
+    "Cleric": 3,
+    "Druid": 4,
+    "Monk": 5,
+    "Barbarian": 6,
+    "Paladin": 7,
+    "Bard": 8
 };
 
 export const Race = {
