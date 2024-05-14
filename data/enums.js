@@ -1,4 +1,4 @@
-export const Worlds = {
+export const Regions = {
     'MOKUAH': 0,
     'NYRA': 1,
     'ISFJALL': 2,

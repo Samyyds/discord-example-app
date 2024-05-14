@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { LocationRepository } from '../data/repository_location.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterRepository } from '../data/repository_character.js';
 import { getRegionNameFromId } from '../data/enums.js';
 import descriptions from '../data/consts.js';
@@ -12,8 +12,8 @@ const mapCommand = async (interaction) => {
             throw new Error('You do not have an available character!');
         }
 
-        const locationRepo = LocationRepository.getInstance();
-        const {regionId,} = locationRepo.getLocation(interaction.user.id, activeCharId) || {};
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const {regionId,} = playerMoveManager.getLocation(interaction.user.id, activeCharId) || {};
        
         const regionName = getRegionNameFromId(regionId);
 

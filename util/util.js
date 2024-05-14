@@ -1,6 +1,6 @@
 import { Class, Race, Personality, Item } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
-import { RegionsData } from "../data/repository_location.js";
+import { RegionsData } from "../data/region_data.js";
 import recipesData from '../json/recipes.json' assert {type: 'json'};
 
 export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {

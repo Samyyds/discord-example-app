@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterRepository } from '../data/repository_character.js';
-import { LocationRepository } from '../data/repository_location.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { ItemRepository } from '../data/repository_item.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
 
@@ -15,8 +15,8 @@ const takeCommand = async (interaction) => {
         }
         const activeCharId = activeCharacter.id;
 
-        const locationRepo = LocationRepository.getInstance();
-        const { regionId, roomId } = locationRepo.getLocation(interaction.user.id, activeCharId);
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
 
         const itemRepo = ItemRepository.getInstance();
         const itemCount = itemRepo.getItemCountByName(regionId, roomId, itemName);

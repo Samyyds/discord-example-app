@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { LocationRepository } from '../data/repository_location.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterRepository } from '../data/repository_character.js';
 import { convertNameToLocationId, convertNameToRegionId } from "../util/util.js";
 
@@ -24,19 +24,19 @@ const goCommand = async (interaction) => {
             throw new Error(`The specified location '${locationName}' does not exist in the region '${regionName}'.`);
         }
 
-        const locationRepo = LocationRepository.getInstance();
-        const curLocation = locationRepo.getLocation(interaction.user.id, activeCharacter.id);
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
 
         if (curLocation && curLocation.regionId === tarRegionId) {
-            if (!locationRepo.canMoveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId)) {
+            if (!playerMoveManager.canMoveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId)) {
                 throw new Error("Cannot move to the target location from current location.");
             }
-            locationRepo.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
+            playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
         } else {
-            if (!locationRepo.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId)) {
+            if (!playerMoveManager.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId)) {
                 throw new Error("Cannot move to the target region and location from current location.");
             }
-            locationRepo.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
+            playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
         }
 
         let embed = new EmbedBuilder()

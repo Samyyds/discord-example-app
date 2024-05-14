@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterRepository } from '../data/repository_character.js';
-import { LocationRepository } from '../data/repository_location.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
 import { Ingredient, ItemRepository } from '../data/repository_item.js';
 import { getItemDataById } from '../util/util.js';
@@ -18,8 +18,8 @@ const mineCommand = async (interaction) => {
         }
         const activeCharId = activeCharacter.id;
         
-        const locationRepo = LocationRepository.getInstance();
-        const { regionId, roomId } = locationRepo.getLocation(interaction.user.id, activeCharId);
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
         
         const itemRepo = ItemRepository.getInstance();
         const oreItem = itemRepo.getItemByName(regionId, roomId, oreName);

@@ -1,5 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
-import { RegionsData, LocationRepository } from '../data/repository_location.js';
+import { RegionsData } from '../data/region_data.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterRepository } from '../data/repository_character.js';
 
 const moveCommand = async (interaction) => {
@@ -10,8 +11,8 @@ const moveCommand = async (interaction) => {
             throw new Error('You do not have an available character!');
         }
 
-        const locationRepo = LocationRepository.getInstance();
-        const curLocation = locationRepo.getLocation(interaction.user.id, activeCharacter.id);
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         const isValidRoom = RegionsData.isValidRoom(curLocation.regionId, curLocation.locationId);
 
         if (!isValidRoom) {
@@ -22,23 +23,23 @@ const moveCommand = async (interaction) => {
         let moved = false;
 
         if (direction === 0) {//Down
-            const canMoveDown = locationRepo.canMoveDown(interaction.user.id, activeCharacter.id);
+            const canMoveDown = playerMoveManager.canMoveDown(interaction.user.id, activeCharacter.id);
             if (!canMoveDown) {
                 throw new Error('You\'ve reached the last room. There\'s no way to move down!');
             }
-            locationRepo.moveRoom(interaction.user.id, activeCharacter.id, false, interaction);
+            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false, interaction);
             moved = true;
         } else if (direction === 1) {//Up
-            const canMoveUp = locationRepo.canMoveUp(interaction.user.id, activeCharacter.id);
+            const canMoveUp = playerMoveManager.canMoveUp(interaction.user.id, activeCharacter.id);
             if (!canMoveUp) {
                 throw new Error('You are already in the first room. There\'s no way to move up!');
             }
-            locationRepo.moveRoom(interaction.user.id, activeCharacter.id, true, interaction);
+            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true, interaction);
             moved = true;
         }
 
         if (moved) {
-            const newLocation = locationRepo.getLocation(interaction.user.id, activeCharacter.id);
+            const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
             const locationName = RegionsData.getLocationById(newLocation.regionId, newLocation.locationId).name;
 
             let distanceDescription;

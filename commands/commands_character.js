@@ -3,7 +3,7 @@ const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { Class, Race, Personality } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
-import { LocationRepository } from '../data/repository_location.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
 import { Equipment } from '../data/repository_item.js';
 
@@ -59,8 +59,8 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
     const initSword = new Equipment(itemData);
     character.equipItem(initSword);
 
-    const locationRepo = LocationRepository.getInstance();
-    locationRepo.setLocation(userId, currentCharacterId);
+    const playerMoveManager = PlayerMovementManager.getInstance();
+    playerMoveManager.setLocation(userId, currentCharacterId);
 
     return character;
 }

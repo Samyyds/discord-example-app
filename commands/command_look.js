@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterRepository } from '../data/repository_character.js';
-import { LocationRepository } from '../data/repository_location.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { ItemRepository } from '../data/repository_item.js';
 import rooms from '../json/rooms.json' assert { type: 'json' };
 
@@ -15,8 +15,8 @@ const lookCommand = async (interaction) => {
         }
         const activeCharId = activeCharacter.id;
 
-        const locationRepo = LocationRepository.getInstance();
-        const { regionId, roomId } = locationRepo.getLocation(interaction.user.id, activeCharId);
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
 
         let description = '';
         const itemRepo = ItemRepository.getInstance();

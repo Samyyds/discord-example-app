@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterRepository } from '../data/repository_character.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
-import { LocationRepository } from '../data/repository_location.js';
+import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { ItemRepository } from '../data/repository_item.js';
 import { Items } from "../data/enums.js";
 import { getItemDataById } from '../util/util.js';
@@ -31,8 +31,8 @@ const dropCommand = async (interaction) => {
         const itemData = getItemDataById(Items[object]);
         const itemInstance = itemRepo.createItem(itemData);
 
-        const locationRepo = LocationRepository.getInstance();
-        const { regionId, roomId } = locationRepo.getLocation(interaction.user.id, activeCharId);
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
         itemRepo.addItemToLocation(regionId, roomId, itemInstance, 1);
 
         let embed = new EmbedBuilder().setDescription(`You drop ${object.toLowerCase()} onto the floor.`);
