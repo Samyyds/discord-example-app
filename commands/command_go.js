@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterRepository } from '../data/repository_character.js';
-import { convertNameToLocationId, convertNameToRegionId } from "../util/util.js";
+import { convertNameToRegionId, convertNameToLocationId } from "../util/util.js";
 
 const goCommand = async (interaction) => {
     try {

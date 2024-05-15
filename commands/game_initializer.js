@@ -1,5 +1,6 @@
 //import itemsData from '../json/items.json' assert { type: 'json' };
-import { NodeRepository } from "../data/repository_node.js";
+//import { NodeRepository } from "../data/repository_node.js";
+import { RegionManager } from "../manager/region_manager.js";
 // import { LocationType } from '../data/enums.js';
 // import { Item, Ore, Ingredient, Potion, Fish, Gem, Equipment, ItemRepository } from '../data/repository_item.js';
 
@@ -54,4 +55,14 @@ function loadNodesFromDB(){
     console.log(nodeRepo.nodes[0].name);
 }
 
-export { loadNodesFromDB };
+function loadRegionsFromJson(){
+    const regionManager = RegionManager.getInstance();
+    regionManager.initializeFromJson();
+
+    for (const region of regionManager.regions.values()) {
+        console.log(`Region: ${region.name} (ID: ${region.id})`);
+        console.log(`Paths:`, region.paths);
+    }
+}
+
+export { loadNodesFromDB,loadRegionsFromJson };

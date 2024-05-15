@@ -1,0 +1,79 @@
+{
+    "regions": [
+      {
+        "id": 0,
+        "name": "Moku'ah",
+        "description": "A lush and vibrant jungle region.",
+        "locations": [
+          { "locationId": 0, "name": "Village Center", "roomCount": 1, "description": "The center of the village." },
+          { "locationId": 1, "name": "Blacksmith", "roomCount": 1, "description": "A place to forge weapons and armor." },
+          { "locationId": 2, "name": "Farm", "roomCount": 1, "description": "A place to grow crops and raise livestock." },
+          { "locationId": 3, "name": "Clinic", "roomCount": 1, "description": "A place to heal wounds and treat illnesses." },
+          { "locationId": 4, "name": "Dock", "roomCount": 1, "description": "The main dock of Moku'ah." },
+          { "locationId": 5, "name": "Jungle", "roomCount": 100, "description": "A dense and dangerous jungle." },
+          { "locationId": 6, "name": "Volcano", "roomCount": 100, "description": "A towering and active volcano." }
+        ],
+        "paths": {
+          "4": [
+            { "regionId": 1, "locationId": 3 },
+            { "regionId": 3, "locationId": 0 }
+          ]
+        }
+      },
+      {
+        "id": 1,
+        "name": "Nyra",
+        "description": "A coastal town with beautiful beaches.",
+        "locations": [
+          { "locationId": 0, "name": "Town", "roomCount": 1, "description": "The main town area." },
+          { "locationId": 1, "name": "Crafthouse", "roomCount": 1, "description": "A place to craft items and equipment." },
+          { "locationId": 2, "name": "Tavern", "roomCount": 1, "description": "A place to rest and socialize." },
+          { "locationId": 3, "name": "Beach", "roomCount": 1, "description": "The beautiful beach of Nyra." },
+          { "locationId": 4, "name": "Labyrinth", "roomCount": 1, "description": "A mysterious and complex maze." }
+        ],
+        "paths": {
+          "3": [
+            { "regionId": 0, "locationId": 4 },
+            { "regionId": 2, "locationId": 2 },
+            { "regionId": 3, "locationId": 0 }
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "name": "Isfjall",
+        "description": "A frozen tundra with a bustling city center.",
+        "locations": [
+          { "locationId": 0, "name": "City Center", "roomCount": 1, "description": "The center of the city." },
+          { "locationId": 1, "name": "Blacksmith", "roomCount": 1, "description": "A place to forge weapons and armor." },
+          { "locationId": 2, "name": "Dock", "roomCount": 1, "description": "The dock of Isfjall." },
+          { "locationId": 3, "name": "Tundra", "roomCount": 1, "description": "A vast and frozen tundra." }
+        ],
+        "paths": {
+          "2": [
+            { "regionId": 1, "locationId": 3 },
+            { "regionId": 3, "locationId": 0 }
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "name": "The Trench",
+        "description": "A deep and mysterious underwater trench.",
+        "locations": [
+          { "locationId": 0, "name": "Entrance", "roomCount": 1, "description": "The entrance to The Trench." },
+          { "locationId": 1, "name": "The Shallows", "roomCount": 50, "description": "The shallow part of the trench." },
+          { "locationId": 2, "name": "The Depths", "roomCount": 50, "description": "The deep part of the trench." },
+          { "locationId": 3, "name": "Obsidian City", "roomCount": 1, "description": "A city made of obsidian." }
+        ],
+        "paths": {
+          "0": [
+            { "regionId": 0, "locationId": 4 },
+            { "regionId": 1, "locationId": 3 },
+            { "regionId": 2, "locationId": 2 }
+          ]
+        }
+      }
+    ]
+  }
+  

@@ -1,6 +1,6 @@
 import { Class, Race, Personality, Item } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
-import { RegionsData } from "../data/region_data.js";
+import { RegionManager } from '../manager/region_manager.js';
 import recipesData from '../json/recipes.json' assert {type: 'json'};
 
 export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
@@ -87,10 +87,10 @@ export function getItemDataById(itemId) {
 
 export function convertNameToRegionId(name) {
     const lowerName = name.toLowerCase();
-    const Regions = RegionsData.Regions;
-    for (const regionKey in Regions) {
-        if (Regions[regionKey].name.toLowerCase() === lowerName) {
-            return Regions[regionKey].id;
+    const regionManager = RegionManager.getInstance();
+    for (const [regionId, region] of regionManager.regions) {
+        if (region.name.toLowerCase() === lowerName) {
+            return region.id;
         }
     }
     console.log(`No region found for the name: ${name}`);
@@ -99,12 +99,12 @@ export function convertNameToRegionId(name) {
 
 export function convertNameToLocationId(name, regionId) {
     const lowerName = name.toLowerCase();
-    const Regions = RegionsData.Regions;
-    const region = Regions[Object.keys(Regions).find(key => Regions[key].id === regionId)];
+    const regionManager = RegionManager.getInstance();
+    const region = regionManager.getRegionById(regionId);
     if (region) {
-        for (const locationKey in region.locations) {
-            if (region.locations[locationKey].name.toLowerCase() === lowerName) {
-                return region.locations[locationKey].id;
+        for (const [locationId, location] of region.locations) {
+            if (location.name.toLowerCase() === lowerName) {
+                return location.locationId;
             }
         }
     }

@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { RegionsData } from '../data/region_data.js';
+import { RegionManager } from '../manager/region_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterRepository } from '../data/repository_character.js';
 
@@ -13,7 +13,12 @@ const moveCommand = async (interaction) => {
 
         const playerMoveManager = PlayerMovementManager.getInstance();
         const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
-        const isValidRoom = RegionsData.isValidRoom(curLocation.regionId, curLocation.locationId);
+
+        const regionManager = RegionManager.getInstance();
+        const currentRegion = regionManager.getRegionById(curLocation.regionId);
+        const currentLocation = currentRegion.getLocation(curLocation.locationId);
+
+        const isValidRoom = currentLocation.roomCount > 1;
 
         if (!isValidRoom) {
             throw new Error('There are no additional rooms to explore in your current location!');
@@ -22,14 +27,14 @@ const moveCommand = async (interaction) => {
         const direction = interaction.options.getInteger('direction');
         let moved = false;
 
-        if (direction === 0) {//Down
+        if (direction === 0) { // Down
             const canMoveDown = playerMoveManager.canMoveDown(interaction.user.id, activeCharacter.id);
             if (!canMoveDown) {
                 throw new Error('You\'ve reached the last room. There\'s no way to move down!');
             }
             playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false, interaction);
             moved = true;
-        } else if (direction === 1) {//Up
+        } else if (direction === 1) { // Up
             const canMoveUp = playerMoveManager.canMoveUp(interaction.user.id, activeCharacter.id);
             if (!canMoveUp) {
                 throw new Error('You are already in the first room. There\'s no way to move up!');
@@ -40,7 +45,7 @@ const moveCommand = async (interaction) => {
 
         if (moved) {
             const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
-            const locationName = RegionsData.getLocationById(newLocation.regionId, newLocation.locationId).name;
+            const locationName = regionManager.getLocationById(newLocation.regionId, newLocation.locationId).name;
 
             let distanceDescription;
             if (newLocation.roomId === 0) {

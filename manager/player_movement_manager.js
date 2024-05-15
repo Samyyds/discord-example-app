@@ -1,4 +1,4 @@
-import { RegionsData } from "../data/region_data.js";
+import { RegionManager } from '../manager/region_manager.js';
 
 class PlayerMovementManager {
     constructor() {
@@ -7,20 +7,17 @@ class PlayerMovementManager {
         }
 
         this.locations = new Map(); // user ID -> Map(character ID -> location)
+        this.regionManager = RegionManager.getInstance(); // 初始化 RegionManager 实例
         PlayerMovementManager.instance = this;
     }
 
     static getInstance() {
-        return PlayerMovementManager.instance || new PlayerMovementManager();
+        if (!PlayerMovementManager.instance) {
+            PlayerMovementManager.instance = new PlayerMovementManager();
+        }
+        return PlayerMovementManager.instance;
     }
 
-    /**
-     * @param {number} userId - The user's ID.
-     * @param {number} characterId - The character's ID.
-     * @param {number} regionId - The worldID where the character is now.
-     * @param {number} locationId - The region ID where the character is now.
-     * @param {number} roomId - The room ID where the character is now.
-     */
     setLocation(userId, characterId, regionId = 0, locationId = 0, roomId = 0) {
         if (!this.locations.has(userId)) {
             this.locations.set(userId, new Map());
@@ -34,7 +31,8 @@ class PlayerMovementManager {
     }
 
     moveRegion(userId, characterId, targetRegionId, targetLocationId) {
-        if (this.canMoveRegion(userId, characterId, targetRegionId, targetLocationId)) {
+        const location = this.getLocation(userId, characterId);
+        if (this.regionManager.canMoveTo(location.regionId, location.locationId, targetRegionId, targetLocationId)) {
             this.setLocation(userId, characterId, targetRegionId, targetLocationId, 0);
             return true;
         } else {
@@ -50,23 +48,10 @@ class PlayerMovementManager {
             return false;
         }
 
-        const currentRegionPaths = RegionsData.changeRegionPaths[location.regionId];
-
-        const currentLocationPaths = currentRegionPaths && currentRegionPaths[location.locationId];
-
-        if (currentLocationPaths.includes(targetRegionId)) {
-            const targetLocation = RegionsData.getLocationById(targetRegionId, targetLocationId);
-            if (targetLocation) {
-                return true;
-            } else {
-                console.error(`Invalid target location ID: ${targetLocationId} for region ID: ${targetRegionId}`);
-            }
-        }
-        return false;
+        return this.regionManager.canMoveTo(location.regionId, location.locationId, targetRegionId, targetLocationId);
     }
 
     moveLocation(userId, characterId, regionId, locationId) {
-        console.log(locationId);
         this.setLocation(userId, characterId, regionId, locationId, 0);
     }
 
@@ -78,8 +63,8 @@ class PlayerMovementManager {
     moveRoom(userId, characterId, isUp, interaction) {
         const location = this.getLocation(userId, characterId);
         if (!location) return;
-        const region = RegionsData.Regions[Object.keys(RegionsData.Regions).find(key => RegionsData.Regions[key].id === location.regionId)];
-        const locationData = region.locations[Object.keys(region.locations).find(key => region.locations[key].id === location.locationId)];
+        const region = this.regionManager.getRegionById(location.regionId);
+        const locationData = region.getLocation(location.locationId);
         const roomCount = locationData.roomCount;
 
         let newRoomId = location.roomId + (isUp ? -1 : 1);
@@ -105,8 +90,8 @@ class PlayerMovementManager {
     canMoveDown(userId, characterId) {
         const location = this.getLocation(userId, characterId);
         if (!location) return false;
-        const region = RegionsData.Regions[Object.keys(RegionsData.Regions).find(key => RegionsData.Regions[key].id === location.regionId)];
-        const locationData = region.locations[Object.keys(region.locations).find(key => region.locations[key].id === location.locationId)];
+        const region = this.regionManager.getRegionById(location.regionId);
+        const locationData = region.getLocation(location.locationId);
         const roomCount = locationData.roomCount;
         return location.roomId < roomCount;
     }
