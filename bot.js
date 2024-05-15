@@ -16,8 +16,8 @@ import { dropCommands } from './commands/command_drop.js';
 import { unequipCommands } from "./commands/command_unequip.js";
 import { equipCommands } from "./commands/command_equip.js";
 import {recipeCommands} from "./commands/command_recipe.js";
-import { handleInventoryInteraction } from './handler/InventoryHandler.js';
-import { handleCharacterInteraction } from "./handler/CharacterHandler.js";
+import { handleInventoryInteraction } from './handler/inventory_handler.js';
+import { handleCharacterInteraction } from "./handler/character_handler.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
