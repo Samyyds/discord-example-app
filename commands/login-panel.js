@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilde
 import Web3Manager from '../web3/web3_manager.js';
 import {userAccounts} from '../data/user_accounts.js';
 import descriptions from '../data/consts.js';
-import { CharacterRepository } from '../data/repository_character.js';
+import { CharacterManager } from '../manager/character_manager.js';
 
 class AccountManagementView {
     constructor(bot) {
@@ -130,7 +130,7 @@ class AccountManagementView {
                 return;
             }
 
-            const charRepo = CharacterRepository.getInstance();
+            const charRepo = CharacterManager.getInstance();
             const activeChar = charRepo.getActiveCharacter(interaction.user.id);
             if (activeChar && activeChar.id) {
                 activeCharacters.set(interaction.user.id, activeChar.id);

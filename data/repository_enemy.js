@@ -1,6 +1,6 @@
-import { CharacterRepository } from "./repository_character";
+import { CharacterManager } from "./repository_character";
 
-class EnemyRepository extends CharacterRepository {
+class EnemyRepository extends CharacterManager {
     constructor() {
 
         super();

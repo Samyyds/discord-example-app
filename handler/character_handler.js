@@ -1,11 +1,11 @@
 import { addCharacterInfoToEmbed } from '../util/util.js';
-import { CharacterRepository } from '../data/repository_character.js';
+import { CharacterManager } from '../manager/character_manager.js';
 import { EmbedBuilder } from 'discord.js';
 
 export async function handleCharacterInteraction(interaction) {
     if (!interaction.isButton()) return false;
 
-    const charRepo = CharacterRepository.getInstance();
+    const charRepo = CharacterManager.getInstance();
     const activeChar = charRepo.getActiveCharacter(interaction.user.id);
 
     if (!activeChar) {

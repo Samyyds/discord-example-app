@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { CharacterRepository, StatContainer } from '../data/repository_character.js';
+import { CharacterManager, StatContainer } from '../manager/character_manager.js';
 import Web3Manager from '../web3/web3_manager.js';
 
 let lastPlayerHp;
@@ -9,7 +9,7 @@ const attackCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
 
-        const characterRepo = CharacterRepository.getInstance();
+        const characterRepo = CharacterManager.getInstance();
         const activeCharId = characterRepo.getActiveCharacter(interaction.user.id).id;
         if (!activeCharId) {
             throw new Error('You do not have an available character!');

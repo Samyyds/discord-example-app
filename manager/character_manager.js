@@ -267,22 +267,22 @@ class Combatant {
     }
 }
 
-class CharacterRepository {
+class CharacterManager {
     constructor() {
-        if (CharacterRepository.instance) {
-            return CharacterRepository.instance;
+        if (CharacterManager.instance) {
+            return CharacterManager.instance;
         }
 
         this.characters = new Map();
         this.activeCharacters = new Map();
-        CharacterRepository.instance = this;
+        CharacterManager.instance = this;
     }
 
     static getInstance() {
-        if (!CharacterRepository.instance) {
-            CharacterRepository.instance = new CharacterRepository();
+        if (!CharacterManager.instance) {
+            CharacterManager.instance = new CharacterManager();
         }
-        return CharacterRepository.instance;
+        return CharacterManager.instance;
     }
 
     addCharacter(userId, character) {
@@ -308,4 +308,4 @@ class CharacterRepository {
     }
 }
 
-export { Character, StatContainer, SkillContainer, CharacterRepository, StatusContainer, Combatant };
+export { Character, StatContainer, SkillContainer, CharacterManager, StatusContainer, Combatant };

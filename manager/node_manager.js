@@ -2,21 +2,21 @@ import Database from "better-sqlite3";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-class NodeRepository {
+class NodeManager {
     constructor() {
-        if (NodeRepository.instance) {
-            return NodeRepository.instance;
+        if (NodeManager.instance) {
+            return NodeManager.instance;
         }
 
         this.nodes = [];
-        NodeRepository.instance = this;
+        NodeManager.instance = this;
     }
 
     static getInstance() {
-        if (!NodeRepository.instance) {
-            NodeRepository.instance = new NodeRepository();
+        if (!NodeManager.instance) {
+            NodeManager.instance = new NodeManager();
         }
-        return NodeRepository.instance;
+        return NodeManager.instance;
     }
 
     loadFromFile() {
@@ -67,6 +67,11 @@ class Node {
         this.description = description;
         this.location = location;
     }
+
+    getLocationParts() {
+        const [regionId, locationId, roomId] = this.location.split('/').map(Number);
+        return { regionId, locationId, roomId };
+    }
 }
 
-export { NodeRepository, Node };
+export { NodeManager, Node };

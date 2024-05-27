@@ -3,7 +3,7 @@ import pkg, { Events } from 'discord.js';
 import { charactercommands } from './commands/commands_character.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
 import { subCommands } from "./commands/command_sub.js";
-import { CharacterRepository } from './data/repository_character.js';
+import { CharacterManager } from './manager/character_manager.js';
 import { goCommands } from './commands/command_go.js';
 import { moveCommands } from './commands/command_move.js';
 import { mapCommands } from './commands/command_map.js';
@@ -71,7 +71,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
   if (interaction.isStringSelectMenu()) {
     const userId = interaction.user.id;
-    const charRepo = CharacterRepository.getInstance();
+    const charRepo = CharacterManager.getInstance();
     const selectedCharacterId = interaction.values[0];
 
     const customId = interaction.customId;

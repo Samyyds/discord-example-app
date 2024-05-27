@@ -7,7 +7,7 @@ class PlayerMovementManager {
         }
 
         this.locations = new Map(); // user ID -> Map(character ID -> location)
-        this.regionManager = RegionManager.getInstance(); // 初始化 RegionManager 实例
+        this.regionManager = RegionManager.getInstance(); 
         PlayerMovementManager.instance = this;
     }
 

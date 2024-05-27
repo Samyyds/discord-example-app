@@ -4,7 +4,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { Class, Race, Personality } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { Character, StatContainer, SkillContainer, CharacterRepository } from '../data/repository_character.js';
+import { Character, StatContainer, SkillContainer, CharacterManager } from '../manager/character_manager.js';
 import { Equipment } from '../data/repository_item.js';
 
 let nextCharacterId = 1;
@@ -23,7 +23,7 @@ const createCommand = async (interaction) => {
 
         const character = createCharacter(userId, charName, className, raceName);
 
-        const characterRepo = CharacterRepository.getInstance();
+        const characterRepo = CharacterManager.getInstance();
         characterRepo.addCharacter(userId, character);
         characterRepo.setActiveCharacter(userId, character.id);
 
@@ -66,7 +66,7 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
 }
 
 const switchCommand = async (interaction) => {
-    const charRepo = CharacterRepository.getInstance();
+    const charRepo = CharacterManager.getInstance();
     const allCharacters = charRepo.getCharactersByUserId(interaction.user.id);
     const activeCharacter = charRepo.getActiveCharacter(interaction.user.id);
     const otherCharacters = allCharacters.filter(character => character.id !== activeCharacter.id);
@@ -103,7 +103,7 @@ const switchCommand = async (interaction) => {
 
 const statusCommand = async (interaction) => {
     try {
-        const charRepo = CharacterRepository.getInstance();
+        const charRepo = CharacterManager.getInstance();
         const characters = charRepo.getCharactersByUserId(interaction.user.id);
 
         if (!characters || characters.length === 0) {

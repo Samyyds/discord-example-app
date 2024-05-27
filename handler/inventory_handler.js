@@ -1,12 +1,12 @@
 import { EmbedBuilder } from 'discord.js';
-import { CharacterRepository } from '../data/repository_character.js';
+import { CharacterManager } from '../manager/character_manager.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
 
 export async function handleInventoryInteraction(interaction) {
     if (!interaction.isButton()) return false;
 
     const userId = interaction.user.id;
-    const characterRepo = CharacterRepository.getInstance();
+    const characterRepo = CharacterManager.getInstance();
     const activeCharacter = characterRepo.getActiveCharacter(userId);
     if (!activeCharacter) {
         await interaction.reply({ content: "You do not have an available character!", ephemeral: true });

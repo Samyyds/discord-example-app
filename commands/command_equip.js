@@ -1,14 +1,14 @@
 import { EmbedBuilder } from 'discord.js';
 import { Items } from "../data/enums.js";
 import { getItemDataById } from '../util/util.js';
-import { CharacterRepository } from '../data/repository_character.js';
+import { CharacterManager } from '../manager/character_manager.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
 
 const equipCommand = async (interaction) => {
     try {
         const object = interaction.options.getString('object').trim().toUpperCase();
 
-        const characterRepo = CharacterRepository.getInstance();
+        const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
             throw new Error('You do not have an available character!');

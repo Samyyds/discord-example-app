@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { CharacterRepository } from '../data/repository_character.js';
+import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { InventoryRepository } from '../data/repository_inventory.js';
 import { Ingredient, ItemRepository } from '../data/repository_item.js';
@@ -11,7 +11,7 @@ const mineCommand = async (interaction) => {
     try {
         const oreName = interaction.options.getString('ore').trim();
 
-        const characterRepo = CharacterRepository.getInstance();
+        const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
             throw new Error('You do not have an available character!');

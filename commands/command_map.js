@@ -1,12 +1,12 @@
 import { EmbedBuilder } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { CharacterRepository } from '../data/repository_character.js';
+import { CharacterManager } from '../manager/character_manager.js';
 import { getRegionNameFromId } from '../data/enums.js';
 import descriptions from '../data/consts.js';
 
 const mapCommand = async (interaction) => {
     try {
-        const characterRepo = CharacterRepository.getInstance();
+        const characterRepo = CharacterManager.getInstance();
         const activeCharId = characterRepo.getActiveCharacter(interaction.user.id).id;
         if (!activeCharId) {
             throw new Error('You do not have an available character!');
