@@ -147,46 +147,50 @@ class Character {
      * @param {number[]} battleBar - The battle bar array.
      * @param {number} lootQuality - The loot quality value.
      */
-    constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality) {
-        const className = Object.keys(Class).find(key => Class[key] === classId);
-        const raceName = Object.keys(Race).find(key => Race[key] === raceId);
-        const personalityName = Object.keys(Personality).find(key => Personality[key] === personalityId);
-
-        const classStats = CLASS_BASE_STATS[className];
-        const classModifiers = CLASS_BASE_STAT_MODIFIERS[className];
-        const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
-        const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
-
+     constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality) {
         this.id = id;
         this.name = name;
+        this.level = level;
         this.classId = classId;
         this.raceId = raceId;
         this.personalityId = personalityId;
-        this.level = level;
         this.xp = xp;
-        this.stats = new StatContainer(
-            Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-            Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-            Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-            Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-            Math.round(classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
-            Math.round(classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
-            Math.round(classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
-            Math.round(classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
-            Math.round(classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),
-            0, // TODO fireATK
-            0, // TODO fireDEF
-            0, // lTODO ightATK
-            0, // TODO lightDEF
-            0, // TODO darkATK
-            0, // TODO darkDEF
-        );
-        console.log(this.stats);
-        this.skills = new SkillContainer();
         this.battleBar = battleBar;
         this.lootQuality = lootQuality;
-        this.equippedItems = {};//eg: {"head": headItem,"body": bodyItem,"weapon": weaponItem}
+
+        if (classId !== null && raceId !== null && personalityId !== null) {
+            const className = Object.keys(Class).find(key => Class[key] === classId);
+            const raceName = Object.keys(Race).find(key => Race[key] === raceId);
+            const personalityName = Object.keys(Personality).find(key => Personality[key] === personalityId);
+
+            const classStats = CLASS_BASE_STATS[className];
+            const classModifiers = CLASS_BASE_STAT_MODIFIERS[className];
+            const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
+            const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
+
+            this.stats = new StatContainer(
+                Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
+                Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
+                Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
+                Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
+                Math.round(classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
+                Math.round(classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
+                Math.round(classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
+                Math.round(classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
+                Math.round(classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),
+                0, // TODO fireATK
+                0, // TODO fireDEF
+                0, // lTODO ightATK
+                0, // TODO lightDEF
+                0, // TODO darkATK
+                0, // TODO darkDEF
+            );
+        } else {
+            this.stats = new StatContainer(); 
+        }
+        this.skills = new SkillContainer(); 
         this.status = new StatusContainer(); 
+        this.equippedItems = {};
     }
 
     equipItem(item) {

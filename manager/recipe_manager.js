@@ -1,18 +1,18 @@
-class RecipeRepository {
+class RecipeManager {
     constructor() {
-        if (RecipeRepository.instance) {
-            return RecipeRepository.instance;
+        if (RecipeManager.instance) {
+            return RecipeManager.instance;
         }
 
         this.recipes = new Map();//userID -> （characterId -> recipes)
-        RecipeRepository.instance = this;
+        RecipeManager.instance = this;
     }
 
     static getInstance() {
-        if (!RecipeRepository.instance) {
-            RecipeRepository.instance = new RecipeRepository();
+        if (!RecipeManager.instance) {
+            RecipeManager.instance = new RecipeManager();
         }
-        return RecipeRepository.instance;
+        return RecipeManager.instance;
     }
 
     getCharRecipes(userId, characterId) {
@@ -40,4 +40,4 @@ class RecipeRepository {
         }
     }
 }
-export { RecipeRepository };
+export { RecipeManager };

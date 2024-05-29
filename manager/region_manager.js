@@ -30,7 +30,15 @@ class RegionManager {
         return this.regions.get(regionId).getLocation(locationId);
     }
 
-    initializeFromJson() {
+    getRoomByLocation(regionId, locationId, roomId) {
+        const location = this.getLocationById(regionId, locationId);
+        if (location) {
+            return location.getRoom(roomId);
+        }
+        return null;
+    }
+
+    loadFromJson() {
         const regionManager = RegionManager.getInstance();
 
         regionData.regions.forEach(regionData => {

@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
-import { RecipeRepository } from '../data/repository_recipe.js';
+import { RecipeManager } from '../manager/recipe_manager.js';
 import { recipesParser } from '../util/util.js';
 
 const recipeCommand = async (interaction) => {
@@ -11,7 +11,7 @@ const recipeCommand = async (interaction) => {
             throw new Error('You do not have an available character!');
         }
 
-        const recipeRepo = RecipeRepository.getInstance();
+        const recipeRepo = RecipeManager.getInstance();
 
         //give player free recipes, this is only for test
         recipeRepo.addRecipe(interaction.user.id, activeCharacter.id, 1);
