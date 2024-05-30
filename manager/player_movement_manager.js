@@ -69,13 +69,13 @@ class PlayerMovementManager {
 
         let newRoomId = location.roomId + (isUp ? -1 : 1);
 
-        const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
-        console.log(`hasSubscriberRole: ${hasSubscriberRole}`);
-        console.log(`locationData.name: ${locationData.name}`);
-        console.log(`newRoomId: ${newRoomId}`);
-        if (!hasSubscriberRole && locationData.name === 'Jungle' && newRoomId > 1) {
-            throw new Error('Oops! Please upgrade your account to explore further.');
-        }
+        // const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
+        // console.log(`hasSubscriberRole: ${hasSubscriberRole}`);
+        // console.log(`locationData.name: ${locationData.name}`);
+        // console.log(`newRoomId: ${newRoomId}`);
+        // if (!hasSubscriberRole && locationData.name === 'Jungle' && newRoomId > 1) {
+        //     throw new Error('Oops! Please upgrade your account to explore further.');
+        // }
 
         if ((isUp && newRoomId >= 0) || (!isUp && newRoomId < roomCount)) {
             this.setLocation(userId, characterId, location.regionId, location.locationId, newRoomId);

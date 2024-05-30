@@ -17,14 +17,14 @@ function initializeGame(){
 
             const enemyTypes = enemyManager.getEnemiesForLocation(region.id, location.locationId);
 
-            for (let roomId = 1; roomId <= location.roomCount; roomId++) {
+            for (let roomId = 0; roomId <= location.roomCount; roomId++) {
                 const room = location.getRoom(roomId);
                 room.spawnEnemies(enemyTypes);
             }
         });
     });
     
-    const enemies = regionManager.getRoomByLocation(0, 5, 1).getEnemies();
+    const enemies = regionManager.getRoomByLocation(0, 5, 0).getEnemies();
     console.log(`Enemies in room: ${enemies.map(enemy => enemy.name).join(', ')}`);
 }
 

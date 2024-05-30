@@ -27,7 +27,7 @@ class Location {
     }
 
     initializeRooms() {
-        for (let roomId = 1; roomId <= this.roomCount; roomId++) {
+        for (let roomId = 0; roomId <= this.roomCount; roomId++) {
             this.generateRoom(roomId);
         }
     }
@@ -74,7 +74,7 @@ class Room {
         const maxEnemies = 5;
         const currentFloor = this.roomId;
 
-        // 首先处理优先级敌人和唯一敌人
+        // 处理优先级敌人和唯一敌人
         const priorityEnemies = enemyTypes.filter(enemy => enemy.isPriority && (!enemy.fixedRooms || enemy.fixedRooms.includes(currentFloor)));
         const uniqueEnemies = enemyTypes.filter(enemy => enemy.isUnique && (!enemy.fixedRooms || enemy.fixedRooms.includes(currentFloor)));
 

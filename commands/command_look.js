@@ -1,8 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { ItemRepository } from '../data/repository_item.js';
-import rooms from '../json/rooms.json' assert { type: 'json' };
+import { RegionManager } from "../manager/region_manager.js";
 
 const lookCommand = async (interaction) => {
     try {
@@ -16,31 +15,42 @@ const lookCommand = async (interaction) => {
         const activeCharId = activeCharacter.id;
 
         const playerMoveManager = PlayerMovementManager.getInstance();
-        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
+        const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
+
+        const regionManager = RegionManager.getInstance();
+        const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
+        if (!room) {
+            throw new Error(`Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
+        }
+        const enemies = room.getEnemies();
 
         let description = '';
-        const itemRepo = ItemRepository.getInstance();
 
         if (objectName) {
-            const itemCount = itemRepo.getItemCountByName(regionId, roomId, objectName);
-            if (itemCount > 0) {
-                // const itemDes = getItemDescriptionByName(objectName, itemCount);
-                const itemDes = itemRepo.getItemByName(regionId, roomId, objectName).description;
-                description += `\n${itemDes}`;
-            } else {
-                description += "\nItem not found or not available in this location.";
-            }
-        } else {
-            const roomDes = getRoomDescriptionById(regionId, roomId) || 'You find yourself in an unremarkable location.';
-            description = roomDes;
+            const enemy = enemies.find(enemy => enemy.name.toLowerCase() === objectName.toLowerCase());
+            if (enemy) {
+                description += enemy.description;
 
-            const itemsInLocation = itemRepo.getItemsInLocation(regionId, roomId).filter(({ quantity }) => quantity > 0);
-            if (itemsInLocation.length > 0) {
-                const itemsDescription = itemsInLocation.map(({ item, quantity }) => {
-                    const toBeMinedText = item.type === "Ore" ? " to be mined" : "";
-                    return `You see ${item.name}*${quantity}${toBeMinedText}`;
-                }).join("\n");
-                description += `\n${itemsDescription}`;
+            } else {
+                description = `${objectName} not found.`;
+            }
+
+        } else {
+            if (roomId < 1) {
+                const location = regionManager.getLocationById(regionId, locationId);
+                description += `${location.description}\n`;
+            }
+
+            if (enemies.length > 0) {
+                const enemyCounts = enemies.reduce((acc, enemy) => {
+                    acc[enemy.name] = (acc[enemy.name] || 0) + 1;
+                    return acc;
+                }, {});
+
+                description += 'You see the following enemies:\n';
+                for (const [enemyName, count] of Object.entries(enemyCounts)) {
+                    description += `${enemyName} x${count}\n`;
+                }
             }
         }
 
@@ -52,11 +62,6 @@ const lookCommand = async (interaction) => {
         console.error('Error in lookCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
-}
-
-function getRoomDescriptionById(regionId, roomId) {
-    const room = rooms.find(room => room.regionId === regionId && room.roomId === roomId);
-    return room ? room.description : null;
 }
 
 export const lookCommands = {
