@@ -135,7 +135,6 @@ const attackCommand = new SlashCommandBuilder()
       .setDescription('The name of the enemy you want to have a fight with')
       .setRequired(true));
 
-
 const recipeCommand = new SlashCommandBuilder()
       .setName('recipe')
       .setDescription('Displays recipes available to your character.');

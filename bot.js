@@ -8,6 +8,7 @@ import { goCommands } from './commands/command_go.js';
 import { moveCommands } from './commands/command_move.js';
 import { mapCommands } from './commands/command_map.js';
 import { lookCommands } from './commands/command_look.js';
+import { attackCommands } from "./commands/command_attack.js";
 import { takeCommands } from './commands/command_take.js';
 import { mineCommands } from "./commands/command_mine.js";
 import { initializeGame } from './commands/game_initializer.js';
@@ -15,9 +16,10 @@ import { inventoryCommands } from './commands/command_inventory.js';
 import { dropCommands } from './commands/command_drop.js';
 import { unequipCommands } from "./commands/command_unequip.js";
 import { equipCommands } from "./commands/command_equip.js";
-import {recipeCommands} from "./commands/command_recipe.js";
+import { recipeCommands } from "./commands/command_recipe.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
+import { handleAttackInteraction } from "./handler/attack_handler.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
@@ -159,7 +161,10 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleInventoryInteraction(interaction);
     } else if (interaction.customId.startsWith('show_')) {
       await handleCharacterInteraction(interaction);
-    } else {
+    } else if (interaction.customId.startsWith('attack_')) {
+      await handleAttackInteraction(interaction);
+    }
+    else {
       console.log('Unrecognized button interaction:', interaction.customId);
       await interaction.reply({ content: "I'm not sure what this button is for!", ephemeral: true });
     }

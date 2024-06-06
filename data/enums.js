@@ -3,7 +3,7 @@ export const Regions = {
     'NYRA': 1,
     'ISFJALL': 2,
     'THE_TRENCH': 3
-}
+};
 
 export const MokuahLocations = {
     'VILLAGE CENTER': 0,
@@ -13,7 +13,7 @@ export const MokuahLocations = {
     'DOCK': 4,
     'JUNGLE': 5,
     'VOLCANO': 6
-}
+};
 
 export const NyraLocations = {
     'TOWN': 0,
@@ -21,21 +21,21 @@ export const NyraLocations = {
     'TAVERN': 2,
     'BEACH': 3,
     'LABYRINTH': 4
-}
+};
 
 export const IsfjallLocations = {
     'CITY_CENTER': 0,
     'BLACKSMITH': 1,
     'DOCK': 2,
     'TUNDRA': 3
-}
+};
 
 export const TheTrenchLocations = {
     'TRENCH_ENTRANCE': 0,
     'THE_SHALLOWS': 1,
     'THE_DEPTHS': 2,
     'OBSIDIAN_CITY': 3
-}
+};
 
 export const Class = {
     "WARRIOR": 0,
@@ -62,12 +62,19 @@ export const Personality = {
     "WISE": 2
 };
 
+export const Ability = {
+    "SMASH": 0,
+    "SLICE": 1,
+    "FORTIFY": 2,
+    "RESTORE": 3
+};
+
 export const ItemType = {
     "MATERIAL": 0,
     "GEAR": 1,
     "CONSUMABLE": 2,
     "KEY": 3
-}
+};
 
 export const Rarity = {
     "RUSTED_JUNK": 0,
@@ -79,7 +86,7 @@ export const Rarity = {
     "ENTHEAT": 6,
     "HALLOWED": 7,
     "APOCRYPHAL": 8
-}
+};
 
 export const Skill = {
     "BREWING": 0,
@@ -90,13 +97,13 @@ export const Skill = {
     "MINING": 5,
     "SMITHING": 6,
     "WATERBREATHING": 7
-}
+};
 
 export const NodeType = {
     "MINING": 0,
     "GATHERING": 1,
     "FISHING": 2
-}
+};
 
 export const Item = {
     "SALVAGE": 0,
@@ -107,7 +114,7 @@ export const Item = {
     "KELP": 5,
     "CRAB": 6,
     "BOILED_CRAB_W/_DICED_KELP": 7
-}
+};
 
 export const Items = {}
 
@@ -115,7 +122,7 @@ export const Slot = {
     "Head": 0,
     "Body": 1,
     "Weapon": 2
-}
+};
 
 export function getLocationFromInput(regionNameInput, roomNameInput) {
     const regionName = regionNameInput.trim().toUpperCase();
