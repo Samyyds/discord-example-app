@@ -79,7 +79,7 @@ class Room {
         const uniqueEnemies = enemyTypes.filter(enemy => enemy.isUnique && (!enemy.fixedRooms || enemy.fixedRooms.includes(currentFloor)));
 
         if (priorityEnemies.length > 0) {
-            this.enemies.push(priorityEnemies[0]); // 生成第一个优先级敌人
+            this.enemies.push(priorityEnemies[0]);
         } else {
             uniqueEnemies.forEach(enemy => {
                 if (!enemyManager.uniqueEnemies.has(enemy.id)) {

@@ -47,7 +47,7 @@
           { "locationId": 0, "name": "City Center", "roomCount": 1, "description": "The center of the city." },
           { "locationId": 1, "name": "Blacksmith", "roomCount": 1, "description": "A place to forge weapons and armor." },
           { "locationId": 2, "name": "Dock", "roomCount": 1, "description": "The dock of Isfjall." },
-          { "locationId": 3, "name": "Tundra", "roomCount": 1, "description": "A vast and frozen tundra." }
+          { "locationId": 3, "name": "Tundra", "roomCount": 100, "description": "A vast and frozen tundra." }
         ],
         "paths": {
           "2": [

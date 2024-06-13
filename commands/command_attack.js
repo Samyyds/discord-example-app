@@ -11,7 +11,7 @@ const AbilityDetails = {
 const attackCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
-
+        
         const characterRepo = CharacterManager.getInstance();
         const activeChar = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeChar) {
@@ -101,7 +101,7 @@ export async function sendCombatLog(interaction, combatLog) {
     for (let i = 0; i < combatLog.length; i++) {
         const embed = new EmbedBuilder().setDescription(combatLog[i]).setColor(0xff0000);
         await interaction.followUp({ embeds: [embed], ephemeral: true });
-        await new Promise(resolve => setTimeout(resolve, 2000)); // 2s
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1s
     }
 }
 

@@ -63,10 +63,29 @@ export const Personality = {
 };
 
 export const Ability = {
-    "SMASH": 0,
-    "SLICE": 1,
-    "FORTIFY": 2,
-    "RESTORE": 3
+    "PUNCH": 0,
+    "DRAIN": 1,
+    "BITE": 2,
+    "SLASH": 3,
+    "MARTIAL_STRIKE":4,
+    "DISARM":5,
+    "FORTIFY":6,
+    "BREAKOUT":7,
+    "SAVAGE_STRIKES":8,
+    "FURY":9,
+    "FRENZY":10,
+    "BLOOD_FRENZY":11,
+    "SPIRITBLADE":12,
+    "ARCANE_BARRIER":13,
+    "FIREBALL":14,
+    "INCINERATE":15,
+    "CHILLING_BLAST":16,
+    "ICE_SPEAR":17,
+    "NOXIOUS_CLOUD":18,
+    "PUTREFY":19,
+    "THUNDERCLAP":20,
+    "ELECTRIC_WHIP":21,
+    "NIMBLE":22
 };
 
 export const ItemType = {
