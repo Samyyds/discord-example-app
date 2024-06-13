@@ -54,7 +54,10 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
         [],
         1
     );
-     
+
+    const characterManager = CharacterManager.getInstance();
+    characterManager.assignAbilitiesToCharacter(character);
+
     const itemData = itemsData.find(item => item.id === "weap_001_shortsword");
     const initSword = new Equipment(itemData);
     character.equipItem(initSword);
@@ -118,9 +121,9 @@ const statusCommand = async (interaction) => {
         }
 
         let embed = new EmbedBuilder()
-        .setColor(0x00AE86)
-        .setTitle("Character Information")
-        .setDescription("Click the buttons below to view detailed information about your character.");
+            .setColor(0x00AE86)
+            .setTitle("Character Information")
+            .setDescription("Click the buttons below to view detailed information about your character.");
 
         const buttonRow = new ActionRowBuilder()
             .addComponents(
@@ -135,6 +138,10 @@ const statusCommand = async (interaction) => {
                 new ButtonBuilder()
                     .setCustomId('show_skills')
                     .setLabel('Skills')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('show_abilities')
+                    .setLabel('Abilities')
                     .setStyle(ButtonStyle.Primary),
             );
 

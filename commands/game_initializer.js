@@ -1,5 +1,6 @@
 import { RegionManager } from "../manager/region_manager.js";
 import { EnemyManager } from '../manager/enemy_manager.js';
+import { CharacterManager } from "../manager/character_manager.js";
 
 function initializeGame(){
     //initialize region
@@ -9,6 +10,11 @@ function initializeGame(){
     //initialize enemy
     const enemyManager = EnemyManager.getInstance();
     enemyManager.loadFromDB();
+
+    //initialize abilities
+    const characterManager = CharacterManager.getInstance();
+    characterManager.loadFromDB();
+    //console.log('Abilities loaded:', characterManager.abilities);
 
     //generate enemies
     regionManager.regions.forEach(region => {
@@ -25,7 +31,7 @@ function initializeGame(){
     });
     
     const enemies = regionManager.getRoomByLocation(0, 5, 0).getEnemies();
-    console.log(`Enemies in room: ${enemies.map(enemy => enemy.name).join(', ')}`);
+    //console.log(`Enemies in room: ${enemies.map(enemy => enemy.name).join(', ')}`);
 }
 
 // function loadNodesFromDB(){

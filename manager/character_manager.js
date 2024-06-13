@@ -1,5 +1,8 @@
 import { increaseXp } from '../util/util.js';
 import { Class, Race, Personality } from '../data/enums.js';
+import Database from "better-sqlite3";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const CLASS_BASE_STATS = {
     'NO_CLASS': { hp: 100, mp: 100, spd: 100, physicalATK: 100, physicalDEF: 100, magicATK: 100, magicDEF: 100 },
@@ -146,8 +149,9 @@ class Character {
      * @param {SkillContainer} skills - The skills container for the character.
      * @param {number[]} battleBar - The battle bar array.
      * @param {number} lootQuality - The loot quality value.
+     * @param {number[]} abilities - The available abilities that character has.
      */
-     constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality) {
+     constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities) {
         this.id = id;
         this.name = name;
         this.level = level;
@@ -157,6 +161,7 @@ class Character {
         this.xp = xp;
         this.battleBar = battleBar;
         this.lootQuality = lootQuality;
+        this.abilities = abilities;
 
         if (classId !== null && raceId !== null && personalityId !== null) {
             const className = Object.keys(Class).find(key => Class[key] === classId);
@@ -279,6 +284,7 @@ class CharacterManager {
 
         this.characters = new Map();
         this.activeCharacters = new Map();
+        this.abilities = {};
         CharacterManager.instance = this;
     }
 
@@ -309,6 +315,58 @@ class CharacterManager {
         const activeCharacterId = this.activeCharacters.get(userId);
         const characters = this.getCharactersByUserId(userId);
         return characters.find(character => character.id === Number(activeCharacterId));
+    }
+
+    loadFromDB() {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        console.log('Current Directory:', __dirname); 
+        const dbPath = path.join(__dirname, '../db/merfolk_and_magic_db.db');
+        console.log('Database Path:', dbPath); 
+        const db = new Database(dbPath, { verbose: console.log });
+
+        try {
+            const stmt = db.prepare('SELECT * FROM Abilities');
+            const rows = stmt.all();
+
+            this.abilities = rows.reduce((acc, row) => {
+                acc[row.ID] = {
+                    id: row.ID,
+                    name: row.NAME,
+                    mp_cost: row.MP_COST,
+                    is_passive: row.IS_PASSIVE,
+                    item_restriction: row.ITEM_RESTRICTION,
+                    class_restriction: row.CLASS_RESTRICTION,
+                    level_restriction: row.LEVEL_RESTRICTION,
+                    override: row.OVERRIDE
+                };
+                return acc;
+            }, {});
+
+        } catch (error) {
+            console.error('Error loading abilities from database:', error);
+        } finally {
+            db.close();
+        }
+    }
+
+    assignAbilitiesToCharacter(character) {
+        character.abilities = Object.values(this.abilities).filter(ability => {
+            return this.isAbilityAvailable(character, ability);
+        }).map(ability => ability.id);
+    }
+
+    isAbilityAvailable(character, ability) {
+        if (ability.level_restriction && character.level < ability.level_restriction) {
+            return false;
+        }
+        if (ability.class_restriction && character.classId !== ability.class_restriction) {
+            return false;
+        }
+        if (ability.item_restriction && !character.isEquipped(ability.item_restriction)) {
+            return false;
+        }
+        return true;
     }
 }
 

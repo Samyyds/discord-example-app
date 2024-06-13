@@ -26,6 +26,9 @@ export async function handleCharacterInteraction(interaction) {
         case 'show_skills':
             infoType = 'skills';
             break;
+        case 'show_abilities':
+            infoType = 'abilities';
+            break;   
     }
 
     embed = addCharacterInfoToEmbed(activeChar, embed, infoType);

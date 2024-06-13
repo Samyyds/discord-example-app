@@ -22,9 +22,7 @@ class NodeManager {
     loadFromDB() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        console.log('Current Directory:', __dirname); 
         const dbPath = path.join(__dirname, '../db/merfolk_and_magic_db.db');
-        console.log('Database Path:', dbPath); 
         const db = new Database(dbPath, { verbose: console.log });
 
         try {

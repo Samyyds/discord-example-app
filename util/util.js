@@ -1,4 +1,4 @@
-import { Class, Race, Personality, Item } from '../data/enums.js';
+import { Class, Race, Personality, Item, Ability } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { RegionManager } from '../manager/region_manager.js';
 import recipesData from '../json/recipes.json' assert {type: 'json'};
@@ -68,11 +68,26 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
                 description += `${skill.charAt(0).toUpperCase() + skill.slice(1)}: \nLevel: ${skillData.level}\nXP: ${createProgressBar(skillXpInfo.newXp, skillXpInfo.xpForNextLevel)}\n`;
             });
             break;
+        case 'abilities':
+            description += "\n**Abilities:**\n";
+            activeChar.abilities.forEach(abilityId => {
+                description += `${formatAbilityName(abilityId)}\n`;
+            });
+            break;
         default:
             description = 'No information available.';
     }
     embed.setDescription(description);
     return embed;
+}
+
+export function formatAbilityName(abilityId) {
+    for (const [key, value] of Object.entries(Ability)) {
+        if (value === abilityId) {
+            return key.toLowerCase().replace(/_/g, ' ');
+        }
+    }
+    return 'Unknown Ability';
 }
 
 export function getKeyByValue(enumObj, value) {
