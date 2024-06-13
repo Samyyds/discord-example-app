@@ -4,9 +4,13 @@ import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { RegionManager } from "../manager/region_manager.js";
 import { Ability } from "../data/enums.js";
 
-const AbilityDetails = {
-    0: { name: 'Smash', intensity: 150, mpCost: 0 }
+export const AbilityDetails = {
+    1: { name: 'Punch', mpCost: 0 },
+    2: { name: 'Drain', mpCost: 0 },
+    3: { name: 'Bite', mpCost: 0 },
+    4: { name: 'Slash', mpCost: 0 },
 };
+
 
 const attackCommand = async (interaction) => {
     try {
@@ -63,38 +67,70 @@ export function turnBasedCombat(player, enemy, abilityIndex) {
 
     player.stats.mp -= ability.mpCost;
 
-    const applicatorATK = player.stats.physicalATK;
-    const receiverDEF = enemy.stats.physicalDEF;
-    const damageReduction = 1 - (receiverDEF / 300);
-    let damage = applicatorATK * damageReduction;
-    damage *= (ability.intensity / 100);
-    enemy.stats.hp -= damage;
+    console.log(`[Combat Log] ${player.name}'s MP after using ${ability.name}: ${player.stats.mp}`);
+
+    let damage = 0;
+    const abilityName = ability.name.toLowerCase().replace(/\s/g, '_');
+
+    switch (abilityName) {
+        case 'punch':
+            damage = handlePhysicalAttack(player, enemy, 80);
+            break;
+        case 'drain':
+            damage = handleMagicalAttack(player, enemy, 80);
+            break;
+        case 'bite':
+            damage = handlePhysicalAttack(player, enemy, 100);
+            break;
+        case 'slash':
+            damage = handlePhysicalAttack(player, enemy, 100);
+            break;
+        default:
+            combatLog.push('Ability effect not implemented.');
+            return combatLog;
+    }
 
     combatLog.push(`${player.name} used ${ability.name} on ${enemy.name}.`);
-    combatLog.push(`${enemy.name} took ${damage.toFixed(2)} damage.`);
+    combatLog.push(`${enemy.name} took ${damage.toFixed(2)} damage. Remaining HP: ${enemy.stats.hp}`);
 
     if (enemy.stats.hp <= 0) {
         combatLog.push(`${enemy.name} is defeated!`);
         return combatLog;
     }
 
-    const enemyAbilityIndex = Ability.SMASH;
+    const enemyAbilityIndex = 1; // Default enemy ability 
     const enemyAbility = AbilityDetails[enemyAbilityIndex];
-    const enemyATK = enemy.stats.physicalATK;
-    const playerDEF = player.stats.physicalDEF;
-    const enemyDamageReduction = 1 - (playerDEF / 300);
-    let enemyDamage = enemyATK * enemyDamageReduction;
-    enemyDamage *= (enemyAbility.intensity / 100);
-    player.stats.hp -= enemyDamage;
+    const enemyDamage = handlePhysicalAttack(enemy, player, 80);
 
     combatLog.push(`${enemy.name} used ${enemyAbility.name} on ${player.name}.`);
-    combatLog.push(`${player.name} took ${enemyDamage.toFixed(2)} damage.`);
+    combatLog.push(`${player.name} took ${enemyDamage.toFixed(2)} damage. Remaining HP: ${player.stats.hp}`);
 
     if (player.stats.hp <= 0) {
         combatLog.push(`${player.name} is defeated!`);
     }
 
     return combatLog;
+}
+
+
+function handlePhysicalAttack(applicator, receiver, intensity) {
+    const applicatorATK = applicator.stats.physicalATK;
+    const receiverDEF = receiver.stats.physicalDEF;
+    const damageReduction = 1 - (receiverDEF / 300);
+    let damage = applicatorATK * damageReduction;
+    damage *= (intensity / 100);
+    receiver.stats.hp -= damage;
+    return damage;
+}
+
+function handleMagicalAttack(applicator, receiver, intensity) {
+    const applicatorMAG = applicator.stats.magicATK;
+    const receiverMDEF = receiver.stats.magicDEF;
+    const magDamageReduction = 1 - (receiverMDEF / 300);
+    let damage = applicatorMAG * magDamageReduction;
+    damage *= (intensity / 100);
+    receiver.stats.hp -= damage;
+    return damage;
 }
 
 export async function sendCombatLog(interaction, combatLog) {
@@ -106,12 +142,17 @@ export async function sendCombatLog(interaction, combatLog) {
 }
 
 export async function sendAbilityButtons(interaction, player, enemy) {
-    const smashButton = new ButtonBuilder()
-        .setCustomId(`attack_smash_${enemy.name}`)
-        .setLabel('Smash')
-        .setStyle(ButtonStyle.Primary);
+    const actionRow = new ActionRowBuilder();
 
-    const actionRow = new ActionRowBuilder().addComponents(smashButton);
+    player.abilities.forEach(abilityId => {
+        const ability = AbilityDetails[abilityId];
+        const abilityButton = new ButtonBuilder()
+            .setCustomId(`attack_${ability.name.toLowerCase().replace(/\s/g, '_')}_${enemy.name}`)
+            .setLabel(ability.name)
+            .setStyle(ButtonStyle.Primary);
+
+        actionRow.addComponents(abilityButton);
+    });
 
     const embed = new EmbedBuilder()
         .setTitle(`Combat with ${enemy.name}`)
@@ -120,6 +161,7 @@ export async function sendAbilityButtons(interaction, player, enemy) {
 
     await interaction.followUp({ embeds: [embed], components: [actionRow], ephemeral: true });
 }
+
 
 export const attackCommands = {
     attack: attackCommand
