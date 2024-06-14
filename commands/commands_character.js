@@ -6,6 +6,7 @@ import itemsData from '../json/items.json' assert { type: 'json' };
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { Character, StatContainer, SkillContainer, CharacterManager } from '../manager/character_manager.js';
 import { Equipment } from '../data/repository_item.js';
+import { AbilityManager } from '../manager/ability_manager.js';
 
 let nextCharacterId = 1;
 
@@ -55,8 +56,8 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
         1
     );
 
-    const characterManager = CharacterManager.getInstance();
-    characterManager.assignAbilitiesToCharacter(character);
+    const abilityManager = AbilityManager.getInstance();
+    abilityManager.assignAbilitiesToCharacter(character);
 
     const itemData = itemsData.find(item => item.id === "weap_001_shortsword");
     const initSword = new Equipment(itemData);

@@ -3,7 +3,7 @@ import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { turnBasedCombat, sendCombatLog, sendAbilityButtons } from "../commands/command_attack.js";
-import { AbilityDetails } from "../commands/command_attack.js";
+import { AbilityManager } from '../manager/ability_manager.js'; 
 
 export async function handleAttackInteraction(interaction) {
     if (!interaction.isButton()) return false;
@@ -41,14 +41,16 @@ export async function handleAttackInteraction(interaction) {
             return;
         }
 
+        const abilityManager = AbilityManager.getInstance();
+        const ability = abilityManager.getAbilityByName(abilityKey.replace('_', ' '));
+
         switch (fullAction) {
             case `attack_punch`:
             case `attack_drain`:
             case `attack_bite`:
             case `attack_slash`:
-                const abilityIndex = Object.keys(AbilityDetails).find(key => AbilityDetails[key].name.toLowerCase().replace(/\s/g, '_') === abilityKey.toLowerCase());
-                console.log(`abilityIndex: ${abilityIndex}`);
-                const combatLog = turnBasedCombat(activeChar, enemy, parseInt(abilityIndex));
+
+                const combatLog = turnBasedCombat(activeChar, enemy, ability.id);
                 await sendCombatLog(interaction, combatLog);
 
                 if (activeChar.stats.hp > 0 && enemy.stats.hp > 0) {

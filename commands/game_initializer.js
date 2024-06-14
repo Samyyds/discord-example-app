@@ -1,6 +1,6 @@
 import { RegionManager } from "../manager/region_manager.js";
 import { EnemyManager } from '../manager/enemy_manager.js';
-import { CharacterManager } from "../manager/character_manager.js";
+import { AbilityManager } from "../manager/ability_manager.js";
 
 function initializeGame(){
     //initialize region
@@ -12,9 +12,9 @@ function initializeGame(){
     enemyManager.loadFromDB();
 
     //initialize abilities
-    const characterManager = CharacterManager.getInstance();
-    characterManager.loadFromDB();
-    //console.log('Abilities loaded:', characterManager.abilities);
+    const abilityManager = AbilityManager.getInstance();
+    abilityManager.loadFromDB();
+    //console.log('Abilities loaded:', abilityManager.abilities);
 
     //generate enemies
     regionManager.regions.forEach(region => {

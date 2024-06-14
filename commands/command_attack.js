@@ -2,15 +2,7 @@ import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'disc
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { RegionManager } from "../manager/region_manager.js";
-import { Ability } from "../data/enums.js";
-
-export const AbilityDetails = {
-    1: { name: 'Punch', mpCost: 0 },
-    2: { name: 'Drain', mpCost: 0 },
-    3: { name: 'Bite', mpCost: 0 },
-    4: { name: 'Slash', mpCost: 0 },
-};
-
+import { AbilityManager } from "../manager/ability_manager.js";
 
 const attackCommand = async (interaction) => {
     try {
@@ -51,9 +43,10 @@ const attackCommand = async (interaction) => {
     }
 }
 
-export function turnBasedCombat(player, enemy, abilityIndex) {
+export function turnBasedCombat(player, enemy, abilityId) {
     const combatLog = [];
-    const ability = AbilityDetails[abilityIndex];
+    const abilityManager = AbilityManager.getInstance();
+    const ability = abilityManager.getAbilityById(abilityId);
 
     if (!ability) {
         combatLog.push('Invalid ability index.');
@@ -70,20 +63,14 @@ export function turnBasedCombat(player, enemy, abilityIndex) {
     console.log(`[Combat Log] ${player.name}'s MP after using ${ability.name}: ${player.stats.mp}`);
 
     let damage = 0;
-    const abilityName = ability.name.toLowerCase().replace(/\s/g, '_');
-
-    switch (abilityName) {
+    switch (ability.name.toLowerCase().replace(/\s/g, '_')) {
         case 'punch':
-            damage = handlePhysicalAttack(player, enemy, 80);
+        case 'bite':
+        case 'slash':
+            damage = handlePhysicalAttack(player, enemy, ability.intensity);
             break;
         case 'drain':
-            damage = handleMagicalAttack(player, enemy, 80);
-            break;
-        case 'bite':
-            damage = handlePhysicalAttack(player, enemy, 100);
-            break;
-        case 'slash':
-            damage = handlePhysicalAttack(player, enemy, 100);
+            damage = handleMagicalAttack(player, enemy, ability.intensity);
             break;
         default:
             combatLog.push('Ability effect not implemented.');
@@ -98,9 +85,9 @@ export function turnBasedCombat(player, enemy, abilityIndex) {
         return combatLog;
     }
 
-    const enemyAbilityIndex = 1; // Default enemy ability 
-    const enemyAbility = AbilityDetails[enemyAbilityIndex];
-    const enemyDamage = handlePhysicalAttack(enemy, player, 80);
+    const enemyAbilityId = 1; // Default enemy ability 
+    const enemyAbility = abilityManager.getAbilityById(enemyAbilityId);
+    const enemyDamage = handlePhysicalAttack(enemy, player, enemyAbility.intensity);
 
     combatLog.push(`${enemy.name} used ${enemyAbility.name} on ${player.name}.`);
     combatLog.push(`${player.name} took ${enemyDamage.toFixed(2)} damage. Remaining HP: ${player.stats.hp}`);
@@ -143,9 +130,11 @@ export async function sendCombatLog(interaction, combatLog) {
 
 export async function sendAbilityButtons(interaction, player, enemy) {
     const actionRow = new ActionRowBuilder();
-
+    
+    const abilityManager = AbilityManager.getInstance();
+    
     player.abilities.forEach(abilityId => {
-        const ability = AbilityDetails[abilityId];
+        const ability = abilityManager.getAbilityById(abilityId);
         const abilityButton = new ButtonBuilder()
             .setCustomId(`attack_${ability.name.toLowerCase().replace(/\s/g, '_')}_${enemy.name}`)
             .setLabel(ability.name)
