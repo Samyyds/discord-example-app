@@ -1,3 +1,5 @@
+import { Enemy } from "../manager/enemy_manager.js";
+
 class Region {
     constructor(id, name, description) {
         this.id = id;
@@ -59,63 +61,75 @@ class Room {
         this.hasEnemy = hasEnemy;
         this.description = description;
         this.enemies = [];
+        this.uniqueEnemiesSpawned = new Set();
     }
 
     calculateAttenuatedWeight(weight, attenuation, floor) {
         return weight * Math.pow(attenuation, floor);
     }
 
-    spawnEnemies(enemyTypes) {
-        if (!enemyTypes || enemyTypes.length === 0) {
+    spawnEnemies(enemyTemplates) {
+        if (!enemyTemplates || enemyTemplates.length === 0) {
             this.hasEnemy = false;
             return;
         }
 
-        const maxEnemies = 5;
         const currentFloor = this.roomId;
+        const maxEnemies = 5;
 
-        // 处理优先级敌人和唯一敌人
-        const priorityEnemies = enemyTypes.filter(enemy => enemy.isPriority && (!enemy.fixedRooms || enemy.fixedRooms.includes(currentFloor)));
-        const uniqueEnemies = enemyTypes.filter(enemy => enemy.isUnique && (!enemy.fixedRooms || enemy.fixedRooms.includes(currentFloor)));
-
-        if (priorityEnemies.length > 0) {
-            this.enemies.push(priorityEnemies[0]);
-        } else {
-            uniqueEnemies.forEach(enemy => {
-                if (!enemyManager.uniqueEnemies.has(enemy.id)) {
-                    this.enemies.push(enemy);
-                    enemyManager.uniqueEnemies.add(enemy.id);
+        // Spawn priority enemies first
+        const priorityEnemies = enemyTemplates.filter(enemy => enemy.isPriority && (!enemy.fixedRooms || enemy.fixedRooms.includes(currentFloor)));
+        for (const enemy of priorityEnemies) {
+            if (!enemy.isUnique || (enemy.isUnique && !this.uniqueEnemiesSpawned.has(enemy.id))) {
+                this.enemies.push(new Enemy(enemy));
+                if (enemy.isUnique) {
+                    this.uniqueEnemiesSpawned.add(enemy.id);
                 }
-            });
+            }
         }
 
-        // 计算每个敌人的加权值
-        const weightedEnemies = enemyTypes
-            .filter(enemy => !enemy.isPriority && (!enemy.fixedRooms || enemy.fixedRooms.includes(currentFloor)))
+        // Calculate the attenuated weight for each non-priority enemy based on the current floor
+        const weightedEnemies = enemyTemplates
+            .filter(enemy => !enemy.isPriority)
             .map(enemy => {
-                enemy.attenuatedWeight = enemy.weight * Math.pow(enemy.attenuation, currentFloor);
-                return enemy;
+                let attenuatedWeight = enemy.weight * Math.pow(enemy.attenuation, currentFloor);
+                if (enemy.fixedRooms && enemy.fixedRooms.length > 0 && !enemy.fixedRooms.includes(currentFloor)) {
+                    attenuatedWeight = 0;
+                }
+                return {
+                    ...enemy,
+                    attenuatedWeight
+                };
             });
 
-        // 计算总权重
-        const totalWeight = weightedEnemies.reduce((sum, enemy) => sum + enemy.attenuatedWeight, 0);
+        // Filter out enemies with 0 attenuated weight
+        const validEnemies = weightedEnemies.filter(enemy => enemy.attenuatedWeight > 0);
 
-        // 随机生成敌人
+        // Calculate the total attenuated weight
+        const totalAttenuatedWeight = validEnemies.reduce((acc, enemy) => acc + enemy.attenuatedWeight, 0);
+
+        if (totalAttenuatedWeight === 0 && this.enemies.length === 0) {
+            this.hasEnemy = false;
+            return;
+        }
+
+        // Determine the number of remaining enemies to spawn
         const numberOfEnemies = Math.min(Math.floor(Math.random() * maxEnemies) + 1, maxEnemies - this.enemies.length);
+
         for (let i = 0; i < numberOfEnemies; i++) {
-            let rand = Math.random() * totalWeight;
-            for (const enemy of weightedEnemies) {
-                if (rand < enemy.attenuatedWeight) {
-                    this.enemies.push(enemy);
+            let randomWeight = Math.random() * totalAttenuatedWeight;
+            for (const enemy of validEnemies) {
+                if (randomWeight < enemy.attenuatedWeight) {
+                    const newEnemy = new Enemy(enemy);  // Create a new instance of the enemy
+                    this.enemies.push(newEnemy);
                     break;
                 }
-                rand -= enemy.attenuatedWeight;
+                randomWeight -= enemy.attenuatedWeight;
             }
         }
 
         this.hasEnemy = this.enemies.length > 0;
     }
-
 
     hasEnemies() {
         return this.enemies.length > 0;

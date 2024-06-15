@@ -43,19 +43,19 @@ const attackCommand = async (interaction) => {
     }
 }
 
-export function turnBasedCombat(player, enemy, abilityId) {
+export function turnBasedCombat(interaction, player, enemy, abilityId) {
     const combatLog = [];
     const abilityManager = AbilityManager.getInstance();
     const ability = abilityManager.getAbilityById(abilityId);
 
     if (!ability) {
         combatLog.push('Invalid ability index.');
-        return combatLog;
+        return { combatLog, playerAlive: true, enemyAlive: true };
     }
 
     if (player.stats.mp < ability.mpCost) {
         combatLog.push(`${player.name} does not have enough MP to use ${ability.name}.`);
-        return combatLog;
+        return { combatLog, playerAlive: true, enemyAlive: true };
     }
 
     player.stats.mp -= ability.mpCost;
@@ -74,7 +74,7 @@ export function turnBasedCombat(player, enemy, abilityId) {
             break;
         default:
             combatLog.push('Ability effect not implemented.');
-            return combatLog;
+            return { combatLog, playerAlive: true, enemyAlive: true };
     }
 
     combatLog.push(`${player.name} used ${ability.name} on ${enemy.name}.`);
@@ -82,7 +82,7 @@ export function turnBasedCombat(player, enemy, abilityId) {
 
     if (enemy.stats.hp <= 0) {
         combatLog.push(`${enemy.name} is defeated!`);
-        return combatLog;
+        return { combatLog, playerAlive: true, enemyAlive: false };
     }
 
     const enemyAbilityId = 1; // Default enemy ability 
@@ -94,11 +94,13 @@ export function turnBasedCombat(player, enemy, abilityId) {
 
     if (player.stats.hp <= 0) {
         combatLog.push(`${player.name} is defeated!`);
+        const characterManager = CharacterManager.getInstance();
+        characterManager.reviveCharacter(interaction.user.id);
+        return { combatLog, playerAlive: false, enemyAlive: true };
     }
 
-    return combatLog;
+    return { combatLog, playerAlive: true, enemyAlive: true };
 }
-
 
 function handlePhysicalAttack(applicator, receiver, intensity) {
     const applicatorATK = applicator.stats.physicalATK;

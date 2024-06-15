@@ -50,15 +50,17 @@ export async function handleAttackInteraction(interaction) {
             case `attack_bite`:
             case `attack_slash`:
 
-                const combatLog = turnBasedCombat(activeChar, enemy, ability.id);
+                const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, ability.id);
                 await sendCombatLog(interaction, combatLog);
 
-                if (activeChar.stats.hp > 0 && enemy.stats.hp > 0) {
+                if (playerAlive && enemyAlive) {
                     await sendAbilityButtons(interaction, activeChar, enemy);
                 } else {
                     const endEmbed = new EmbedBuilder()
                         .setTitle('Combat Ended')
-                        .setDescription(activeChar.stats.hp <= 0 ? 'You were defeated!' : 'You defeated the enemy!')
+                        .setDescription(playerAlive 
+                            ? 'You defeated the enemy!' 
+                            : 'You died!')
                         .setColor(0xFF0000);
                     await interaction.followUp({ embeds: [endEmbed], ephemeral: true });
                 }

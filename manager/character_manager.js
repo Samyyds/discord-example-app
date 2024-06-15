@@ -1,5 +1,6 @@
 import { increaseXp } from '../util/util.js';
-import { Class, Race, Personality } from '../data/enums.js';
+import { Class, Race, Personality, Regions, MokuahLocations } from '../data/enums.js';
+import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 
 const CLASS_BASE_STATS = {
     'NO_CLASS': { hp: 100, mp: 100, spd: 100, physicalATK: 100, physicalDEF: 100, magicATK: 100, magicDEF: 100 },
@@ -148,7 +149,7 @@ class Character {
      * @param {number} lootQuality - The loot quality value.
      * @param {number[]} abilities - The available abilities that character has.
      */
-     constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities) {
+    constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities) {
         this.id = id;
         this.name = name;
         this.level = level;
@@ -188,10 +189,10 @@ class Character {
                 0, // TODO darkDEF
             );
         } else {
-            this.stats = new StatContainer(); 
+            this.stats = new StatContainer();
         }
-        this.skills = new SkillContainer(); 
-        this.status = new StatusContainer(); 
+        this.skills = new SkillContainer();
+        this.status = new StatusContainer();
         this.equippedItems = {};
     }
 
@@ -312,6 +313,21 @@ class CharacterManager {
         const activeCharacterId = this.activeCharacters.get(userId);
         const characters = this.getCharactersByUserId(userId);
         return characters.find(character => character.id === Number(activeCharacterId));
+    }
+
+    reviveCharacter(userId) {
+        const character = this.getActiveCharacter(userId);
+        if (character) {
+            character.stats.hp = character.stats.hpMax / 2;
+            character.stats.mp = character.stats.mpMax / 2;
+
+            const reviveRegionId = Regions['MOKUAH'];
+            const reviveLocationId = MokuahLocations['CLINIC'];
+            const reviveRoomId = 0;
+
+            const playerMoveManager = PlayerMovementManager.getInstance();
+            playerMoveManager.setLocation(userId, character.id, reviveRegionId, reviveLocationId, reviveRoomId);
+        }
     }
 }
 

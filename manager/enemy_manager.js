@@ -4,18 +4,30 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 class Enemy extends Character {
-    constructor(id, name, level, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, dropItem, dropChance, behaviourPreset, description, weight, attenuation, fixedRooms, isUnique, isPriority) {
-        super(id, name, level, null, null, null, 0, [], 0);
-        this.stats = new StatContainer(hp, mp, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF);
-        this.dropItem = dropItem;
-        this.dropChance = dropChance;
-        this.behaviourPreset = behaviourPreset;
-        this.description = description;
-        this.weight = weight;
-        this.attenuation = attenuation;
-        this.fixedRooms = fixedRooms ? fixedRooms.split(',').map(Number) : null;
-        this.isUnique = isUnique;
-        this.isPriority = isPriority;
+    constructor(enemyType) {
+        super(
+            enemyType.id,
+            enemyType.name,
+            enemyType.level,
+            null, null, null, // Assuming Class, Race, Personality are null for enemies
+            0, [], 0 // XP, Battle Bar, Loot Quality set to defaults
+        );
+        this.stats = new StatContainer(
+            enemyType.hp, enemyType.mp, enemyType.hp, enemyType.mp,
+            enemyType.spd, enemyType.physicalATK, enemyType.physicalDEF,
+            enemyType.magicATK, enemyType.magicDEF
+        );
+        this.dropItem = enemyType.dropItem;
+        this.dropChance = enemyType.dropChance;
+        this.behaviourPreset = enemyType.behaviourPreset;
+        this.description = enemyType.description;
+        this.weight = enemyType.weight;
+        this.attenuation = enemyType.attenuation;
+        this.fixedRooms = Array.isArray(enemyType.fixedRooms) ?
+            enemyType.fixedRooms :
+            (enemyType.fixedRooms ? enemyType.fixedRooms.split(',').map(Number) : null);
+        this.isUnique = enemyType.isUnique;
+        this.isPriority = enemyType.isPriority;
     }
 }
 
@@ -24,10 +36,8 @@ class EnemyManager {
         if (EnemyManager.instance) {
             return EnemyManager.instance;
         }
-
-        this.enemies = [];
-        this.locationEnemies = new Map();
-        this.uniqueEnemies = new Set();
+        this.enemyTemplates = []; // Holds templates only
+        this.locationEnemies = new Map(); // Maps region_location to enemy templates
         EnemyManager.instance = this;
     }
 
@@ -41,35 +51,33 @@ class EnemyManager {
     loadFromDB() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        console.log('Current Directory:', __dirname);
         const dbPath = path.join(__dirname, '../db/merfolk_and_magic_db.db');
-        console.log('Database Path:', dbPath);
         const db = new Database(dbPath, { verbose: console.log });
 
         try {
             const stmt = db.prepare('SELECT * FROM Enemies');
             const rows = stmt.all();
-            this.enemies = rows.map(row => new Enemy(
-                row.ID,
-                row.NAME,
-                row.LEVEL,
-                row.HP,
-                row.MP,
-                row.SPD,
-                row.PHY_ATK,
-                row.PHY_DEF,
-                row.MAG_ATK,
-                row.MAG_DEF,
-                row.DROP_ITEM,
-                row.DROP_CHANCE,
-                row.BEHAVIOUR_PRESET,
-                row.DESCRIPTION,
-                row.WEIGHT,
-                row.ATTENUATION,
-                row.FIXED_ROOMS,
-                row.IS_UNIQUE,
-                row.IS_PRIORITY
-            ));
+            this.enemyTemplates = rows.map(row => ({
+                id: row.ID,
+                name: row.NAME,
+                level: row.LEVEL,
+                hp: row.HP,
+                mp: row.MP,
+                spd: row.SPD,
+                physicalATK: row.PHY_ATK,
+                physicalDEF: row.PHY_DEF,
+                magicATK: row.MAG_ATK,
+                magicDEF: row.MAG_DEF,
+                dropItem: row.DROP_ITEM,
+                dropChance: row.DROP_CHANCE,
+                behaviourPreset: row.BEHAVIOUR_PRESET,
+                description: row.DESCRIPTION,
+                weight: row.WEIGHT,
+                attenuation: row.ATTENUATION,
+                fixedRooms: row.FIXED_ROOMS ? row.FIXED_ROOMS.split(',').map(Number) : [],
+                isUnique: row.IS_UNIQUE,
+                isPriority: row.IS_PRIORITY
+            }));
 
             const locationStmt = db.prepare('SELECT * FROM LocationEnemies');
             const locationRows = locationStmt.all();
@@ -78,10 +86,7 @@ class EnemyManager {
                 if (!this.locationEnemies.has(key)) {
                     this.locationEnemies.set(key, []);
                 }
-                const enemy = this.enemies.find(e => e.id === row.ENEMY_ID);
-                if (enemy) {
-                    this.locationEnemies.get(key).push(enemy);
-                }
+                this.locationEnemies.get(key).push(this.getTemplateById(row.ENEMY_ID));
             });
 
         } catch (error) {
@@ -91,14 +96,15 @@ class EnemyManager {
         }
     }
 
+    getTemplateById(id) {
+        return this.enemyTemplates.find(t => t.id === id);
+    }
+
     getEnemiesForLocation(regionId, locationId) {
         const key = `${regionId}_${locationId}`;
-        const result = this.locationEnemies.get(key) || [];
-        if (result.length > 0) {
-            console.log(`Enemies found for regionId ${regionId} and locationId ${locationId}`);
-        }
-        return result;
+        return this.locationEnemies.get(key) || [];
     }
 }
 
-export { EnemyManager };
+
+export { Enemy, EnemyManager };
