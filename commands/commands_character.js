@@ -4,7 +4,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { Class, Race, Personality } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { Character, StatContainer, SkillContainer, CharacterManager } from '../manager/character_manager.js';
+import { Character, CharacterManager } from '../manager/character_manager.js';
 import { Equipment } from '../data/repository_item.js';
 import { AbilityManager } from '../manager/ability_manager.js';
 

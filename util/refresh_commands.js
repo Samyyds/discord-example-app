@@ -31,10 +31,11 @@ const characterCommand = new SlashCommandBuilder()
           .setDescription('Race of your character.')
           .setRequired(true)
           .addChoices(
-            { name: 'Human', value: 'HUMAN' },
-            { name: 'Draconid', value: 'DRACONID' },
-            { name: 'Ogre', value: 'OGRE' },
-            { name: 'Elf', value: 'ELF' }
+            { name: 'Ahonu', value: 'AHONU' },
+            { name: 'Manumanu', value: 'MANUMANU' },
+            { name: 'Kui', value: 'KUI' },
+            { name: 'Minotaur', value: 'MINOTAUR' },
+            { name: 'Ulfur', value: 'ULFUR' }
           )))
   .addSubcommand(subcommand =>
     subcommand

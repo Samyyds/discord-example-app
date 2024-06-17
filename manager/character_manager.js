@@ -17,9 +17,11 @@ const CLASS_BASE_STAT_MODIFIERS = {
 };
 
 const RACE_BASE_STAT_MODIFIERS = {
-    'HUMAN': { hp: 1.1, mp: 1, spd: 1, physicalATK: 1.1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
-    'ELF': { hp: 0.9, mp: 1.2, spd: 1.2, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
-    'DWARF': { hp: 1.2, mp: 0.8, spd: 0.8, physicalATK: 1.2, physicalDEF: 1.3, magicATK: 0.8, magicDEF: 1 },
+    'AHONU': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'MANUMANU': { hp: 0.9, mp: 1.3, spd: 0.9, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 1.1 },
+    'KUI': { hp: 1.3, mp: 0.9, spd: 0.7, physicalATK: 0.9, physicalDEF: 1.2, magicATK: 1, magicDEF: 1 },
+    'MINOTAUR': { hp: 1.2, mp: 0.9, spd: 1, physicalATK: 1.1, physicalDEF: 1.1, magicATK: 0.6, magicDEF: 1 },
+    'ULFUR': { hp: 1.1, mp: 0.8, spd: 1.1, physicalATK: 1.2, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 0.8 },
 };
 
 const PERSONALITY_BASE_STAT_MODIFIERS = {
@@ -49,27 +51,31 @@ const attributeMapping = {
 
 class StatContainer {
     constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF) {
-        this.hpMax = hpMax;
-        this.mpMax = mpMax;
-        this.hp = hp;
-        this.mp = mp;
-        this.spd = spd;
-        this.physicalATK = physicalATK;
-        this.physicalDEF = physicalDEF;
-        this.magicATK = magicATK;
-        this.magicDEF = magicDEF;
-        this.fireATK = fireATK;
-        this.fireDEF = fireDEF;
-        this.lightATK = lightATK;
-        this.lightDEF = lightDEF;
-        this.darkATK = darkATK;
-        this.darkDEF = darkDEF;
+        this.hpMax = Math.max(0, Math.round(hpMax));
+        this.mpMax = Math.max(0, Math.round(mpMax));
+        this.hp = Math.max(0, Math.round(hp));
+        this.mp = Math.max(0, Math.round(mp));
+        this.spd = Math.max(0, Math.round(spd));
+        this.physicalATK = Math.max(0, Math.round(physicalATK));
+        this.physicalDEF = Math.max(0, Math.round(physicalDEF));
+        this.magicATK = Math.max(0, Math.round(magicATK));
+        this.magicDEF = Math.max(0, Math.round(magicDEF));
+        this.fireATK = Math.max(0, Math.round(fireATK));
+        this.fireDEF = Math.max(0, Math.round(fireDEF));
+        this.lightATK = Math.max(0, Math.round(lightATK));
+        this.lightDEF = Math.max(0, Math.round(lightDEF));
+        this.darkATK = Math.max(0, Math.round(darkATK));
+        this.darkDEF = Math.max(0, Math.round(darkDEF));
+    }
+
+    applyDamage(damageAmount) {
+        this.hp = Math.max(0, Math.round(this.hp - damageAmount));
     }
 
     addAttributes(attributes) {
         for (const key in attributes) {
             if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
-                this[key] += attributes[key];
+                this[key] = Math.max(0, Math.round(this[key] + attributes[key]));
             }
         }
     }
@@ -77,7 +83,7 @@ class StatContainer {
     subtractAttributes(attributes) {
         for (const key in attributes) {
             if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
-                this[key] -= attributes[key];
+                this[key] = Math.max(0, Math.round(this[key] - attributes[key]));
             }
         }
     }

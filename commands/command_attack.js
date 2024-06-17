@@ -78,7 +78,7 @@ export function turnBasedCombat(interaction, player, enemy, abilityId) {
     }
 
     combatLog.push(`${player.name} used ${ability.name} on ${enemy.name}.`);
-    combatLog.push(`${enemy.name} took ${damage.toFixed(2)} damage. Remaining HP: ${enemy.stats.hp}`);
+    combatLog.push(`${enemy.name} took ${damage} damage. Remaining HP: ${enemy.stats.hp}`);
 
     if (enemy.stats.hp <= 0) {
         combatLog.push(`${enemy.name} is defeated!`);
@@ -90,7 +90,6 @@ export function turnBasedCombat(interaction, player, enemy, abilityId) {
         enemyAbility = abilityManager.getAbilityById(enemy.abilities[0]);
     } else if (enemy.abilities.length > 1) {
         const randomAbilityIndex = Math.floor(Math.random() * enemy.abilities.length);
-        console.log(`randomAbilityIndex: ${randomAbilityIndex}`);
         enemyAbility = abilityManager.getAbilityById(enemy.abilities[randomAbilityIndex]);
     }
 
@@ -102,7 +101,7 @@ export function turnBasedCombat(interaction, player, enemy, abilityId) {
     const enemyDamage = handlePhysicalAttack(enemy, player, enemyAbility.intensity);
 
     combatLog.push(`${enemy.name} used ${enemyAbility.name} on ${player.name}.`);
-    combatLog.push(`${player.name} took ${enemyDamage.toFixed(2)} damage. Remaining HP: ${player.stats.hp}`);
+    combatLog.push(`${player.name} took ${enemyDamage} damage. Remaining HP: ${player.stats.hp}`);
 
     if (player.stats.hp <= 0) {
         combatLog.push(`${player.name} is defeated!`);
@@ -120,7 +119,8 @@ function handlePhysicalAttack(applicator, receiver, intensity) {
     const damageReduction = 1 - (receiverDEF / 300);
     let damage = applicatorATK * damageReduction;
     damage *= (intensity / 100);
-    receiver.stats.hp -= damage;
+    damage = Math.round(damage);
+    receiver.stats.applyDamage(damage);
     return damage;
 }
 
@@ -130,7 +130,8 @@ function handleMagicalAttack(applicator, receiver, intensity) {
     const magDamageReduction = 1 - (receiverMDEF / 300);
     let damage = applicatorMAG * magDamageReduction;
     damage *= (intensity / 100);
-    receiver.stats.hp -= damage;
+    damage = Math.round(damage);
+    receiver.stats.applyDamage(damage);
     return damage;
 }
 

@@ -50,10 +50,11 @@ export const Class = {
 };
 
 export const Race = {
-    "HUMAN": 0,
-    "OGRE": 1,
-    "DRACONID": 2,
-    "ELF": 3
+    "AHONU": 0,
+    "MANUMANU": 1,
+    "KUI": 2,
+    "MINOTAUR": 3,
+    "ULFUR":4,
 };
 
 export const Personality = {
