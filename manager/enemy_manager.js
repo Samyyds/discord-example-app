@@ -9,8 +9,8 @@ class Enemy extends Character {
             enemyType.id,
             enemyType.name,
             enemyType.level,
-            null, null, null, // Assuming Class, Race, Personality are null for enemies
-            0, [], 0 // XP, Battle Bar, Loot Quality set to defaults
+            null, null, null,
+            0, [], 0, enemyType.abilities
         );
         this.stats = new StatContainer(
             enemyType.hp, enemyType.mp, enemyType.hp, enemyType.mp,
@@ -23,9 +23,7 @@ class Enemy extends Character {
         this.description = enemyType.description;
         this.weight = enemyType.weight;
         this.attenuation = enemyType.attenuation;
-        this.fixedRooms = Array.isArray(enemyType.fixedRooms) ?
-            enemyType.fixedRooms :
-            (enemyType.fixedRooms ? enemyType.fixedRooms.split(',').map(Number) : null);
+        this.fixedRooms = this.fixedRooms;
         this.isUnique = enemyType.isUnique;
         this.isPriority = enemyType.isPriority;
     }
@@ -36,7 +34,7 @@ class EnemyManager {
         if (EnemyManager.instance) {
             return EnemyManager.instance;
         }
-        this.enemyTemplates = []; // Holds templates only
+        this.enemyTemplates = [];
         this.locationEnemies = new Map(); // Maps region_location to enemy templates
         EnemyManager.instance = this;
     }
@@ -68,6 +66,7 @@ class EnemyManager {
                 physicalDEF: row.PHY_DEF,
                 magicATK: row.MAG_ATK,
                 magicDEF: row.MAG_DEF,
+                abilities: row.ABILITIES ? row.ABILITIES.split(',').map(Number) : [],
                 dropItem: row.DROP_ITEM,
                 dropChance: row.DROP_CHANCE,
                 behaviourPreset: row.BEHAVIOUR_PRESET,

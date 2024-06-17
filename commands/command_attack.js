@@ -85,8 +85,20 @@ export function turnBasedCombat(interaction, player, enemy, abilityId) {
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
 
-    const enemyAbilityId = 1; // Default enemy ability 
-    const enemyAbility = abilityManager.getAbilityById(enemyAbilityId);
+    let enemyAbility;
+    if (enemy.abilities.length === 1) {
+        enemyAbility = abilityManager.getAbilityById(enemy.abilities[0]);
+    } else if (enemy.abilities.length > 1) {
+        const randomAbilityIndex = Math.floor(Math.random() * enemy.abilities.length);
+        console.log(`randomAbilityIndex: ${randomAbilityIndex}`);
+        enemyAbility = abilityManager.getAbilityById(enemy.abilities[randomAbilityIndex]);
+    }
+
+    if (!enemyAbility) {
+        combatLog.push('Enemy tried to use an invalid ability.');
+        return { combatLog, playerAlive: true, enemyAlive: true };
+    }
+
     const enemyDamage = handlePhysicalAttack(enemy, player, enemyAbility.intensity);
 
     combatLog.push(`${enemy.name} used ${enemyAbility.name} on ${player.name}.`);
