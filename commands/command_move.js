@@ -17,11 +17,17 @@ const moveCommand = async (interaction) => {
         const regionManager = RegionManager.getInstance();
         const currentRegion = regionManager.getRegionById(curLocation.regionId);
         const currentLocation = currentRegion.getLocation(curLocation.locationId);
+        const currentRoom = currentLocation.getRoom(curLocation.roomId);
 
         const isValidRoom = currentLocation.roomCount > 1;
 
         if (!isValidRoom) {
             throw new Error('There are no additional rooms to explore in your current location!');
+        }
+
+        console.log(`currentRoom.hasEnemies: ${currentRoom.hasEnemies()}`);
+        if (currentRoom.hasEnemies()) {
+            throw new Error('You cannot move to another room while there are still enemies here!');
         }
 
         const direction = interaction.options.getInteger('direction');

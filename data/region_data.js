@@ -135,7 +135,6 @@ class Room {
         const index = this.enemies.indexOf(enemy);
         if (index > -1) {
             this.enemies.splice(index, 1);
-            this.hasEnemies = this.enemies.length > 0;
         }
     }
 
