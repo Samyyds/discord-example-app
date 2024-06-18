@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
-import { charactercommands } from './commands/commands_character.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
+import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
 import { goCommands } from './commands/command_go.js';
@@ -31,7 +31,9 @@ const compoundCommand = {
 client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
-  initializeGame();
+  setImmediate(() => {
+    initializeGame();  
+  });
   console.log('Bot is ready!');
 
   // const channelId = '1232231036054667286';

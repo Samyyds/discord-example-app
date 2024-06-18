@@ -2,8 +2,8 @@ import { EmbedBuilder } from 'discord.js';
 import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
-import { turnBasedCombat, sendCombatLog, sendAbilityButtons } from "../commands/command_attack.js";
 import { AbilityManager } from '../manager/ability_manager.js'; 
+import { turnBasedCombat, sendCombatLog, sendAbilityButtons } from "../commands/command_attack.js";
 
 export async function handleAttackInteraction(interaction) {
     if (!interaction.isButton()) return false;
@@ -11,8 +11,8 @@ export async function handleAttackInteraction(interaction) {
     try {
         await interaction.deferReply({ ephemeral: true });
 
-        const characterRepo = CharacterManager.getInstance();
-        const activeChar = characterRepo.getActiveCharacter(interaction.user.id);
+        const characterManager = CharacterManager.getInstance();
+        const activeChar = characterManager.getActiveCharacter(interaction.user.id);
 
         if (!activeChar) {
             await interaction.followUp({ content: 'No active character found.', ephemeral: true });
@@ -23,8 +23,8 @@ export async function handleAttackInteraction(interaction) {
         const fullAction = `${action}_${abilityKey}`;
         const enemyName = enemyNameParts.join(' ');
 
-        const playerMoveManager = PlayerMovementManager.getInstance();
-        const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeChar.id);
+        const playerMovementManager = PlayerMovementManager.getInstance();
+        const { regionId, locationId, roomId } = playerMovementManager.getLocation(interaction.user.id, activeChar.id);
 
         const regionManager = RegionManager.getInstance();
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
@@ -50,7 +50,7 @@ export async function handleAttackInteraction(interaction) {
             case `attack_bite`:
             case `attack_slash`:
 
-                const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, ability.id);
+                const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, ability.id, regionManager, regionId, locationId, roomId);
                 await sendCombatLog(interaction, combatLog);
 
                 if (playerAlive && enemyAlive) {

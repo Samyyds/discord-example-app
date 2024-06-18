@@ -131,6 +131,14 @@ class Room {
         this.hasEnemy = this.enemies.length > 0;
     }
 
+    removeEnemy(enemy) {
+        const index = this.enemies.indexOf(enemy);
+        if (index > -1) {
+            this.enemies.splice(index, 1);
+            this.hasEnemies = this.enemies.length > 0;
+        }
+    }
+
     hasEnemies() {
         return this.enemies.length > 0;
     }

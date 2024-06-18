@@ -8,8 +8,8 @@ const attackCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
         
-        const characterRepo = CharacterManager.getInstance();
-        const activeChar = characterRepo.getActiveCharacter(interaction.user.id);
+        const characterManager = CharacterManager.getInstance();
+        const activeChar = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeChar) {
             throw new Error('You do not have an available character!');
         }
@@ -19,10 +19,10 @@ const attackCommand = async (interaction) => {
             throw new Error('Enemy name is required.');
         }
         const enemyName = enemyNameInput.trim().toLowerCase();
-
-        const playerMoveManager = PlayerMovementManager.getInstance();
-        const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeChar.id);
-
+        
+        const playerMovementManager = PlayerMovementManager.getInstance();
+        const { regionId, locationId, roomId } = playerMovementManager.getLocation(interaction.user.id, activeChar.id);
+        
         const regionManager = RegionManager.getInstance();
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
         if (!room) {
@@ -43,8 +43,9 @@ const attackCommand = async (interaction) => {
     }
 }
 
-export function turnBasedCombat(interaction, player, enemy, abilityId) {
+export function turnBasedCombat(interaction, player, enemy, abilityId, regionManager, regionId, locationId, roomId) {
     const combatLog = [];
+
     const abilityManager = AbilityManager.getInstance();
     const ability = abilityManager.getAbilityById(abilityId);
 
@@ -82,6 +83,8 @@ export function turnBasedCombat(interaction, player, enemy, abilityId) {
 
     if (enemy.stats.hp <= 0) {
         combatLog.push(`${enemy.name} is defeated!`);
+        const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
+        room.removeEnemy(enemy);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
 
@@ -147,7 +150,6 @@ export async function sendAbilityButtons(interaction, player, enemy) {
     const actionRow = new ActionRowBuilder();
     
     const abilityManager = AbilityManager.getInstance();
-    
     player.abilities.forEach(abilityId => {
         const ability = abilityManager.getAbilityById(abilityId);
         const abilityButton = new ButtonBuilder()

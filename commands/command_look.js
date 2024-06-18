@@ -51,6 +51,8 @@ const lookCommand = async (interaction) => {
                 for (const [enemyName, count] of Object.entries(enemyCounts)) {
                     description += `${enemyName} x${count}\n`;
                 }
+            }else {
+                description += 'The room is empty.';
             }
         }
 
