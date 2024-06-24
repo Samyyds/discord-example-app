@@ -1,4 +1,4 @@
-import { Enemy } from "../manager/enemy_manager.js";
+import { Enemy, EnemyManager } from "../manager/enemy_manager.js";
 
 class Region {
     constructor(id, name, description) {
@@ -120,7 +120,7 @@ class Room {
             let randomWeight = Math.random() * totalAttenuatedWeight;
             for (const enemy of validEnemies) {
                 if (randomWeight < enemy.attenuatedWeight) {
-                    const newEnemy = new Enemy(enemy);  // Create a new instance of the enemy
+                    const newEnemy = new Enemy(enemy);
                     this.enemies.push(newEnemy);
                     break;
                 }
@@ -135,6 +135,34 @@ class Room {
         const index = this.enemies.indexOf(enemy);
         if (index > -1) {
             this.enemies.splice(index, 1);
+            if (enemy.isUnique) {
+                this.uniqueEnemiesSpawned.delete(enemy.id);
+            }
+            this.scheduleRespawn(enemy);
+        }
+    }
+
+    scheduleRespawn(enemy) {
+        if (enemy.isUnique) {
+            // Handle unique enemy respawn rules if needed
+            return;
+        }
+
+        const respawnTime = 180000; // 3mins
+        setTimeout(() => {
+            const template = EnemyManager.getInstance().getTemplateById(enemy.id);
+            this.respawnEnemy(template);
+        }, respawnTime);
+    }
+
+    respawnEnemy(enemyTemplate) {
+        if (!this.uniqueEnemiesSpawned.has(enemyTemplate.id)) {
+            const newEnemy = new Enemy(enemyTemplate);
+            this.enemies.push(newEnemy);
+            if (enemyTemplate.isUnique) {
+                this.uniqueEnemiesSpawned.add(enemyTemplate.id);
+            }
+            console.log(`Enemy ${newEnemy.name} has respawned in Room ID: ${this.roomId}`);
         }
     }
 
