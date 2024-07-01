@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
+import { initializeMysql } from "./db/mysql.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
@@ -32,7 +33,8 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
   setImmediate(() => {
-    initializeGame();  
+    //initializeGame(); 
+    initializeMysql(); 
   });
   console.log('Bot is ready!');
 

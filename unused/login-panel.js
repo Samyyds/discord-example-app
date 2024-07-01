@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, AttachmentBuilder } from 'discord.js';
 import Web3Manager from '../web3/web3_manager.js';
-import {userAccounts} from '../data/user_accounts.js';
+import {userAccounts} from './user_accounts.js';
 import descriptions from '../data/consts.js';
 import { CharacterManager } from '../manager/character_manager.js';
 
