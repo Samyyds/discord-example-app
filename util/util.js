@@ -152,3 +152,21 @@ export function recipesParser(recipeIds, embed) {
 
     return embed;
 }
+
+export function serializeObject(instance, properties) {
+    let serialized = {};
+    properties.forEach(prop => {
+        if (instance[prop] !== undefined) {
+            serialized[prop] = instance[prop];
+        }
+    });
+    return JSON.stringify(serialized);
+}
+
+export function exportLocationValues(location) {
+    return {
+        regionId: location.regionId,
+        locationId: location.locationId,
+        roomId: location.roomId
+    };
+}

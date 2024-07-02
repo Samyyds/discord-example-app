@@ -1,12 +1,15 @@
 import pkg from 'discord.js';
+import { saveCharacter } from "../db/mysql.js";
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { Class, Race, Personality } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
+import { Equipment } from '../data/repository_item.js';
+import { Class, Race, Personality } from '../data/enums.js';
+import { AbilityManager } from '../manager/ability_manager.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { Character, CharacterManager } from '../manager/character_manager.js';
-import { Equipment } from '../data/repository_item.js';
-import { AbilityManager } from '../manager/ability_manager.js';
+
+
 
 let nextCharacterId = 1;
 
@@ -65,6 +68,9 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
 
     const playerMoveManager = PlayerMovementManager.getInstance();
     playerMoveManager.setLocation(userId, currentCharacterId);
+    const location = playerMoveManager.getLocation(userId, currentCharacterId);
+
+    saveCharacter(userId, character, location);
 
     return character;
 }

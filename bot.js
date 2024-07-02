@@ -33,8 +33,7 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
   setImmediate(() => {
-    //initializeGame(); 
-    initializeMysql(); 
+    initializeGame(); 
   });
   console.log('Bot is ready!');
 
