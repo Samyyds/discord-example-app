@@ -65,7 +65,7 @@ async function saveCharacterData(userId, character, location) {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         `;
         const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status } = character;
-
+        console.log(`id: ${id}`);
         const battleBarJson = JSON.stringify(battleBar);
         const abilitiesJson = JSON.stringify(abilities);
         const serializedStats = serializeObject(character.stats, ['hp', 'mp', 'spd', 'physicalATK', 'physicalDEF', 'magicATK', 'magicDEF', 'fireATK', 'fireDEF', 'lightATK', 'lightDEF', 'darkATK', 'darkDEF']);
@@ -151,10 +151,10 @@ async function loadCharactersForUser(userId) {
             return character;
         });
 
-        characters.forEach(character => {
-            charManager.addCharacter(userId, character);
-            moveManager.setLocation(userId, character.id, rows[0].region_id, rows[0].location_id, rows[0].room_id);
-        });
+        for (let i = 0; i < characters.length; i++) {
+            charManager.addCharacter(userId, characters[i]);
+            moveManager.setLocation(userId, characters[i].id, rows[i].region_id, rows[i].location_id, rows[i].room_id);
+        }
 
         charManager.setActiveCharacter(userId, characters[0].id);
 
