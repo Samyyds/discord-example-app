@@ -288,7 +288,6 @@ class CharacterManager {
 
         this.characters = new Map();
         this.activeCharacters = new Map();
-        this.abilities = {};
         CharacterManager.instance = this;
     }
 

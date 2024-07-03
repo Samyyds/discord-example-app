@@ -2,6 +2,7 @@ import { EmbedBuilder } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { convertNameToRegionId, convertNameToLocationId } from "../util/util.js";
+import { saveCharacterLocation } from "../db/mysql.js";
 
 const goCommand = async (interaction) => {
     try {
@@ -38,6 +39,9 @@ const goCommand = async (interaction) => {
             }
             playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
         }
+
+        const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+        saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
         let embed = new EmbedBuilder()
             .setTitle('Adventure Awaits!')

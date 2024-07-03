@@ -2,6 +2,7 @@ import { EmbedBuilder } from 'discord.js';
 import { RegionManager } from '../manager/region_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
+import { saveCharacterLocation } from "../db/mysql.js";
 
 const moveCommand = async (interaction) => {
     try {
@@ -59,6 +60,8 @@ const moveCommand = async (interaction) => {
             } else {
                 distanceDescription = `You are now ${newLocation.roomId} miles away from ${locationName}.`;
             }
+
+            saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
             let embed = new EmbedBuilder()
                 .setTitle('Journey Continues!')

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
-import { initializeMysql } from "./db/mysql.js";
+import { MysqlDB, getAllUserIds, hasCharacters, loadCharactersForUser } from "./db/mysql.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
@@ -32,11 +32,25 @@ const compoundCommand = {
 client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
-  setImmediate(() => {
-    initializeGame(); 
-  });
-  console.log('Bot is ready!');
+  try {
+    const connection = await MysqlDB.getConnection();
+    const hasData = await hasCharacters(connection);
 
+    setImmediate(() => {
+      initializeGame();
+    });
+
+    if (hasData) {
+      const userIds = await getAllUserIds(connection);
+      for (const userId of userIds) {
+        await loadCharactersForUser(userId);
+      }
+    }
+
+    console.log('Bot is ready!');
+  } catch (error) {
+    console.error('Failed to initialize bot:', error);
+  }
   // const channelId = '1232231036054667286';
   // const channel = client.channels.cache.get(channelId);
   // if (!channel) {

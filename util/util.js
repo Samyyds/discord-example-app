@@ -162,11 +162,3 @@ export function serializeObject(instance, properties) {
     });
     return JSON.stringify(serialized);
 }
-
-export function exportLocationValues(location) {
-    return {
-        regionId: location.regionId,
-        locationId: location.locationId,
-        roomId: location.roomId
-    };
-}

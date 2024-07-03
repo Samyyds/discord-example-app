@@ -1,5 +1,5 @@
 import pkg from 'discord.js';
-import { saveCharacter } from "../db/mysql.js";
+import { saveCharacterData } from "../db/mysql.js";
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { Equipment } from '../data/repository_item.js';
@@ -70,7 +70,7 @@ function createCharacter(userId, name, className, raceName, personality = 'NO_PE
     playerMoveManager.setLocation(userId, currentCharacterId);
     const location = playerMoveManager.getLocation(userId, currentCharacterId);
 
-    saveCharacter(userId, character, location);
+    saveCharacterData(userId, character, location);
 
     return character;
 }
