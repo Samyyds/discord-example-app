@@ -50,7 +50,8 @@ class RegionManager {
                     regionData.id,
                     locationData.locationId,
                     locationData.roomCount,
-                    locationData.description
+                    locationData.description,
+                    locationData.subscriberOnly
                 );
                 region.addLocation(location);
             });

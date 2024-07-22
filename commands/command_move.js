@@ -39,14 +39,14 @@ const moveCommand = async (interaction) => {
             if (!canMoveDown) {
                 throw new Error('You\'ve reached the last room. There\'s no way to move down!');
             }
-            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false, interaction);
+            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false);
             moved = true;
         } else if (direction === 1) { // Up
             const canMoveUp = playerMoveManager.canMoveUp(interaction.user.id, activeCharacter.id);
             if (!canMoveUp) {
                 throw new Error('You are already in the first room. There\'s no way to move up!');
             }
-            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true, interaction);
+            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true);
             moved = true;
         }
 

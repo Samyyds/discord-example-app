@@ -7,7 +7,7 @@ class PlayerMovementManager {
         }
 
         this.locations = new Map(); // user ID -> Map(character ID -> location)
-        this.regionManager = RegionManager.getInstance(); 
+        this.regionManager = RegionManager.getInstance();
         PlayerMovementManager.instance = this;
     }
 
@@ -55,12 +55,33 @@ class PlayerMovementManager {
         this.setLocation(userId, characterId, regionId, locationId, 0);
     }
 
-    canMoveLocation(userId, characterId, destRegionId, destLocationId) {
+    // canMoveLocation(userId, characterId, destRegionId, destLocationId) {
+    //     const location = this.getLocation(userId, characterId);
+    //     return location && location.regionId === destRegionId && location.locationId !== destLocationId && location.roomId === 0;
+    // }
+    canMoveLocation(userId, characterId, destRegionId, destLocationId, interaction) {
         const location = this.getLocation(userId, characterId);
-        return location && location.regionId === destRegionId && location.locationId !== destLocationId && location.roomId === 0;
+        if (!location) {
+            console.error("No location found for this user/character.");
+            return { canMove: false, message: "No location found for this user/character." };
+        }
+
+        const region = this.regionManager.getRegionById(destRegionId);
+        const targetLocation = region.getLocation(destLocationId);
+
+        const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
+        if (targetLocation.subscriberOnly && !hasSubscriberRole) {
+            return { canMove: false, message: "This area is only available to subscribers." };
+        }
+
+        if (location.regionId === destRegionId && location.locationId !== destLocationId && location.roomId === 0) {
+            return { canMove: true };
+        } else {
+            return { canMove: false, message: "Cannot move to the target location from current location." };
+        }
     }
 
-    moveRoom(userId, characterId, isUp, interaction) {
+    moveRoom(userId, characterId, isUp) {
         const location = this.getLocation(userId, characterId);
         if (!location) return;
         const region = this.regionManager.getRegionById(location.regionId);
@@ -68,14 +89,6 @@ class PlayerMovementManager {
         const roomCount = locationData.roomCount;
 
         let newRoomId = location.roomId + (isUp ? -1 : 1);
-
-        // const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
-        // console.log(`hasSubscriberRole: ${hasSubscriberRole}`);
-        // console.log(`locationData.name: ${locationData.name}`);
-        // console.log(`newRoomId: ${newRoomId}`);
-        // if (!hasSubscriberRole && locationData.name === 'Jungle' && newRoomId > 1) {
-        //     throw new Error('Oops! Please upgrade your account to explore further.');
-        // }
 
         if ((isUp && newRoomId >= 0) || (!isUp && newRoomId < roomCount)) {
             this.setLocation(userId, characterId, location.regionId, location.locationId, newRoomId);

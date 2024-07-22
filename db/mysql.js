@@ -65,7 +65,6 @@ async function saveCharacterData(userId, character, location) {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         `;
         const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status } = character;
-        console.log(`id: ${id}`);
         const battleBarJson = JSON.stringify(battleBar);
         const abilitiesJson = JSON.stringify(abilities);
         const serializedStats = serializeObject(character.stats, ['hp', 'mp', 'spd', 'physicalATK', 'physicalDEF', 'magicATK', 'magicDEF', 'fireATK', 'fireDEF', 'lightATK', 'lightDEF', 'darkATK', 'darkDEF']);
@@ -166,4 +165,18 @@ async function loadCharactersForUser(userId) {
     }
 }
 
-export { MysqlDB, hasCharacters, saveCharacterData, getAllUserIds, loadCharactersForUser, saveCharacterLocation };
+async function getNextCharacterId() {
+    const connection = await MysqlDB.getConnection();
+    try {
+        const [rows] = await connection.execute('SELECT MAX(id) AS max_id FROM mm_characters');
+        const maxId = rows[0].max_id || 0;
+        return maxId + 1;
+    } catch (error) {
+        console.error('Failed to retrieve next character ID:', error);
+        throw error;
+    } finally {
+        connection.release();
+    }
+}
+
+export { MysqlDB, hasCharacters, saveCharacterData, getAllUserIds, loadCharactersForUser, saveCharacterLocation, getNextCharacterId };

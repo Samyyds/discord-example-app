@@ -1,5 +1,5 @@
 import pkg from 'discord.js';
-import { saveCharacterData } from "../db/mysql.js";
+import { saveCharacterData, getNextCharacterId } from "../db/mysql.js";
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { Equipment } from '../data/repository_item.js';
@@ -8,10 +8,6 @@ import { AbilityManager } from '../manager/ability_manager.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { Character, CharacterManager } from '../manager/character_manager.js';
-
-
-
-let nextCharacterId = 1;
 
 const createCommand = async (interaction) => {
     try {
@@ -43,9 +39,9 @@ const createCommand = async (interaction) => {
     }
 };
 
-function createCharacter(userId, name, className, raceName, personality = 'NO_PERSONALITY') {
-    const currentCharacterId = nextCharacterId;
-    nextCharacterId++;
+async function createCharacter(userId, name, className, raceName, personality = 'NO_PERSONALITY') {
+   
+    let currentCharacterId = await getNextCharacterId();
 
     const character = new Character(
         currentCharacterId,

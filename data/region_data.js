@@ -18,7 +18,7 @@ class Region {
 }
 
 class Location {
-    constructor(id, name, regionId, locationId, roomCount = 1, description = '') {
+    constructor(id, name, regionId, locationId, roomCount = 1, description = '', subscriberOnly = false) {
         this.id = `${regionId}-${id}`;
         this.name = name;
         this.regionId = regionId;
@@ -26,6 +26,7 @@ class Location {
         this.roomCount = roomCount;
         this.description = description;
         this.rooms = new Map();
+        this.subscriberOnly = subscriberOnly;
     }
 
     initializeRooms() {
