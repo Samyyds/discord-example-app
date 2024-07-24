@@ -21,6 +21,16 @@ const createCommand = async (interaction) => {
 
         const userId = interaction.user.id;
 
+        const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
+        if ((raceName === 'MINOTAUR' || raceName === 'ULFUR') && !hasSubscriberRole) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle('Restricted Access')
+                .setDescription('The race you have chosen is only available to subscribers.');
+            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return;
+        }
+
         const character = createCharacter(userId, charName, className, raceName);
 
         const characterRepo = CharacterManager.getInstance();
