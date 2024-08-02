@@ -91,21 +91,19 @@ export const Ability = {
 
 export const ItemType = {
     "MATERIAL": 0,
-    "GEAR": 1,
+    "EQUIPMENT": 1,
     "CONSUMABLE": 2,
     "KEY": 3
 };
 
 export const Rarity = {
-    "RUSTED_JUNK": 0,
-    "STANDARD": 1,
-    "VALUABLE": 2,
-    "FABLED": 3,
-    "ENIGMATA": 4,
-    "DELPHIC": 5,
-    "ENTHEAT": 6,
-    "HALLOWED": 7,
-    "APOCRYPHAL": 8
+    "WORN": 0,
+    "MEDIAN": 1,
+    "ENIGMATIC": 2,
+    "DELPHIC": 3,
+    "ENTHEAT": 4,
+    "HALLOWED": 5,
+    "APOCRYPHAL": 6
 };
 
 export const Skill = {
@@ -126,14 +124,45 @@ export const NodeType = {
 };
 
 export const Item = {
-    "SALVAGE": 0,
-    "SHELL": 1,
-    "CORAL": 2,
-    "BONE": 3,
-    "KELP_BROTH": 4,
-    "KELP": 5,
-    "CRAB": 6,
-    "BOILED_CRAB_W/_DICED_KELP": 7
+    "SALVAGE": 1,
+    "LARGE_INTACT_SHELL": 2,
+    "CORAL": 3,
+    "BONE": 4,
+    "LAVA_CHUNKS": 5,
+    "OBSIDIAN": 6,
+    "FOSSIL_REMAINS": 7,
+    "CRAB": 8,
+    "EEL": 9,
+    "BISNOVA_BUD": 10,
+    "TRENCH_WORM_LIVER": 11,
+    "SALT_CRYSTAL": 12,
+    "CRUSHED_SALT": 13,
+    "POLARISED_SALT": 14,
+    "DEEP_CRYSTAL": 15,
+    "RAW_MEAT": 16,
+    "KELP": 17,
+    "BRINEAPPLE": 18,
+    "TRENCH_FUNGUS": 19,
+    "BANEWORT": 20,
+    "CHARGE_MOSS": 21,
+    "BLIGHTBEAN": 22,
+    "BRAIDED_KELP": 23,
+    "BOILED_SHELL": 24,
+    "CONCENTRATED_CALCIUM": 25,
+    "NECROTIC_RESIDUE": 26,
+    "NECROSALT_INFUSION": 27,
+    "DEEPSPARK_ESSENCE": 28,
+    "STORMCORAL_INFUSION": 29,
+    "INFUSED_CALCIUM": 30,
+    "RECONSTRUCTED_GEOMATTER": 31,
+    "GALVANISED_GEOMATTER": 32,
+    "MEMORY_MARROW": 33,
+    "GALVANIC_MARROW": 34,
+    "BISNOVA_CONCENTRATE": 35,
+    "KALAs_FINGERNAIL": 36,
+    "PRIMORDIAL_STONE": 37,
+    "SILVER_GRASS": 38,
+    "LOTUS_ROOT": 39
 };
 
 export const Items = {}

@@ -51,7 +51,7 @@ class NodeManager {
 }
 
 class Node {
-    constructor(id, type, recharge_interval, charges, name, yield_entry, yield_quantity, required_skill_type, required_skill_value, required_item, description, location) {
+    constructor(id, type, recharge_interval, charges, name, yield_entry, yield_quantity, required_skill_type, required_skill_value, required_item, subscriberOnly = false, description, location) {
         this.id = id;
         this.type = type;
         this.recharge_interval = recharge_interval;
@@ -62,6 +62,7 @@ class Node {
         this.required_skill_type = required_skill_type;
         this.required_skill_value = required_skill_value;
         this.required_item = required_item;
+        this.subscriberOnly = subscriberOnly;
         this.description = description;
         this.location = location;
     }
