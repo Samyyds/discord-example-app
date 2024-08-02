@@ -23,37 +23,24 @@ const lookCommand = async (interaction) => {
             throw new Error(`Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
         }
         const enemies = room.getEnemies();
+        const nodes = room.getNodes();
 
         let description = '';
 
         if (objectName) {
             const enemy = enemies.find(enemy => enemy.name.toLowerCase() === objectName.toLowerCase());
+            const node = nodes.find(node => node.name.toLowerCase() === objectName.toLowerCase());
             if (enemy) {
-                description += enemy.description;
-
+                description += `${enemy.description}\n`;
+            } else if (node) {
+                description += `${node.description}\n`;
             } else {
-                description = `${objectName} not found.`;
+                description = `No '${objectName}' found.`;
             }
-
         } else {
-            if (roomId < 1) {
-                const location = regionManager.getLocationById(regionId, locationId);
-                description += `${location.description}\n`;
-            }
-
-            if (enemies.length > 0) {
-                const enemyCounts = enemies.reduce((acc, enemy) => {
-                    acc[enemy.name] = (acc[enemy.name] || 0) + 1;
-                    return acc;
-                }, {});
-
-                description += 'You see the following enemies:\n';
-                for (const [enemyName, count] of Object.entries(enemyCounts)) {
-                    description += `${enemyName} x${count}\n`;
-                }
-            }else {
-                description += 'The room is empty.';
-            }
+            description += room.description ? `${room.description}\n\n` : '';
+            description += enemies.length ? '**Enemies in the room:**\n' + enemies.map(enemy => `${enemy.name}`).join(', ') + '\n\n' : 'No enemies present.\n\n';
+            description += nodes.length ? '**Nodes in the room:**\n' + nodes.map(node => `${node.name}`).join(', ') + '\n' : 'No nodes present.';
         }
 
         let embed = new EmbedBuilder().setDescription(description);

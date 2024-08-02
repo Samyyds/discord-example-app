@@ -2,13 +2,31 @@ import Database from "better-sqlite3";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+class Node {
+    constructor(nodeType) {
+        this.id = nodeType.id;
+        this.rechargeInterval = nodeType.rechargeInterval;
+        this.charges = nodeType.charges;
+        this.name = nodeType.name;
+        this.yieldEntry = nodeType.yieldEntry;
+        this.yieldQuantity = nodeType.yieldQuantity;
+        this.requiredSkillType = nodeType.requiredSkillType;
+        this.requiredSkillValue = nodeType.requiredSkillValue;
+        this.requiredItem = nodeType.requiredItem;
+        this.subscriberOnly = nodeType.subscriberOnly;
+        this.description = nodeType.description;
+        this.location = nodeType.location;
+    }
+}
+
 class NodeManager {
     constructor() {
         if (NodeManager.instance) {
             return NodeManager.instance;
         }
 
-        this.nodes = [];
+        this.nodeTemplates = [];
+        this.locationNodes = new Map();
         NodeManager.instance = this;
     }
 
@@ -26,50 +44,55 @@ class NodeManager {
         const db = new Database(dbPath, { verbose: console.log });
 
         try {
-            const stmt = db.prepare('SELECT * FROM Nodes');
-            const rows = stmt.all();
-            this.nodes = rows.map(row => new Node(
-                row.ID, 
-                row.TYPE, 
-                row.RECHARGE_INTERVAL, 
-                row.CHARGES, 
-                row.NAME, 
-                row.YIELD_ENTRY, 
-                row.YIELD_QUANTITY, 
-                row.REQUIRED_SKILL_TYPE, 
-                row.REQUIRED_SKILL_VALUE, 
-                row.REQUIRED_ITEM, 
-                row.DESCRIPTION, 
-                row.LOCATION
-            ));
+            const nodeStmt = db.prepare('SELECT * FROM Nodes');
+            const nodeRows = nodeStmt.all();
+            this.nodeTemplates = nodeRows.map(row => ({
+                id: row.ID,
+                name: row.NAME,
+                rechargeInterval: row.RECHARGE_INTERVAL,
+                charges: row.CHARGES,
+                yieldEntry: row.YIELD_ENTRY,
+                yieldQuantity: row.YIELD_QUANTITY,
+                requiredSkillType: row.REQUIRED_SKILL_TYPE,
+                requiredSkillValue: row.REQUIRED_SKILL_VALUE,
+                requiredItem: row.REQUIRED_ITEM,
+                description: row.DESCRIPTION,
+                subscriberOnly: row.SUBSCRIBER_ONLY
+            }));
+
+            const locationStmt = db.prepare('SELECT * FROM LocationNodes');
+            const locationRows = locationStmt.all();
+            locationRows.forEach(row => {
+                const key = `${row.REGION_ID}_${row.LOCATION_ID}_${row.ROOM_ID}`;
+                if (!this.locationNodes.has(key)) {
+                    this.locationNodes.set(key, []);
+                }
+                this.locationNodes.get(key).push(this.getTemplateById(row.NODE_ID));
+            });
         } catch (error) {
             console.error('Error loading nodes from database:', error);
         } finally {
             db.close();
         }
     }
-}
 
-class Node {
-    constructor(id, type, recharge_interval, charges, name, yield_entry, yield_quantity, required_skill_type, required_skill_value, required_item, subscriberOnly = false, description, location) {
-        this.id = id;
-        this.type = type;
-        this.recharge_interval = recharge_interval;
-        this.charges = charges;
-        this.name = name;
-        this.yield_entry = yield_entry;
-        this.yield_quantity = yield_quantity;
-        this.required_skill_type = required_skill_type;
-        this.required_skill_value = required_skill_value;
-        this.required_item = required_item;
-        this.subscriberOnly = subscriberOnly;
-        this.description = description;
-        this.location = location;
+    getTemplateById(id) {
+        return this.nodeTemplates.find(t => t.id === id);
     }
 
-    getLocationParts() {
-        const [regionId, locationId, roomId] = this.location.split('/').map(Number);
-        return { regionId, locationId, roomId };
+    getAllNodeLocations() {
+        const nodeLocations = [];
+        for (const [key, value] of this.locationNodes.entries()) {
+            const parts = key.split('_').map(Number); 
+            const locationInfo = {
+                regionId: parts[0],
+                locationId: parts[1],
+                roomId: parts[2],
+                node: value  
+            };
+            nodeLocations.push(locationInfo);
+        }
+        return nodeLocations;
     }
 }
 

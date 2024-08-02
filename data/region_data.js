@@ -1,4 +1,5 @@
 import { Enemy, EnemyManager } from "../manager/enemy_manager.js";
+import { Node, NodeManager } from "../manager/node_manager.js";
 
 class Region {
     constructor(id, name, description) {
@@ -63,6 +64,7 @@ class Room {
         this.description = description;
         this.enemies = [];
         this.uniqueEnemiesSpawned = new Set();
+        this.nodes = [];
     }
 
     calculateAttenuatedWeight(weight, attenuation, floor) {
@@ -177,6 +179,16 @@ class Room {
 
     getEnemies() {
         return this.enemies;
+    }
+
+    spawnNodes(nodeTemplates) {
+        nodeTemplates.forEach(template => {
+            this.nodes.push( new Node(template));
+        });
+    }
+
+    getNodes(){
+        return this.nodes;
     }
 }
 

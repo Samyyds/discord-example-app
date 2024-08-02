@@ -27,9 +27,9 @@ const moveCommand = async (interaction) => {
         }
 
         console.log(`currentRoom.hasEnemies: ${currentRoom.hasEnemies()}`);
-        if (currentRoom.hasEnemies()) {
-            throw new Error('You cannot move to another room while there are still enemies here!');
-        }
+        // if (currentRoom.hasEnemies()) {
+        //     throw new Error('You cannot move to another room while there are still enemies here!');
+        // }实际测试时要打开！
 
         const direction = interaction.options.getInteger('direction');
         let moved = false;

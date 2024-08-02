@@ -1,6 +1,7 @@
 import { RegionManager } from "../manager/region_manager.js";
 import { EnemyManager } from '../manager/enemy_manager.js';
 import { AbilityManager } from "../manager/ability_manager.js";
+import { NodeManager } from "../manager/node_manager.js";
 
 function initializeGame() {
     //initialize region
@@ -16,7 +17,11 @@ function initializeGame() {
     abilityManager.loadFromDB();
     //console.log('Abilities loaded:', abilityManager.abilities);
 
-    //generate enemies
+    //initialize nodes
+    const nodeManager = NodeManager.getInstance();
+    nodeManager.loadFromDB();
+
+    //initialize rooms and generate enemies
     regionManager.regions.forEach(region => {
         region.locations.forEach(location => {
             location.initializeRooms();
@@ -33,7 +38,18 @@ function initializeGame() {
         });
     });
 
+    //generate nodes
+    const nodeLocations = nodeManager.getAllNodeLocations();
+    for (let i = 0; i <= nodeLocations.length - 1; i++) {
+        const room = regionManager.getRoomByLocation(nodeLocations[i].regionId, nodeLocations[i].locationId, nodeLocations[i].roomId);
+        if (room) {
+            room.spawnNodes(nodeLocations[i].node);
 
+            const nodes = room.getNodes();
+            const nodeNames = nodes.map(node => node.name).join(', ');
+            console.log(`room id: ${room.roomId}, nodes in room: ${nodeNames}`);
+        }
+    }
 }
 
 // function loadNodesFromDB(){
