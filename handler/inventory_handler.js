@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
-import { InventoryRepository } from '../data/repository_inventory.js';
+import { InventoryManager } from '../manager/inventory_manager.js';
 
 export async function handleInventoryInteraction(interaction) {
     if (!interaction.isButton()) return false;
@@ -14,8 +14,8 @@ export async function handleInventoryInteraction(interaction) {
     }
 
     const activeCharId = activeCharacter.id;
-    const inventoryRepo = InventoryRepository.getInstance();
-    const inventory = inventoryRepo.getInventory(userId, activeCharId);
+    const inventoryManager = InventoryManager.getInstance();
+    const inventory = inventoryManager.getInventory(userId, activeCharId);
     const groupedItems = inventory.getItemsGroupedByType();
 
     let description = '';
@@ -26,20 +26,20 @@ export async function handleInventoryInteraction(interaction) {
                 ? groupedItems['Equipment'].map(item => `${item.name} x${item.quantity}`).join('\n')
                 : 'No equipment items in your inventory.';
             break;
-        case 'inventory_gem':
-            description = groupedItems['Gem'].length > 0
-                ? groupedItems['Gem'].map(item => `${item.name} x${item.quantity}`).join('\n')
-                : 'No gem items in your inventory.';
+        case 'inventory_consumable':
+            description = groupedItems['Consumable'].length > 0
+                ? groupedItems['Consumable'].map(item => `${item.name} x${item.quantity}`).join('\n')
+                : 'No consumable items in your inventory.';
             break;
-        case 'inventory_potion':
-            description = groupedItems['Potion'].length > 0
-                ? groupedItems['Potion'].map(item => `${item.name} x${item.quantity}`).join('\n')
-                : 'No potion items in your inventory.';
+        case 'inventory_material':
+            description = groupedItems['Material'].length > 0
+                ? groupedItems['Material'].map(item => `${item.name} x${item.quantity}`).join('\n')
+                : 'No material items in your inventory.';
             break;
-        case 'inventory_ingredient':
-            description = groupedItems['Ingredient'].length > 0
-                ? groupedItems['Ingredient'].map(item => `${item.name} x${item.quantity}`).join('\n')
-                : 'No ingredient items in your inventory.';
+        case 'inventory_quest':
+            description = groupedItems['Quest'].length > 0
+                ? groupedItems['Quest'].map(item => `${item.name} x${item.quantity}`).join('\n')
+                : 'No quest items in your inventory.';
             break;
     }
 

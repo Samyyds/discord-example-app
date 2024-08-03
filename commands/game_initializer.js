@@ -2,24 +2,29 @@ import { RegionManager } from "../manager/region_manager.js";
 import { EnemyManager } from '../manager/enemy_manager.js';
 import { AbilityManager } from "../manager/ability_manager.js";
 import { NodeManager } from "../manager/node_manager.js";
+import { ItemManager } from "../manager/item_manager.js";
 
 function initializeGame() {
-    //initialize region
+    //load region
     const regionManager = RegionManager.getInstance();
     regionManager.loadFromJson();
 
-    //initialize enemy
+    //load enemy
     const enemyManager = EnemyManager.getInstance();
     enemyManager.loadFromDB();
 
-    //initialize abilities
+    //load abilities
     const abilityManager = AbilityManager.getInstance();
     abilityManager.loadFromDB();
     //console.log('Abilities loaded:', abilityManager.abilities);
 
-    //initialize nodes
+    //load nodes
     const nodeManager = NodeManager.getInstance();
     nodeManager.loadFromDB();
+
+    //load items/equipments/consumables
+    const itemManager = ItemManager.getInstance();
+    itemManager.loadFromDB();
 
     //initialize rooms and generate enemies
     regionManager.regions.forEach(region => {

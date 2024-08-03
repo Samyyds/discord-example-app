@@ -1,55 +1,50 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { InventoryRepository } from '../data/repository_inventory.js';
-import { Ingredient, ItemRepository } from '../data/repository_item.js';
+import { InventoryManager } from '../manager/inventory_manager.js';
+import { Item } from '../data/enums.js';
 import { getItemDataById } from '../util/util.js';
+import { RegionManager } from '../manager/region_manager.js';
 
-const oreTierThreshold = 10;
 
 const mineCommand = async (interaction) => {
     try {
-        const oreName = interaction.options.getString('ore').trim();
+        const nodeName = interaction.options.getString('node').trim();
 
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
             throw new Error('You do not have an available character!');
         }
-        const activeCharId = activeCharacter.id;
-        
+
         const playerMoveManager = PlayerMovementManager.getInstance();
-        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
-        
-        const itemRepo = ItemRepository.getInstance();
-        const oreItem = itemRepo.getItemByName(regionId, roomId, oreName);
+        const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
 
-        if (!oreItem || oreItem.type !== 'Ore' || !oreItem.details || oreItem.details.level === undefined) {
-            throw new Error(`No ore named ${oreName} found or it does not have a valid level.`);
-        }
-        
-        const miningLevel = activeCharacter.skills.mining.level;
-        const oreLevel = oreItem.details.level;
-        if (miningLevel < oreLevel * oreTierThreshold - (oreTierThreshold - 1)) {
-            throw new Error(`Your mining skill is not high enough to mine ${oreName}.`);
+        const regionManager = RegionManager.getInstance();
+        const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
+        const nodes = room.getNodes();
+        const node = nodes.find(node => node.name.toLowerCase() === nodeName.toLowerCase());
+
+        if (!node) {
+            throw new Error(`No node named ${nodeName} found in your current location.`);
         }
 
-        let quality = oreLevel;
-        let quantity = (((quality % oreTierThreshold) * 20) / 100) + 1;
-        quality /= oreTierThreshold;
+        if (activeCharacter.skills[node.requiredSkillType].level < node.requiredSkillValue) {
+            throw new Error(`Your ${node.requiredSkillType} skill is not high enough to harvest ${nodeName}. Required level: ${node.requiredSkillValue}`);
+        }
+
+        if (node.requiredItem && !activeCharacter.inventory.includes(node.requiredItem)) {
+            throw new Error(`You do not have the required item: ${node.requiredItem} to mine ${nodeName}.`);
+        }
 
         activeCharacter.skills.increaseSkillXp('mining', 30);
-        itemRepo.removeItemFromLocation(regionId, roomId, oreItem.id, 1);
 
-        const transformedData = getItemDataById(oreItem.transformed.id);
-        const newItem = new Ingredient(transformedData);
-
-        if(newItem){
-            const inventoryRepo = InventoryRepository.getInstance();
-            inventoryRepo.addItem(interaction.user.id, activeCharId, newItem, Math.round(quantity));
+        if (newItem) {
+            const inventoryManager = InventoryManager.getInstance();
+            inventoryManager.addItem(interaction.user.id, activeCharId, newItem, Math.round(quantity));
             let embed = new EmbedBuilder().setDescription(`You successfully mined ${Math.round(quantity)} ${newItem.name}. Your mining skill has increased.`);
             await interaction.reply({ embeds: [embed], ephemeral: true });
-        }else {
+        } else {
             throw new Error("Failed to create a new item.");
         }
 

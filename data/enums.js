@@ -54,7 +54,7 @@ export const Race = {
     "MANUMANU": 1,
     "KUI": 2,
     "MINOTAUR": 3,
-    "ULFUR":4,
+    "ULFUR": 4,
 };
 
 export const Personality = {
@@ -68,25 +68,25 @@ export const Ability = {
     "DRAIN": 2,
     "BITE": 3,
     "SLASH": 4,
-    "MARTIAL_STRIKE":5,
-    "DISARM":6,
-    "FORTIFY":7,
-    "BREAKOUT":8,
-    "SAVAGE_STRIKES":9,
-    "FURY":10,
-    "FRENZY":11,
-    "BLOOD_FRENZY":12,
-    "SPIRITBLADE":13,
-    "ARCANE_BARRIER":14,
-    "FIREBALL":15,
-    "INCINERATE":16,
-    "CHILLING_BLAST":17,
-    "ICE_SPEAR":18,
-    "NOXIOUS_CLOUD":19,
-    "PUTREFY":20,
-    "THUNDERCLAP":21,
-    "ELECTRIC_WHIP":22,
-    "NIMBLE":23
+    "MARTIAL_STRIKE": 5,
+    "DISARM": 6,
+    "FORTIFY": 7,
+    "BREAKOUT": 8,
+    "SAVAGE_STRIKES": 9,
+    "FURY": 10,
+    "FRENZY": 11,
+    "BLOOD_FRENZY": 12,
+    "SPIRITBLADE": 13,
+    "ARCANE_BARRIER": 14,
+    "FIREBALL": 15,
+    "INCINERATE": 16,
+    "CHILLING_BLAST": 17,
+    "ICE_SPEAR": 18,
+    "NOXIOUS_CLOUD": 19,
+    "PUTREFY": 20,
+    "THUNDERCLAP": 21,
+    "ELECTRIC_WHIP": 22,
+    "NIMBLE": 23
 };
 
 export const ItemType = {
@@ -107,13 +107,13 @@ export const Rarity = {
 };
 
 export const Skill = {
-    "BREWING": 0,
-    "COOKING": 1,
-    "FARMING": 2,
-    "FISHING": 3,
-    "GATHERING": 4,
-    "MINING": 5,
-    "SMITHING": 6,
+    "MINING": 0,
+    "SMITHING": 1,
+    "FISHING": 2,
+    "GATHERING": 3,
+    "FARMING": 4,
+    "COOKING": 5,
+    "BREWING": 6,
     "WATERBREATHING": 7
 };
 

@@ -1,6 +1,6 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
-import { InventoryRepository } from '../data/repository_inventory.js';
+import { InventoryManager } from '../manager/inventory_manager.js';
 
 const inventoryCommand = async (interaction) => {
     try {
@@ -11,8 +11,8 @@ const inventoryCommand = async (interaction) => {
         }
         const activeCharId = activeCharacter.id;
 
-        const inventoryRepo = InventoryRepository.getInstance();
-        const inventory = inventoryRepo.getInventory(interaction.user.id, activeCharId);
+        const inventoryManager = InventoryManager.getInstance();
+        const inventory = inventoryManager.getInventory(interaction.user.id, activeCharId);
         const groupedItems = inventory.getItemsGroupedByType();
 
         let description = groupedItems['Equipment'].length > 0
@@ -26,16 +26,16 @@ const inventoryCommand = async (interaction) => {
                     .setLabel('Equipment')
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
-                    .setCustomId('inventory_gem')
-                    .setLabel('Gem')
+                    .setCustomId('inventory_consumable')
+                    .setLabel('Consumable')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
-                    .setCustomId('inventory_potion')
-                    .setLabel('Potion')
+                    .setCustomId('inventory_material')
+                    .setLabel('Material')
                     .setStyle(ButtonStyle.Secondary),
                 new ButtonBuilder()
-                    .setCustomId('inventory_ingredient')
-                    .setLabel('Ingredient')
+                    .setCustomId('inventory_quest')
+                    .setLabel('Quest')
                     .setStyle(ButtonStyle.Danger),
             );
 
