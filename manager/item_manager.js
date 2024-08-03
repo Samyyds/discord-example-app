@@ -95,6 +95,10 @@ class ItemManager {
             db.close();
         }
     }
+
+    getItemDataById(itemId) {
+        return this.itemTemplates.find(item => item.id === itemId);        
+    }
 }
 
 export { Item, Equipment, Consumable, ItemManager };

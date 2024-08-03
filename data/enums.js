@@ -93,7 +93,7 @@ export const ItemType = {
     "MATERIAL": 0,
     "EQUIPMENT": 1,
     "CONSUMABLE": 2,
-    "KEY": 3
+    "QUEST": 3
 };
 
 export const Rarity = {

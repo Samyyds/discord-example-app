@@ -1,3 +1,5 @@
+import { ItemType } from '../data/enums.js';
+
 class InventoryManager {
     constructor() {
         if (InventoryManager.instance) {
@@ -104,21 +106,20 @@ class Inventory {
 
     getItemsGroupedByType() {
         const groupedItems = {
-            'Equipment': [],
-            'Material': [],
-            'Consumable': [],
-            'Quest': [],
+            [ItemType.MATERIAL]: [],
+            [ItemType.EQUIPMENT]: [],
+            [ItemType.CONSUMABLE]: [],
+            [ItemType.QUEST]: [],
         };
 
-        Object.values(this.items).forEach(({item, quantity}) => {
+        for (const { item, quantity } of Object.values(this.items)) {
             if (groupedItems.hasOwnProperty(item.type)) {
                 groupedItems[item.type].push({ ...item, quantity });
             }
-        });
+        }
 
         return groupedItems;
     }
-
 }
 
 export { InventoryManager };
