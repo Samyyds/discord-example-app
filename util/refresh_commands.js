@@ -104,6 +104,14 @@ const mineCommand = new SlashCommandBuilder()
       .setDescription('The name of the ore you want to mine.')
       .setRequired(true));
 
+const gatherCommand = new SlashCommandBuilder()
+  .setName('gather')
+  .setDescription('Collect resources from a specified node.')
+  .addStringOption(option =>
+    option.setName('resource')
+      .setDescription('The name of the node you want to gather.')
+      .setRequired(true));
+
 const dropCommand = new SlashCommandBuilder()
   .setName('drop')
   .setDescription('Drop item from inventory onto the floor.')
@@ -137,8 +145,8 @@ const attackCommand = new SlashCommandBuilder()
       .setRequired(true));
 
 const recipeCommand = new SlashCommandBuilder()
-      .setName('recipe')
-      .setDescription('Displays recipes available to your character.');
+  .setName('recipe')
+  .setDescription('Displays recipes available to your character.');
 
 const guildCommands =
   [
@@ -153,6 +161,7 @@ const guildCommands =
     takeCommand.toJSON(),
     inventoryCommand.toJSON(),
     mineCommand.toJSON(),
+    gatherCommand.toJSON(),
     dropCommand.toJSON(),
     unequipCommand.toJSON(),
     equipCommand.toJSON(),

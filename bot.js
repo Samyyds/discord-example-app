@@ -12,6 +12,7 @@ import { lookCommands } from './commands/command_look.js';
 import { attackCommands } from "./commands/command_attack.js";
 import { takeCommands } from './commands/command_take.js';
 import { mineCommands } from "./commands/command_mine.js";
+import { gatherCommands } from "./commands/command_gather.js";
 import { initializeGame } from './commands/game_initializer.js';
 import { inventoryCommands } from './commands/command_inventory.js';
 import { dropCommands } from './commands/command_drop.js';
@@ -143,6 +144,9 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "mine":
         commandHandler = mineCommands[commandName];
+        break;
+      case "gather":
+        commandHandler = gatherCommands[commandName];
         break;
       case "drop":
         commandHandler = dropCommands[commandName];

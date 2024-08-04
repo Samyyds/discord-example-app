@@ -97,8 +97,14 @@ class ItemManager {
     }
 
     getItemDataById(itemId) {
-        return this.itemTemplates.find(item => item.id === itemId);        
+        return this.itemTemplates.find(item => item.id === itemId);
     }
+
+    parseYieldQuantity(yieldQuantity) {
+        const [min, max] = yieldQuantity.split('-').map(Number);
+        return { min, max };
+    }
+
 }
 
 export { Item, Equipment, Consumable, ItemManager };

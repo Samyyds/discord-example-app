@@ -6,10 +6,9 @@ import { Skill } from '../data/enums.js';
 import { RegionManager } from '../manager/region_manager.js';
 import { Item, ItemManager } from "../manager/item_manager.js";
 
-
-const mineCommand = async (interaction) => {
+const gatherCommand = async (interaction) => {
     try {
-        const nodeName = interaction.options.getString('ore').trim();
+        const nodeName = interaction.options.getString('resource').trim();
 
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
@@ -29,8 +28,8 @@ const mineCommand = async (interaction) => {
             throw new Error(`No node named ${nodeName} found in your current location.`);
         }
 
-        if (node.requiredSkillType != Skill.MINING) {
-            throw new Error("Requires the Mining skill.");
+        if (node.requiredSkillType != Skill.GATHERING) {
+            throw new Error("Requires the gathering skill.");
         }
 
         // if (activeCharacter.skills[node.requiredSkillType].level < node.requiredSkillValue) {
@@ -50,20 +49,18 @@ const mineCommand = async (interaction) => {
         if (newItem) {
             const inventoryManager = InventoryManager.getInstance();
             inventoryManager.addItem(interaction.user.id, activeCharacter.id, newItem, Math.round(quantity));
-            let embed = new EmbedBuilder().setDescription(`You successfully mined ${Math.round(quantity)} ${newItem.name}. Your mining skill has increased.`);
+            let embed = new EmbedBuilder().setDescription(`You successfully gathered ${Math.round(quantity)} ${newItem.name}. Your gathering skill has increased.`);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         } else {
             throw new Error("Failed to create a new item.");
         }
 
-        //activeCharacter.skills.increaseSkillXp('mining', 30);
-
     } catch (error) {
-        console.error('Error in mineCommand:', error);
+        console.error('Error in gatherCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
 }
 
-export const mineCommands = {
-    mine: mineCommand
+export const gatherCommands = {
+    gather: gatherCommand
 }
