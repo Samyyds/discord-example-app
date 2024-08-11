@@ -11,13 +11,13 @@ const recipeCommand = async (interaction) => {
             throw new Error('You do not have an available character!');
         }
 
-        const recipeRepo = RecipeManager.getInstance();
+        const recipeManager = RecipeManager.getInstance();
 
-        //give player free recipes, this is only for test
-        recipeRepo.addRecipe(interaction.user.id, activeCharacter.id, 1);
-        recipeRepo.addRecipe(interaction.user.id, activeCharacter.id, 2);
+        //give player free recipe, this is only for test
+        const testRecipe = recipeManager.getRecipeById(1);
+        recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe);
 
-        const charRecipes = recipeRepo.getCharRecipes(interaction.user.id, activeCharacter.id);
+        const charRecipes = recipeManager.getCharRecipes(interaction.user.id, activeCharacter.id);
 
         let embed = new EmbedBuilder();
         embed = recipesParser(charRecipes, embed);

@@ -127,28 +127,17 @@ export function convertNameToLocationId(name, regionId) {
     return undefined;
 }
 
-export function recipesParser(recipeIds, embed) {
-    if (!recipeIds.length) {
+export function recipesParser(recipes, embed) {
+    if (!recipes.length) {
         embed.addFields({ name: 'No Recipes Available', value: 'You currently do not have any recipes.', inline: false });
         return embed;
     }
 
-    const itemNames = Object.keys(Item).reduce((obj, key) => {
-        obj[Item[key]] = key.replace(/_/g, ' ').toLowerCase();
-        return obj;
-    }, {});
-
-    let description = '';
-    recipeIds.forEach(id => {
-        const recipe = recipesData.find(r => r.id === id);
-        if (recipe) {
-            description += `${itemNames[recipe.result]} recipe: `;
-            let ingredientTexts = recipe.ingredients.map(ing => `${itemNames[ing.item]}*${ing.quantity}`);
-            description += ingredientTexts.join(', ') + '\n';
-        }
+    recipes.forEach(recipe => {
+        let ingredientsText = recipe.ingredients.map(ing => `${ing.item} x${ing.quantity}`).join(', ');
+        let recipeText = `**${recipe.name}**\nSkill: ${recipe.skill} (Min: ${recipe.minSkill})\nIngredients: ${ingredientsText}`;
+        embed.addFields({ name: 'Recipes:', value: recipeText, inline: false });
     });
-
-    embed.addFields({ name: 'Your available recipes are:\n', value: description.trim(), inline: false });
 
     return embed;
 }

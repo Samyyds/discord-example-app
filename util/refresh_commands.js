@@ -112,6 +112,14 @@ const gatherCommand = new SlashCommandBuilder()
       .setDescription('The name of the node you want to gather.')
       .setRequired(true));
 
+const cookCommand = new SlashCommandBuilder()
+  .setName('cook')
+  .setDescription('Cook raw materials according to the recipe.')
+  .addStringOption(option =>
+    option.setName('recipe_name')
+      .setDescription('The name of the recipe you want to cook.')
+      .setRequired(true));
+
 const dropCommand = new SlashCommandBuilder()
   .setName('drop')
   .setDescription('Drop item from inventory onto the floor.')
@@ -162,6 +170,7 @@ const guildCommands =
     inventoryCommand.toJSON(),
     mineCommand.toJSON(),
     gatherCommand.toJSON(),
+    cookCommand.toJSON(),
     dropCommand.toJSON(),
     unequipCommand.toJSON(),
     equipCommand.toJSON(),

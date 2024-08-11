@@ -3,6 +3,7 @@ import { EnemyManager } from '../manager/enemy_manager.js';
 import { AbilityManager } from "../manager/ability_manager.js";
 import { NodeManager } from "../manager/node_manager.js";
 import { ItemManager } from "../manager/item_manager.js";
+import { RecipeManager } from "../manager/recipe_manager.js";
 
 function initializeGame() {
     //load region
@@ -17,6 +18,10 @@ function initializeGame() {
     const abilityManager = AbilityManager.getInstance();
     abilityManager.loadFromDB();
     //console.log('Abilities loaded:', abilityManager.abilities);
+
+    //load recipes
+    const recipeManager = RecipeManager.getInstance();
+    recipeManager.loadFromJson();
 
     //load nodes
     const nodeManager = NodeManager.getInstance();

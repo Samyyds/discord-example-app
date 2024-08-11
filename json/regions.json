@@ -9,54 +9,61 @@
           "locationId": 0,
           "name": "Village Center",
           "roomCount": 1,
-          "description": "The center of the village.",
+          "description": "The village center contains useful tutorial NPCs, and questgiver NPCs.",
           "subscriberOnly": false
         },
         {
           "locationId": 1,
           "name": "Blacksmith",
           "roomCount": 1,
-          "description": "A place to forge weapons and armor.",
+          "description": "Players can use the services of the blacksmith to craft items and equipment.",
           "subscriberOnly": false
         },
         {
           "locationId": 2,
           "name": "Farm",
           "roomCount": 1,
-          "description": "A place to grow crops and raise livestock.",
+          "description": "Players can use the farm to grow crops for use in crafting.",
           "subscriberOnly": true
         },
         {
           "locationId": 3,
-          "name": "Clinic",
+          "name": "Tavern",
           "roomCount": 1,
-          "description": "A place to heal wounds and treat illnesses.",
+          "description": "Players can cook and brew here.",
           "subscriberOnly": false
         },
         {
           "locationId": 4,
-          "name": "Dock",
+          "name": "Clinic",
           "roomCount": 1,
-          "description": "The main dock of Moku'ah.",
+          "description": "Players respawn here if they die in this region.",
           "subscriberOnly": false
         },
         {
           "locationId": 5,
-          "name": "Jungle",
-          "roomCount": 100,
-          "description": "A dense and dangerous jungle.",
+          "name": "Dock",
+          "roomCount": 1,
+          "description": "Player can travel to other specified regions at the dock.",
           "subscriberOnly": false
         },
         {
           "locationId": 6,
+          "name": "Jungle",
+          "roomCount": 100,
+          "description": "Tier 1 dungeon for players to fight enemies and get loot in.",
+          "subscriberOnly": false
+        },
+        {
+          "locationId": 7,
           "name": "Volcano",
           "roomCount": 100,
-          "description": "A towering and active volcano.",
+          "description": "Tier 3 dungeon for players to fight enemies and get loot in. Mixed subscriber content",
           "subscriberOnly": true
         }
       ],
       "paths": {
-        "4": [
+        "5": [
           {
             "regionId": 1,
             "locationId": 3
@@ -77,19 +84,19 @@
           "locationId": 0,
           "name": "Town",
           "roomCount": 1,
-          "description": "The main town area."
+          "description": "The village center contains useful tutorial NPCs."
         },
         {
           "locationId": 1,
           "name": "Crafthouse",
           "roomCount": 1,
-          "description": "A place to craft items and equipment."
+          "description": "Players can use the services of the crafthouse to craft items and equipment."
         },
         {
           "locationId": 2,
           "name": "Tavern",
           "roomCount": 1,
-          "description": "A place to rest and socialize."
+          "description": "Contains questgiver NPCs."
         },
         {
           "locationId": 3,
@@ -101,14 +108,20 @@
           "locationId": 4,
           "name": "Labyrinth",
           "roomCount": 1,
-          "description": "A mysterious and complex maze."
+          "description": "Tier 2 dungeon for players to fight enemies and get loot in."
+        },
+        {
+          "locationId": 5,
+          "name": "Hospital",
+          "roomCount": 1,
+          "description": "Players respawn here if they die in this region."
         }
       ],
       "paths": {
         "3": [
           {
             "regionId": 0,
-            "locationId": 4
+            "locationId": 5
           },
           {
             "regionId": 2,
@@ -152,6 +165,13 @@
           "name": "Tundra",
           "roomCount": 100,
           "description": "A vast and frozen tundra.",
+          "subscriberOnly": true
+        },
+        {
+          "locationId": 4,
+          "name": "Hospital",
+          "roomCount": 1,
+          "description": "Players respawn here if they die in this region.",
           "subscriberOnly": true
         }
       ],
@@ -206,7 +226,7 @@
         "0": [
           {
             "regionId": 0,
-            "locationId": 4
+            "locationId": 5
           },
           {
             "regionId": 1,

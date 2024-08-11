@@ -15,14 +15,20 @@ class Item {
 }
 
 class Equipment extends Item {
+    // constructor(equipmentType) {
+    //     super(equipmentType.id, equipmentType.name, equipmentType.type, equipmentType.rarity, equipmentType.value, equipmentType.isQuest, equipmentType.description);
+    // }
     constructor(equipmentType) {
-        super(equipmentType.id, equipmentType.name, equipmentType.type, equipmentType.rarity, equipmentType.value, equipmentType.isQuest, equipmentType.description);
+        super(equipmentType);
     }
 }
 
 class Consumable extends Item {
+    // constructor(consumableType) {
+    //     super(consumableType.id, consumableType.name, consumableType.type, consumableType.rarity, consumableType.value, consumableType.isQuest, consumableType.description);
+    // }
     constructor(consumableType) {
-        super(consumableType.id, consumableType.name, consumableType.type, consumableType.rarity, consumableType.value, consumableType.isQuest, consumableType.description);
+        super(consumableType);
     }
 }
 
@@ -98,6 +104,10 @@ class ItemManager {
 
     getItemDataById(itemId) {
         return this.itemTemplates.find(item => item.id === itemId);
+    }
+
+    getConsumableDataById(consumableId) {
+        return this.consumableTemplates.find(item => item.id === consumableId);
     }
 
     parseYieldQuantity(yieldQuantity) {

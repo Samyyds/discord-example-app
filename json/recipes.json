@@ -1,30 +1,279 @@
 [
     {
         "id": 1,
-        "skill": 1,
-        "minSkill": 0,
+        "name": "kelp broth",
+        "skill": 5,
+        "minSkill": 10,
         "ingredients": [
             {
-                "item": 5,
+                "item": 17,
                 "quantity": 1
             }
         ],
-        "result": 4
+        "result": {
+            "type": 2,
+            "item": 1
+        },
+        "subscriberOnly": false
     },
     {
         "id": 2,
-        "skill": 1,
-        "minSkill": 0,
+        "name": "boiled crab w/ diced kelp",
+        "skill": 5,
+        "minSkill": 10,
         "ingredients": [
             {
-                "item": 5,
+                "item": 17,
                 "quantity": 1
             },
             {
-                "item": 6,
+                "item": 8,
                 "quantity": 1
             }
         ],
-        "result": 7
+        "result": {
+            "type": 2,
+            "item": 2
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 3,
+        "name": "geyser roasted eel",
+        "skill": 5,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 9,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 3
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 4,
+        "name": "sourfin sushi",
+        "skill": 5,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 40,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 4
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 5,
+        "name": "blubber steak",
+        "skill": 5,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 41,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 5
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 6,
+        "name": "mystic reef scones",
+        "skill": 5,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 18,
+                "quantity": 1
+            },
+            {
+                "item": 24,
+                "quantity": 1
+            },
+            {
+                "item": 35,
+                "quantity": 1
+            },
+            {
+                "item": 42,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 6
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 7,
+        "name": "trench worm stew",
+        "skill": 5,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 11,
+                "quantity": 1
+            },
+            {
+                "item": 16,
+                "quantity": 1
+            },
+            {
+                "item": 17,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 7
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 8,
+        "name": "abyssal brisket",
+        "skill": 5,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 16,
+                "quantity": 2
+            },
+            {
+                "item": 43,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 8
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 9,
+        "name": "bisnova brew",
+        "skill": 5,
+        "minSkill": 25,
+        "ingredients": [
+            {
+                "item": 40,
+                "quantity": 1
+            },
+            {
+                "item": 35,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 9
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 10,
+        "name": "tender w/ brine reduction",
+        "skill": 5,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 18,
+                "quantity": 1
+            },
+            {
+                "item": 13,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 10
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 11,
+        "name": "serpent's embrace (roast)",
+        "skill": 5,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 8,
+                "quantity": 1
+            },
+            {
+                "item": 16,
+                "quantity": 2
+            },
+            {
+                "item": 33,
+                "quantity": 1
+            },
+            {
+                "item": 43,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 11
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 12,
+        "name": "brineapple blast bowl",
+        "skill": 5,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 18,
+                "quantity": 1
+            },
+            {
+                "item": 17,
+                "quantity": 1
+            },
+            {
+                "item": 13,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 12
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 13,
+        "name": "boiled shell",
+        "skill": 5,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 2,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 24
+        },
+        "subscriberOnly": false
     }
 ]

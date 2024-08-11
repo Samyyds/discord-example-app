@@ -19,6 +19,7 @@ import { dropCommands } from './commands/command_drop.js';
 import { unequipCommands } from "./commands/command_unequip.js";
 import { equipCommands } from "./commands/command_equip.js";
 import { recipeCommands } from "./commands/command_recipe.js";
+import { cookCommands } from "./commands/command_cook.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
@@ -147,6 +148,9 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "gather":
         commandHandler = gatherCommands[commandName];
+        break;
+      case "cook":
+        commandHandler = cookCommands[commandName];
         break;
       case "drop":
         commandHandler = dropCommands[commandName];
