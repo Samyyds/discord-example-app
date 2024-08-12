@@ -150,7 +150,7 @@ export const Item = {
     "BLIGHTBEAN": 22,
     "BRAIDED_KELP": 23,
     "BOILED_SHELL": 24,
-    "CONCENTRATED_CALCIUM": 25,
+    "CALCIUM": 25,
     "NECROTIC_RESIDUE": 26,
     "NECROSALT_INFUSION": 27,
     "DEEPSPARK_ESSENCE": 28,
@@ -166,9 +166,7 @@ export const Item = {
     "SILVER_GRASS": 38,
     "LOTUS_ROOT": 39,
     "SOURFIN": 40,
-    "EELSHARK_BLUBBER": 41,
-    "BABY_KELP": 42,
-    "NECROSALT": 43
+    "EELSHARK_BLUBBER": 41
 };
 
 export const Nodes = {

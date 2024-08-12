@@ -117,7 +117,15 @@ const cookCommand = new SlashCommandBuilder()
   .setDescription('Cook raw materials according to the recipe.')
   .addStringOption(option =>
     option.setName('recipe_name')
-      .setDescription('The name of the recipe you want to cook.')
+      .setDescription('The name of the recipe you want to use.')
+      .setRequired(true));
+
+const brewCommand = new SlashCommandBuilder()
+  .setName('brew')
+  .setDescription('Create potions using diverse ingredients.')
+  .addStringOption(option =>
+    option.setName('recipe_name')
+      .setDescription('The name of the recipe you want to use.')
       .setRequired(true));
 
 const dropCommand = new SlashCommandBuilder()
@@ -171,6 +179,7 @@ const guildCommands =
     mineCommand.toJSON(),
     gatherCommand.toJSON(),
     cookCommand.toJSON(),
+    brewCommand.toJSON(),
     dropCommand.toJSON(),
     unequipCommand.toJSON(),
     equipCommand.toJSON(),

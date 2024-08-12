@@ -107,7 +107,7 @@
                 "quantity": 1
             },
             {
-                "item": 42,
+                "item": 17,
                 "quantity": 1
             }
         ],
@@ -153,7 +153,7 @@
                 "quantity": 2
             },
             {
-                "item": 43,
+                "item": 27,
                 "quantity": 1
             }
         ],
@@ -224,7 +224,7 @@
                 "quantity": 1
             },
             {
-                "item": 43,
+                "item": 27,
                 "quantity": 1
             }
         ],
@@ -273,6 +273,313 @@
         "result": {
             "type": 0,
             "item": 24
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 14,
+        "name": "health potion",
+        "skill": 6,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": "any_consumable",
+                "quantity": 1
+            },
+            {
+                "item": 13,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 13
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 15,
+        "name": "mana potion",
+        "skill": 6,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": "any_consumable",
+                "quantity": 1
+            },
+            {
+                "item": 14,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 14
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 16,
+        "name": "potent health potion",
+        "skill": 6,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 40,
+                "quantity": 1
+            },
+            {
+                "item": 18,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 15
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 17,
+        "name": "potent mana potion",
+        "skill": 6,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 40,
+                "quantity": 1
+            },
+            {
+                "item": 35,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 16
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 18,
+        "name": "storm potion",
+        "skill": 6,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 29,
+                "quantity": 1
+            },
+            {
+                "item": 13,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 17
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 19,
+        "name": "alacrity potion",
+        "skill": 6,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 28,
+                "quantity": 1
+            },
+            {
+                "item": 13,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 18
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 20,
+        "name": "stoneskin potion",
+        "skill": 6,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 31,
+                "quantity": 1
+            },
+            {
+                "item": 13,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 18
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 21,
+        "name": "kleptomania potion",
+        "skill": 6,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 11,
+                "quantity": 1
+            },
+            {
+                "item": 13,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 2,
+            "item": 20
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 22,
+        "name": "necrotic residue",
+        "skill": 6,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 20,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 26
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 23,
+        "name": "necrosalt infusion",
+        "skill": 6,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 13,
+                "quantity": 2
+            },
+            {
+                "item": 26,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 26
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 24,
+        "name": "deepspark essence",
+        "skill": 6,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 15,
+                "quantity": 1
+            },
+            {
+                "item": 21,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 28
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 25,
+        "name": "stormcoral infusion",
+        "skill": 6,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 2
+            },
+            {
+                "item": 28,
+                "quantity": 2
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 28
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 26,
+        "name": "infused calcium",
+        "skill": 6,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 25,
+                "quantity": 4
+            },
+            {
+                "item": 29,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 28
+        },
+        "subscriberOnly": true
+    },
+    {
+        "id": 27,
+        "name": "polarised salt",
+        "skill": 6,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": "tier1_currency",
+                "quantity": 20
+            },
+            {
+                "item": 12,
+                "quantity": 1
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 14
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 28,
+        "name": "crushed salt",
+        "skill": 6,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 12,
+                "quantity": 2
+            }
+        ],
+        "result": {
+            "type": 0,
+            "item": 13
         },
         "subscriberOnly": false
     }
