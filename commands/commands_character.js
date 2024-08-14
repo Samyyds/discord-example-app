@@ -31,7 +31,7 @@ const createCommand = async (interaction) => {
             return;
         }
 
-        const character = createCharacter(userId, charName, className, raceName);
+        const character = await createCharacter(userId, charName, className, raceName);
 
         const characterRepo = CharacterManager.getInstance();
         characterRepo.addCharacter(userId, character);

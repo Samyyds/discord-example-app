@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { CharacterManager } from '../manager/character_manager.js';
+import { CharacterManager,SkillContainer } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { InventoryManager } from '../manager/inventory_manager.js';
 import { Skill } from '../data/enums.js';
@@ -56,6 +56,7 @@ const mineCommand = async (interaction) => {
             throw new Error("Failed to create a new item.");
         }
 
+        console.log(activeCharacter.skills);
         //activeCharacter.skills.increaseSkillXp('mining', 30);
 
     } catch (error) {

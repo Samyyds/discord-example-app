@@ -170,6 +170,7 @@ async function getNextCharacterId() {
     try {
         const [rows] = await connection.execute('SELECT MAX(id) AS max_id FROM mm_characters');
         const maxId = rows[0].max_id || 0;
+        console.log(`=================maxId:${maxId}`);
         return maxId + 1;
     } catch (error) {
         console.error('Failed to retrieve next character ID:', error);
