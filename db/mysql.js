@@ -1,6 +1,6 @@
 import mysql from 'mysql2/promise';
 import { serializeObject } from "../util/util.js";
-import { Character, CharacterManager } from "../manager/character_manager.js";
+import { Character, CharacterManager, SkillContainer, StatContainer, StatusContainer } from "../manager/character_manager.js";
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 
 const dbConfig = {
@@ -144,9 +144,27 @@ async function loadCharactersForUser(userId) {
                 row.loot_quality,
                 JSON.parse(row.abilities)
             );
-            character.stats = JSON.parse(row.stats);
-            character.skills = JSON.parse(row.skills);
-            character.status = JSON.parse(row.status);
+            const statsData = JSON.parse(row.stats);
+            const skillsData = JSON.parse(row.skills);
+            const statusData = JSON.parse(row.status);
+
+            character.stats = new StatContainer(
+                statsData.hpMax, statsData.mpMax, statsData.hp, statsData.mp, statsData.spd,
+                statsData.physicalATK, statsData.physicalDEF, statsData.magicATK, statsData.magicDEF,
+                statsData.fireATK, statsData.fireDEF, statsData.lightATK, statsData.lightDEF,
+                statsData.darkATK, statsData.darkDEF
+            );
+
+            character.skills = new SkillContainer(
+                skillsData.mining, skillsData.smithing, skillsData.crafting, skillsData.fishing,
+                skillsData.gathering, skillsData.farming, skillsData.cooking, skillsData.brewing
+            );
+
+            character.status = new StatusContainer(
+                statusData.spdMult, statusData.phyDefBuffMag, statusData.phyDefBuffTimer,
+                statusData.bleedMag, statusData.bleedTimer, statusData.poisonMag, statusData.poisonTimer
+            );
+
             return character;
         });
 
@@ -170,7 +188,6 @@ async function getNextCharacterId() {
     try {
         const [rows] = await connection.execute('SELECT MAX(id) AS max_id FROM mm_characters');
         const maxId = rows[0].max_id || 0;
-        console.log(`=================maxId:${maxId}`);
         return maxId + 1;
     } catch (error) {
         console.error('Failed to retrieve next character ID:', error);

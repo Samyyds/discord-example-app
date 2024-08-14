@@ -56,8 +56,7 @@ const mineCommand = async (interaction) => {
             throw new Error("Failed to create a new item.");
         }
 
-        console.log(activeCharacter.skills);
-        //activeCharacter.skills.increaseSkillXp('mining', 30);
+        activeCharacter.skills.increaseSkillXp('mining', 30);
 
     } catch (error) {
         console.error('Error in mineCommand:', error);

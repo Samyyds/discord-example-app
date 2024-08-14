@@ -60,6 +60,8 @@ const cookCommand = async (interaction) => {
 
         inventoryManager.addItem(interaction.user.id, activeCharacter.id, craftedItem, 1);
 
+        activeCharacter.skills.increaseSkillXp('cooking', 30);
+
         const embed = new EmbedBuilder()
             .setColor(0x00AE86)
             .setTitle('Crafting Successful!')

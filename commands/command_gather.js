@@ -55,6 +55,8 @@ const gatherCommand = async (interaction) => {
             throw new Error("Failed to create a new item.");
         }
 
+        activeCharacter.skills.increaseSkillXp('gathering', 30);
+
     } catch (error) {
         console.error('Error in gatherCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
