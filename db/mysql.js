@@ -2,6 +2,9 @@ import mysql from 'mysql2/promise';
 import { serializeObject } from "../util/util.js";
 import { Character, CharacterManager, SkillContainer, StatContainer, StatusContainer } from "../manager/character_manager.js";
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
+import { InventoryManager } from "../manager/inventory_manager.js";
+import { ItemManager, Item, Consumable, Equipment } from "../manager/item_manager.js";
+import { ItemType } from "../data/enums.js";
 
 const dbConfig = {
     host: 'na01-sql.pebblehost.com',
@@ -197,4 +200,107 @@ async function getNextCharacterId() {
     }
 }
 
-export { MysqlDB, hasCharacters, saveCharacterData, getAllUserIds, loadCharactersForUser, saveCharacterLocation, getNextCharacterId };
+async function updateInventoryToDB(userId, characterId, item, quantity, operation) {
+    const connection = await MysqlDB.getConnection();
+    try {
+        await connection.beginTransaction();
+ 
+        const [existingRows] = await connection.query(
+            'SELECT quantity FROM mm_inventory WHERE user_id = ? AND character_id = ? AND item_id = ?',
+            [userId, characterId, item.id]
+        );
+
+        let newQuantity;
+        if (existingRows && existingRows.length > 0) {
+            let existingQuantity = existingRows[0].quantity;
+            newQuantity = operation === 'add' ? existingQuantity + quantity : existingQuantity - quantity;
+        } else {
+            console.log("No existing data found. Initializing new entry.");
+            newQuantity = operation === 'add' ? quantity : 0;
+        }
+
+        if (newQuantity <= 0) {
+            await connection.query(
+                'DELETE FROM mm_inventory WHERE user_id = ? AND character_id = ? AND item_id = ?',
+                [userId, characterId, item.id]
+            );
+        } else {
+            if (existingRows && existingRows.length > 0) {
+                await connection.query(
+                    'UPDATE mm_inventory SET quantity = ? WHERE user_id = ? AND character_id = ? AND item_id = ?',
+                    [newQuantity, userId, characterId, item.id]
+                );
+            } else {
+                await connection.query(
+                    'INSERT INTO mm_inventory (user_id, character_id, item_type, item_id, quantity) VALUES (?, ?, ?, ?, ?)',
+                    [userId, characterId, item.type, item.id, newQuantity]
+                );
+            }
+        }
+
+        await connection.commit();
+    } catch (error) {
+        console.error('Transaction failed, rolling back.', error);
+        await connection.rollback();
+        throw error;  // Re-throwing the error is important after a rollback
+    } finally {
+        connection.release();
+    }
+}
+
+async function loadInventoryForUser(userId) {
+    const connection = await MysqlDB.getConnection();
+    try {
+        const [characterInventories] = await connection.query(
+            'SELECT character_id, item_type, item_id, quantity FROM mm_inventory WHERE user_id = ?',
+            [userId]
+        );
+
+        const itemManager = ItemManager.getInstance();
+        const inventoryManager = InventoryManager.getInstance();
+
+        for (const { character_id, item_type, item_id, quantity } of characterInventories) {
+            let newItem;
+            switch (item_type) {
+                case ItemType.MATERIAL:
+                    let itemInfo = itemManager.getItemDataById(item_id);
+                    newItem = itemInfo ? new Item(itemInfo) : null;
+                    break;
+                case ItemType.CONSUMABLE:
+                    let consumableInfo = itemManager.getConsumableDataById(item_id);
+                    newItem = consumableInfo ? new Consumable(consumableInfo) : null;
+                    break;
+                case ItemType.EQUIPMENT:
+                    let equipmentInfo = itemManager.getEquipmentDataById(item_id);
+                    newItem = equipmentInfo ? new Equipment(equipmentInfo) : null;
+                    break;
+                default:
+                    console.log(`Unrecognized item type for item_id: ${item_id}`);
+                    newItem = null;
+            }
+
+            if (newItem) {
+                const inventory = inventoryManager.getInventory(userId, character_id);
+                inventory.loadItem(newItem, quantity);
+            } else {
+                console.log(`Item data not found or failed to instantiate for item_id: ${item_id}`);
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load inventory for user:', error);
+    } finally {
+        connection.release();
+    }
+}
+
+export {
+    MysqlDB,
+    hasCharacters,
+    saveCharacterData,
+    getAllUserIds,
+    loadCharactersForUser,
+    saveCharacterLocation,
+    getNextCharacterId,
+    updateInventoryToDB,
+    loadInventoryForUser
+};

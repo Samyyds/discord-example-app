@@ -1,7 +1,7 @@
 import { Class, Race, Personality, Item, Ability } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { RegionManager } from '../manager/region_manager.js';
-import recipesData from '../json/recipes.json' assert {type: 'json'};
+import { EmbedBuilder } from 'discord.js';
 
 export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
     const baseSkillRequirement = 100;
@@ -151,3 +151,11 @@ export function serializeObject(instance, properties) {
     });
     return JSON.stringify(serialized);
 }
+
+export async function sendErrorMessage(interaction, message) {
+    const embed = new EmbedBuilder()
+        .setColor(0xFF0000) // Red color for error
+        .setDescription(message);
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+}
+

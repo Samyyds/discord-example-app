@@ -4,6 +4,9 @@ import { InventoryManager } from '../manager/inventory_manager.js';
 import { RecipeManager } from '../manager/recipe_manager.js';
 import { ItemType } from "../data/enums.js";
 import { Consumable, Item, ItemManager } from "../manager/item_manager.js";
+import { sendErrorMessage } from "../util/util.js";
+import { RegionManager } from "../manager/region_manager.js";
+import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 
 const brewCommand = async (interaction) => {
     try {
@@ -12,14 +15,24 @@ const brewCommand = async (interaction) => {
         const characterManager = CharacterManager.getInstance();
         const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
+        }
+
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+
+        const regionManager = RegionManager.getInstance();
+        const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
+        const nodes = room.getNodes();
+        if(!nodes.find(node => node.name.toLowerCase() === 'kitchen')){
+            return await sendErrorMessage(interaction, 'No kitchen available here. Please head to the Moku\'ah Tavern.');
         }
 
         const recipeManager = RecipeManager.getInstance();
         const recipe = recipeManager.getRecipeByName(recipeName);
 
         if (!recipeManager.hasRecipe(recipe.id)) {
-            throw new Error('You do not have this recipe!');
+            return await sendErrorMessage(interaction, 'You do not have this recipe!');
         }
 
         const ingredients = recipe.ingredients;
@@ -55,7 +68,7 @@ const brewCommand = async (interaction) => {
         }
 
         if (missingIngredients.length > 0) {
-            throw new Error(`You are missing the following ingredients: ${missingIngredients.join(', ')}`);
+            return await sendErrorMessage(interaction, `You are missing the following ingredients: ${missingIngredients.join(', ')}`);
         }
 
         ingredients.forEach(ingredient => {
@@ -74,7 +87,7 @@ const brewCommand = async (interaction) => {
                 craftedItem = new Consumable(itemManager.getConsumableDataById(Number(result.item)));
                 break;
             default:
-                throw new Error('Unsupported item type for crafting.');
+                return await sendErrorMessage(interaction, 'Unsupported item type for crafting.');
         }
 
         inventoryManager.addItem(interaction.user.id, activeCharacter.id, craftedItem, 1);

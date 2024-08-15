@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
-import { MysqlDB, getAllUserIds, hasCharacters, loadCharactersForUser } from "./db/mysql.js";
+import { MysqlDB, getAllUserIds, hasCharacters, loadCharactersForUser, loadInventoryForUser } from "./db/mysql.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
@@ -47,6 +47,7 @@ client.once('ready', async () => {
       const userIds = await getAllUserIds(connection);
       for (const userId of userIds) {
         await loadCharactersForUser(userId);
+        await loadInventoryForUser(userId);
       }
     }
 

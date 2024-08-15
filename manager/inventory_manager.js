@@ -1,4 +1,5 @@
 import { ItemType } from '../data/enums.js';
+import { updateInventoryToDB } from "../db/mysql.js";
 
 class InventoryManager {
     constructor() {
@@ -41,11 +42,18 @@ class InventoryManager {
     addItem(userId, characterId, item, quantity) {
         const inventory = this.getInventory(userId, characterId);
         inventory.addItem(item, quantity);
+        updateInventoryToDB(userId, characterId, item, quantity, 'add');
     }
 
     removeItem(userId, characterId, item, quantity) {
         const inventory = this.getInventory(userId, characterId);
         inventory.removeItem(item, quantity);
+        updateInventoryToDB(userId, characterId, item, quantity, 'remove');
+    }
+
+    loadItem(item, quantity){// used only during the initial loading from database
+        const inventory = this.getInventory(userId, characterId);
+        inventory.loadItem(item, quantity);
     }
 
     useItem(userId, characterId, item) {
@@ -94,6 +102,12 @@ class Inventory {
             console.log('Not enough item quantity or item does not exist in inventory.');
         }
     }
+
+    loadItem(item, quantity) {
+        // used only during the initial loading from database
+        this.items[item.id] = { item, quantity };
+    }
+
 
     useItem(item) {
         if (item instanceof Potion && this.items[item.id] && this.items[item.id].quantity > 0) {

@@ -5,6 +5,7 @@ import { InventoryManager } from '../manager/inventory_manager.js';
 import { Skill } from '../data/enums.js';
 import { RegionManager } from '../manager/region_manager.js';
 import { Item, ItemManager } from "../manager/item_manager.js";
+import { sendErrorMessage } from "../util/util.js";
 
 const gatherCommand = async (interaction) => {
     try {
@@ -13,7 +14,7 @@ const gatherCommand = async (interaction) => {
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
         const playerMoveManager = PlayerMovementManager.getInstance();
@@ -25,11 +26,11 @@ const gatherCommand = async (interaction) => {
         const node = nodes.find(node => node.name.toLowerCase() === nodeName.toLowerCase());
 
         if (!node) {
-            throw new Error(`No node named ${nodeName} found in your current location.`);
+            return await sendErrorMessage(interaction, `No node named ${nodeName} found in your current location.`)
         }
 
         if (node.requiredSkillType != Skill.GATHERING) {
-            throw new Error("Requires the gathering skill.");
+            return await sendErrorMessage(interaction, 'Requires gathering skill.');
         }
 
         // if (activeCharacter.skills[node.requiredSkillType].level < node.requiredSkillValue) {
@@ -37,7 +38,7 @@ const gatherCommand = async (interaction) => {
         // }
 
         if (node.requiredItem && !activeCharacter.inventory.includes(node.requiredItem)) {
-            throw new Error(`You do not have the required item: ${node.requiredItem} to mine ${nodeName}.`);
+            return await sendErrorMessage(interaction, `You do not have the required item: ${node.requiredItem} to gather ${nodeName}.`);
         }
 
         const itemManager = ItemManager.getInstance();
@@ -52,7 +53,7 @@ const gatherCommand = async (interaction) => {
             let embed = new EmbedBuilder().setDescription(`You successfully gathered ${Math.round(quantity)} ${newItem.name}. Your gathering skill has increased.`);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         } else {
-            throw new Error("Failed to create a new item.");
+            return await sendErrorMessage(interaction, 'Failed to gather.');
         }
 
         activeCharacter.skills.increaseSkillXp('gathering', 30);
