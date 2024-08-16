@@ -14,8 +14,10 @@ const recipeCommand = async (interaction) => {
         const recipeManager = RecipeManager.getInstance();
 
         //give player free recipe, this is only for test
-        const testRecipe = recipeManager.getRecipeById(1);
-        recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe);
+        const testRecipe1 = recipeManager.getRecipeById(1);//kelp broth for cooking
+        recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe1);
+        const testRecipe2 = recipeManager.getRecipeById(16);//potent health potion for brewing
+        recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe2);
 
         const charRecipes = recipeManager.getCharRecipes(interaction.user.id, activeCharacter.id);
 

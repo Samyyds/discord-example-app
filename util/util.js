@@ -1,4 +1,4 @@
-import { Class, Race, Personality, Item, Ability } from '../data/enums.js';
+import { Class, Race, Personality, Item, Skill, Ability } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { RegionManager } from '../manager/region_manager.js';
 import { EmbedBuilder } from 'discord.js';
@@ -133,11 +133,20 @@ export function recipesParser(recipes, embed) {
         return embed;
     }
 
+    let recipeText = '';
+    
     recipes.forEach(recipe => {
-        let ingredientsText = recipe.ingredients.map(ing => `${ing.item} x${ing.quantity}`).join(', ');
-        let recipeText = `**${recipe.name}**\nSkill: ${recipe.skill} (Min: ${recipe.minSkill})\nIngredients: ${ingredientsText}`;
-        embed.addFields({ name: 'Recipes:', value: recipeText, inline: false });
+        const skillName = Object.keys(Skill).find(key => Skill[key] === recipe.skill);
+        
+        let ingredientsText = recipe.ingredients.map(ing => {
+            const itemName = Object.keys(Item).find(key => Item[key] === ing.item);
+            return `${itemName} x${ing.quantity}`;
+        }).join(', ');
+
+        recipeText += `**${recipe.name}**\nSkill: ${skillName.toLowerCase()} (Min: ${recipe.minSkill})\nIngredients: ${ingredientsText.toLowerCase()}\n\n`;
     });
+
+    embed.addFields({ name: 'Recipes:', value: recipeText.trim(), inline: false });
 
     return embed;
 }
