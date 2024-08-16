@@ -31,7 +31,7 @@ const brewCommand = async (interaction) => {
         const recipeManager = RecipeManager.getInstance();
         const recipe = recipeManager.getRecipeByName(recipeName);
 
-        if (!recipeManager.hasRecipe(recipe.id)) {
+        if (!recipeManager.hasRecipe(interaction.user.id, activeCharacter.id, recipe.id)) {
             return await sendErrorMessage(interaction, 'You do not have this recipe!');
         }
 

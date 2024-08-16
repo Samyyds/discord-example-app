@@ -35,7 +35,7 @@ const cookCommand = async (interaction) => {
             return await sendErrorMessage(interaction, `It's not a cooking recipe!`);
         }
 
-        if (!recipeManager.hasRecipe(recipe.id)) {
+        if (!recipeManager.hasRecipe(interaction.user.id, activeCharacter.id, recipe.id)) {
             return await sendErrorMessage(interaction, 'You do not have this recipe!');
         }
 

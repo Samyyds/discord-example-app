@@ -81,10 +81,10 @@ class RecipeManager {
     addCharRecipe(userId, characterId, recipe) {
         const charRecipes = this.getCharRecipes(userId, characterId);
         if (!this.hasRecipe(userId, characterId, recipe.id)) {
-            charRecipes.push(recipe);
+            charRecipes.push(recipe.id);
         } else {
             console.log('Already owned this recipe.');
         }
-    }
+    }   
 }
 export { Recipe, RecipeManager };

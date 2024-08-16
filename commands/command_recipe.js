@@ -19,8 +19,10 @@ const recipeCommand = async (interaction) => {
 
         const charRecipes = recipeManager.getCharRecipes(interaction.user.id, activeCharacter.id);
 
+        const charRecipeObjects = charRecipes.map(recipeId => recipeManager.getRecipeById(recipeId));
+
         let embed = new EmbedBuilder();
-        embed = recipesParser(charRecipes, embed);
+        embed = recipesParser(charRecipeObjects, embed);
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
