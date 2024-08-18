@@ -1,15 +1,14 @@
 import { EmbedBuilder } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
-import { InventoryRepository } from '../data/repository_inventory.js';
+import { InventoryManager } from '../manager/inventory_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { ItemRepository } from '../data/repository_item.js';
-import { Items } from "../data/enums.js";
-import { getItemDataById } from '../util/util.js';
+import { RegionManager } from "../manager/region_manager.js";
+import { Item } from "../data/enums.js";
 
 const dropCommand = async (interaction) => {
     try {
         const object = interaction.options.getString('object').trim().toUpperCase();
-        if (!object in Items) {
+        if (!object in Item) {
             throw new Error('Invalid item!');
         }
 
@@ -20,22 +19,25 @@ const dropCommand = async (interaction) => {
         }
         const activeCharId = activeCharacter.id;
 
-        const inventoryRepo = InventoryRepository.getInstance();
-        if (!inventoryRepo.hasItem(interaction.user.id, activeCharId, Items[object])) {
+        const inventoryManager = InventoryManager.getInstance();
+        console.log(`Items[object]: ${Item[object]}`);
+        if (!inventoryManager.hasItem(interaction.user.id, activeCharId, Item[object])) {
             throw new Error('No such item in your inventory!');
         }
-        const { item: item, quantity } = inventoryRepo.getItem(interaction.user.id, activeCharId, Items[object]);
-        inventoryRepo.removeItem(interaction.user.id, activeCharId, item, 1);
-
-        const itemRepo = ItemRepository.getInstance();
-        const itemData = getItemDataById(Items[object]);
-        const itemInstance = itemRepo.createItem(itemData);
-
+        const { item: item, quantity } = inventoryManager.getItem(interaction.user.id, activeCharId, Item[object]);
+        inventoryManager.removeItem(interaction.user.id, activeCharId, item, 1);
+      
         const playerMoveManager = PlayerMovementManager.getInstance();
-        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
-        itemRepo.addItemToLocation(regionId, roomId, itemInstance, 1);
+        const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
 
-        let embed = new EmbedBuilder().setDescription(`You drop ${object.toLowerCase()} onto the floor.`);
+        const regionManager = RegionManager.getInstance();
+        const currentRegion = regionManager.getRegionById(regionId);
+        const currentLocation = currentRegion.getLocation(locationId);
+        const currentRoom = currentLocation.getRoom(roomId);
+
+        currentRoom.addItemToRoom(item);
+
+        let embed = new EmbedBuilder().setDescription(`You drop a ${item.name} onto the floor.`);
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {

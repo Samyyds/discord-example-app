@@ -65,6 +65,7 @@ class Room {
         this.enemies = [];
         this.uniqueEnemiesSpawned = new Set();
         this.nodes = [];
+        this.items = [];
     }
 
     calculateAttenuatedWeight(weight, attenuation, floor) {
@@ -189,6 +190,21 @@ class Room {
 
     getNodes(){
         return this.nodes;
+    }
+
+    addItemToRoom(item) {
+        this.items.push(item);
+    }
+
+    removeItemFromRoom(item) {
+        const index = this.items.indexOf(item);
+        if (index > -1) {
+            this.items.splice(index, 1);
+        }
+    }
+
+    getItems() {
+        return this.items;
     }
 }
 

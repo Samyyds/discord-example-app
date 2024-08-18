@@ -24,26 +24,61 @@ const lookCommand = async (interaction) => {
         }
         const enemies = room.getEnemies();
         const nodes = room.getNodes();
+        const items = room.getItems();
 
         let description = '';
+
+        if (roomId === 0) {
+            const location = regionManager.getLocationById(regionId, locationId);
+            description += location.description ? `${location.description}\n\n` : '';
+        } else {
+            description += room.description ? `${room.description}\n\n` : '';
+        }
 
         if (objectName) {
             const enemy = enemies.find(enemy => enemy.name.toLowerCase() === objectName.toLowerCase());
             const node = nodes.find(node => node.name.toLowerCase() === objectName.toLowerCase());
+            const item = items.find(item => item.name.toLowerCase() === objectName.toLowerCase());
             if (enemy) {
                 description += `${enemy.description}\n`;
             } else if (node) {
                 description += `${node.description}\n`;
+            } else if (item) {
+                description += `${item.description}\n`;
             } else {
                 description = `No '${objectName}' found.`;
             }
         } else {
-            description += room.description ? `${room.description}\n\n` : '';
-            description += enemies.length ? '**Enemies in the room:**\n' + enemies.map(enemy => `${enemy.name}`).join(', ') + '\n\n' : 'No enemies present.\n\n';
-            description += nodes.length ? '**Nodes in the room:**\n' + nodes.map(node => `${node.name}`).join(', ') + '\n' : 'No nodes present.';
-        }
+            if (enemies.length) {
+                description += '**Enemies in the room:**\n';
+                description += enemies.map(enemy => `${enemy.name}`).join(', ') + '\n\n';
+            }
 
-        let embed = new EmbedBuilder().setDescription(description);
+            if (nodes.length) {
+                description += '**Nodes in the room:**\n';
+                description += nodes.map(node => `${node.name}`).join(', ') + '\n';
+            }
+
+            if (items.length) {
+                const itemCounts = items.reduce((counts, item) => {
+                    counts[item.id] = (counts[item.id] || 0) + 1;
+                    return counts;
+                }, {});
+
+                description += '\n**Items in the room:**\n';
+                for (const [itemId, count] of Object.entries(itemCounts)) {
+                    const item = items.find(i => i.id === parseInt(itemId));
+                    description += `${item.name} (x${count})\n`;
+                }
+            }
+        }
+        
+        let embed = new EmbedBuilder();
+        if (description.trim().length > 0) {
+            embed.setDescription(description);
+        } else {
+            embed.setDescription('There is nothing to see here.');
+        }
         await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
