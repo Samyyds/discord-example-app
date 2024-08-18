@@ -1,8 +1,8 @@
 import { EmbedBuilder } from 'discord.js';
+import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
+import { InventoryManager } from '../manager/inventory_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { ItemRepository } from '../data/repository_item.js';
-import { InventoryRepository } from '../data/repository_inventory.js';
 
 const takeCommand = async (interaction) => {
     try {
@@ -16,24 +16,34 @@ const takeCommand = async (interaction) => {
         const activeCharId = activeCharacter.id;
 
         const playerMoveManager = PlayerMovementManager.getInstance();
-        const { regionId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
+        const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);
 
-        const itemRepo = ItemRepository.getInstance();
-        const itemCount = itemRepo.getItemCountByName(regionId, roomId, itemName);
+        const regionManager = RegionManager.getInstance();
+        const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
 
-        let description = '';
-
-        if (itemCount > 0) {
-            const item = itemRepo.getItemByName(regionId, roomId, itemName);
-            const inventoryRepo = InventoryRepository.getInstance();
-            inventoryRepo.addItem(interaction.user.id, activeCharId, item, 1);
-            itemRepo.removeItemFromLocation(regionId, roomId, item.id, 1);
-
-            description += `${item.name.toLowerCase()} added to your inventory.`;
+        if (!room) {
+            throw new Error(`Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
         }
-        else {
-            description += "\nItem not found or not available in this location.";
+
+        const items = room.getItems();
+        const item = items.find(i => i.name.toLowerCase() === itemName);
+
+        if (!item) {
+            throw new Error(`No '${itemName}' found in the room.`);
         }
+
+        const itemCount = items.filter(i => i.id === item.id).length;
+        room.removeItemFromRoom(item);
+
+        const inventoryManager = InventoryManager.getInstance();
+        inventoryManager.addItem(interaction.user.id, activeCharId, item, 1);
+
+        let description = `You have taken ${item.name} (x1) and added it to your inventory.`;
+
+        if (itemCount > 1) {
+            description += `\n${itemCount - 1} x ${item.name} remain(s) in the room.`;
+        }
+
         let embed = new EmbedBuilder().setDescription(description);
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
