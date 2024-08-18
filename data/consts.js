@@ -30,23 +30,24 @@ Moku'ah ───┬── Village Center
            ├── Jungle
            └── Volcano [S]
 
-Nyra ───┬── Town
-        ├── Crafthouse
-        ├── Tavern
-        ├── Beach
-        ├── Labyrinth
-        └── Hospital
+Nyra ──────┬── Town
+           ├── Crafthouse
+           ├── Tavern
+           ├── Beach
+           ├── Labyrinth
+           └── Hospital
 
-Isfjall ──┬── City Center [S]
-          ├── Blacksmith [S]
-          ├── Dock [S]
-          ├── Tundra [S]
-          └── Hospital [S]
-
-The Trench ──┬── Entrance
-             ├── The Shallows
-             ├── The Depths [S]
-             └── Obsidian City [S]
+Isfjall ───┬── City Center [S]
+           ├── Blacksmith [S]
+           ├── Dock [S]
+           ├── Tundra [S]
+           └── Hospital [S]
+           
+The 
+Trench ────┬── Entrance
+           ├── The Shallows
+           ├── The Depths [S]
+           └── Obsidian City [S]
 
 ⭐️ indicates your current location
 [S] indicates Subscriber Only locations
