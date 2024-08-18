@@ -19,17 +19,38 @@ If you ever need help, use the /help command.
 To start, create a new account, or login to an existing account.`;
 
 const MAP_STRING = `
-+------------------------------------------+
-|            +------------+                |
-|            |  Mountain  |                |
-|            +------------+                | 
-|+----------+ +----------+ +------------+  |
-||  Forest  | |   Mara   | | Graveyard  |  |
-|+----------+ +----------+ +------------+  |
-|             +----------+                 |
-|             |  Beach   |                 |
-|             +----------+                 |
-+------------------------------------------+`;
+Game World Map
+
+Moku'ah ───┬── Village Center
+           ├── Blacksmith
+           ├── Farm [S]
+           ├── Tavern
+           ├── Clinic
+           ├── Dock
+           ├── Jungle
+           └── Volcano [S]
+
+Nyra ───┬── Town
+        ├── Crafthouse
+        ├── Tavern
+        ├── Beach
+        ├── Labyrinth
+        └── Hospital
+
+Isfjall ──┬── City Center [S]
+          ├── Blacksmith [S]
+          ├── Dock [S]
+          ├── Tundra [S]
+          └── Hospital [S]
+
+The Trench ──┬── Entrance
+             ├── The Shallows
+             ├── The Depths [S]
+             └── Obsidian City [S]
+
+⭐️ indicates your current location
+[S] indicates Subscriber Only locations
+`;
 
 const descriptions = {
     SIGNUP_MESSAGE,

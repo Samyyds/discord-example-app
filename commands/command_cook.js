@@ -24,7 +24,7 @@ const cookCommand = async (interaction) => {
         const regionManager = RegionManager.getInstance();
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
         const nodes = room.getNodes();
-        if(!nodes.find(node => node.name.toLowerCase() === 'kitchen')){
+        if (!nodes.find(node => node.name.toLowerCase() === 'kitchen')) {
             return await sendErrorMessage(interaction, 'No kitchen available here. Please head to the Moku\'ah Tavern.');
         }
 
@@ -57,7 +57,8 @@ const cookCommand = async (interaction) => {
         }
 
         ingredients.forEach(ingredient => {
-            inventoryManager.removeItems(interaction.user.id, activeCharacter.id, ingredient.item, ingredient.quantity);
+            const item = itemManager.getItemDataById(ingredient.item);
+            inventoryManager.removeItem(interaction.user.id, activeCharacter.id, item, ingredient.quantity);
         });
 
         const result = recipe.result;

@@ -1,7 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
-import { getRegionNameFromId } from '../data/enums.js';
 import descriptions from '../data/consts.js';
 
 const mapCommand = async (interaction) => {
@@ -13,17 +12,25 @@ const mapCommand = async (interaction) => {
         }
 
         const playerMoveManager = PlayerMovementManager.getInstance();
-        const {regionId,} = playerMoveManager.getLocation(interaction.user.id, activeCharId) || {};
-       
-        const regionName = getRegionNameFromId(regionId);
+        const { regionId, locationId } = playerMoveManager.getLocation(interaction.user.id, activeCharId) || {};
 
         let updatedMapString = descriptions.MAP_STRING;
-        const regionRegex = new RegExp(`(${regionName})(\\s|\\|)`, 'g');
-        updatedMapString = updatedMapString.replace(regionRegex, (match, p1, p2) => p1 + '*' + p2.slice(1));
+
+        const regionLocationMap = {
+            0: ["Village Center", "Blacksmith", "Farm [S]", "Tavern", "Clinic", "Dock", "Jungle", "Volcano [S]"],
+            1: ["Town", "Crafthouse", "Tavern", "Beach", "Labyrinth", "Hospital"],
+            2: ["City Center [S]", "Blacksmith [S]", "Dock [S]", "Tundra [S]", "Hospital [S]"],
+            3: ["Entrance", "The Shallows", "The Depths [S]", "Obsidian City [S]"]
+        };
+
+        if (regionLocationMap[regionId] && regionLocationMap[regionId][locationId]) {
+            const locationName = regionLocationMap[regionId][locationId];
+            updatedMapString = updatedMapString.replace(locationName, locationName + " ⭐️");
+        }
 
         let embed = new EmbedBuilder()
             .setTitle('Discover Your Adventure!')
-            .setDescription("```\n" + updatedMapString + "\n```")
+            .setDescription("```\n" + updatedMapString + "\n```");
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
 

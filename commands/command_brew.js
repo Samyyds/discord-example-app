@@ -62,7 +62,7 @@ const brewCommand = async (interaction) => {
                     missingIngredients.push(`${ingredient.quantity} x ${item.name}`);
                 }
                 else {
-                    inventoryManager.removeItems(interaction.user.id, activeCharacter.id, ingredient.item, ingredient.quantity);
+                    inventoryManager.removeItem(interaction.user.id, activeCharacter.id, ingredient.item, ingredient.quantity);
                 }
             }
         }
