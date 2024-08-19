@@ -128,28 +128,48 @@ export function convertNameToLocationId(name, regionId) {
 }
 
 export function recipesParser(recipes, embed) {
-    if (!recipes.length) {
-        embed.addFields({ name: 'No Recipes Available', value: 'You currently do not have any recipes.', inline: false });
-        return embed;
-    }
+    const maxFieldLength = 1024;
+    let currentFieldValue = '';
+    let fieldIndex = 1;
 
-    let recipeText = '';
-    
     recipes.forEach(recipe => {
         const skillName = Object.keys(Skill).find(key => Skill[key] === recipe.skill);
-        
-        let ingredientsText = recipe.ingredients.map(ing => {
-            const itemName = Object.keys(Item).find(key => Item[key] === ing.item);
-            return `${itemName} x${ing.quantity}`;
-        }).join(', ');
 
-        recipeText += `**${recipe.name}**\nSkill: ${skillName.toLowerCase()} (Min: ${recipe.minSkill})\nIngredients: ${ingredientsText.toLowerCase()}\n\n`;
+        if (!skillName) {
+            console.warn(`Skill not found for skill value: ${recipe.skill}`);
+            return; 
+        }
+
+        let ingredientsText = recipe.ingredients.map(ing => {
+            let itemName = Object.keys(Item).find(key => Item[key] === ing.item);
+
+            if (!itemName) {
+                itemName = ing.item;
+            }
+
+            return `${itemName.toLowerCase()} x${ing.quantity}`;
+        }).filter(Boolean).join(', '); 
+
+
+        let recipeText = `**${recipe.name}**\nSkill: ${skillName.toLowerCase()} (Min: ${recipe.minSkill})\nIngredients: ${ingredientsText}\n\n`;
+
+        if (currentFieldValue.length + recipeText.length > maxFieldLength) {
+            embed.addFields({ name: `Recipes (${fieldIndex})`, value: currentFieldValue, inline: false });
+            currentFieldValue = recipeText;
+            fieldIndex += 1;
+        } else {
+            currentFieldValue += recipeText;
+        }
     });
 
-    embed.addFields({ name: 'Recipes:', value: recipeText.trim(), inline: false });
+    if (currentFieldValue.length > 0) {
+        embed.addFields({ name: `Recipes (${fieldIndex})`, value: currentFieldValue, inline: false });
+    }
 
     return embed;
 }
+
+
 
 export function serializeObject(instance, properties) {
     let serialized = {};

@@ -24,7 +24,7 @@ const brewCommand = async (interaction) => {
         const regionManager = RegionManager.getInstance();
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
         const nodes = room.getNodes();
-        if(!nodes.find(node => node.name.toLowerCase() === 'kitchen')){
+        if (!nodes.find(node => node.name.toLowerCase() === 'kitchen')) {
             return await sendErrorMessage(interaction, 'No kitchen available here. Please head to the Moku\'ah Tavern.');
         }
 
@@ -40,6 +40,8 @@ const brewCommand = async (interaction) => {
         const inventoryManager = InventoryManager.getInstance();
         const itemManager = ItemManager.getInstance();
 
+        const itemsToRemove = [];
+
         for (const ingredient of ingredients) {
             if (ingredient.item === "any_consumable") {
                 let foundConsumable = false;
@@ -47,7 +49,7 @@ const brewCommand = async (interaction) => {
                 for (const id of consumables) {
                     const itemQuantity = inventoryManager.getItem(interaction.user.id, activeCharacter.id, id);
                     if (itemQuantity && itemQuantity.quantity >= ingredient.quantity) {
-                        inventoryManager.removeItems(interaction.user.id, activeCharacter.id, id, ingredient.quantity);
+                        itemsToRemove.push({ itemId: id, quantity: ingredient.quantity });
                         foundConsumable = true;
                         break;
                     }
@@ -60,9 +62,8 @@ const brewCommand = async (interaction) => {
                 if (!itemQuantity || itemQuantity.quantity < ingredient.quantity) {
                     const item = itemManager.getItemDataById(ingredient.item);
                     missingIngredients.push(`${ingredient.quantity} x ${item.name}`);
-                }
-                else {
-                    inventoryManager.removeItem(interaction.user.id, activeCharacter.id, ingredient.item, ingredient.quantity);
+                } else {
+                    itemsToRemove.push({ itemId: ingredient.item, quantity: ingredient.quantity });
                 }
             }
         }
@@ -71,9 +72,10 @@ const brewCommand = async (interaction) => {
             return await sendErrorMessage(interaction, `You are missing the following ingredients: ${missingIngredients.join(', ')}`);
         }
 
-        ingredients.forEach(ingredient => {
-            inventoryManager.removeItems(interaction.user.id, activeCharacter.id, ingredient.item, ingredient.quantity);
-        });
+        for (const toRemove of itemsToRemove) {
+            const item = itemManager.getItemDataById(toRemove.itemId);
+            inventoryManager.removeItem(interaction.user.id, activeCharacter.id, item, toRemove.quantity);
+        }
 
         const result = recipe.result;
         let craftedItem;
@@ -101,7 +103,7 @@ const brewCommand = async (interaction) => {
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
-        console.error('Error in gatherCommand:', error);
+        console.error('Error in brewCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
 }

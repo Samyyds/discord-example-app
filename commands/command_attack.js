@@ -3,11 +3,12 @@ import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { RegionManager } from "../manager/region_manager.js";
 import { AbilityManager } from "../manager/ability_manager.js";
+import { ItemManager } from "../manager/item_manager.js";
 
 const attackCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
-        
+
         const characterManager = CharacterManager.getInstance();
         const activeChar = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeChar) {
@@ -19,10 +20,10 @@ const attackCommand = async (interaction) => {
             throw new Error('Enemy name is required.');
         }
         const enemyName = enemyNameInput.trim().toLowerCase();
-        
+
         const playerMovementManager = PlayerMovementManager.getInstance();
         const { regionId, locationId, roomId } = playerMovementManager.getLocation(interaction.user.id, activeChar.id);
-        
+
         const regionManager = RegionManager.getInstance();
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
         if (!room) {
@@ -84,6 +85,13 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
     if (enemy.stats.hp <= 0) {
         combatLog.push(`${enemy.name} is defeated!`);
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
+        if (enemy.dropItem && Math.random() < enemy.dropChance) {
+            const itemManager = ItemManager.getInstance();
+            const droppedItem = itemManager.getItemDataById(enemy.dropItem);
+            room.addItemToRoom(droppedItem);
+            combatLog.push(`${enemy.name} dropped ${droppedItem.name}!`);
+        }
+
         room.removeEnemy(enemy);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
@@ -148,7 +156,7 @@ export async function sendCombatLog(interaction, combatLog) {
 
 export async function sendAbilityButtons(interaction, player, enemy) {
     const actionRow = new ActionRowBuilder();
-    
+
     const abilityManager = AbilityManager.getInstance();
     player.abilities.forEach(abilityId => {
         const ability = abilityManager.getAbilityById(abilityId);

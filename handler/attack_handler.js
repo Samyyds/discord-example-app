@@ -2,7 +2,7 @@ import { EmbedBuilder } from 'discord.js';
 import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
-import { AbilityManager } from '../manager/ability_manager.js'; 
+import { AbilityManager } from '../manager/ability_manager.js';
 import { turnBasedCombat, sendCombatLog, sendAbilityButtons } from "../commands/command_attack.js";
 
 export async function handleAttackInteraction(interaction) {
@@ -58,10 +58,10 @@ export async function handleAttackInteraction(interaction) {
                 } else {
                     const endEmbed = new EmbedBuilder()
                         .setTitle('Combat Ended')
-                        .setDescription(playerAlive 
-                            ? 'You defeated the enemy!' 
+                        .setDescription(playerAlive
+                            ? 'You defeated the enemy!'
                             : 'You died!')
-                        .setColor(0xFF0000);
+                        .setColor(playerAlive ? 0x00FF00 : 0xFF0000);
                     await interaction.followUp({ embeds: [endEmbed], ephemeral: true });
                 }
                 break;

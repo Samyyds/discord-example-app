@@ -1,9 +1,7 @@
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { RecipeManager } from '../manager/recipe_manager.js';
 import { recipesParser } from '../util/util.js';
-import { Consumable, Item, ItemManager } from "../manager/item_manager.js";
-import { InventoryManager } from '../manager/inventory_manager.js';
 
 const recipeCommand = async (interaction) => {
     try {
@@ -15,25 +13,38 @@ const recipeCommand = async (interaction) => {
 
         const recipeManager = RecipeManager.getInstance();
 
-        //***give player free recipe, this is only for test***
-        const testRecipe1 = recipeManager.getRecipeById(1);//kelp broth for cooking
-        recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe1);
-        const testRecipe2 = recipeManager.getRecipeById(16);//potent health potion for brewing
-        recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe2);
-        const inventoryManager = InventoryManager.getInstance();
-        const itemManager = ItemManager.getInstance();
-        const freeItem = new Item(itemManager.getItemDataById(17));
-        inventoryManager.addItem(interaction.user.id, activeCharacter.id, freeItem, 1);
-        //******
+        // Grant player all recipes for testing
+        for (let index = 1; index <= 28; index++) {
+            const testRecipe = recipeManager.getRecipeById(index);
+            recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe);
+        }
+        //***
 
         const charRecipes = recipeManager.getCharRecipes(interaction.user.id, activeCharacter.id);
-
         const charRecipeObjects = charRecipes.map(recipeId => recipeManager.getRecipeById(recipeId));
 
-        let embed = new EmbedBuilder();
-        embed = recipesParser(charRecipeObjects, embed);
+        const currentPage = 1;
+        const itemsPerPage = 10;
+        const totalPages = Math.ceil(charRecipeObjects.length / itemsPerPage);
+        const paginatedRecipes = charRecipeObjects.slice(0, itemsPerPage);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        let embed = new EmbedBuilder();
+        embed = recipesParser(paginatedRecipes, embed);
+        embed.setFooter({ text: `Page ${currentPage} of ${totalPages}` });
+
+        const components = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`prev_${currentPage}`)
+                    .setLabel('Previous')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId(`next_${currentPage}`)
+                    .setLabel('Next')
+                    .setStyle(ButtonStyle.Primary)
+            );
+
+        await interaction.reply({ embeds: [embed], components: [components], ephemeral: true });
 
     } catch (error) {
         console.error('Error in recipeCommand:', error);

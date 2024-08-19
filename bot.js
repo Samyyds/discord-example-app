@@ -24,6 +24,7 @@ import { brewCommands } from "./commands/command_brew.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
+import { handleRecipeInteraction } from "./handler/recipe_handler.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
@@ -193,6 +194,8 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleCharacterInteraction(interaction);
     } else if (interaction.customId.startsWith('attack_')) {
       await handleAttackInteraction(interaction);
+    }else if(interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_')){
+      await handleRecipeInteraction(interaction);
     }
     else {
       console.log('Unrecognized button interaction:', interaction.customId);
