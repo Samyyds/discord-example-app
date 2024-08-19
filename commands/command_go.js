@@ -3,13 +3,14 @@ import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { convertNameToRegionId, convertNameToLocationId } from "../util/util.js";
 import { saveCharacterLocation } from "../db/mysql.js";
+import { sendErrorMessage } from "../util/util.js";
 
 const goCommand = async (interaction) => {
     try {
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
         const regionName = interaction.options.getString('region').trim();
@@ -19,10 +20,10 @@ const goCommand = async (interaction) => {
         const tarLocationId = convertNameToLocationId(locationName, tarRegionId);
 
         if (tarRegionId === undefined) {
-            throw new Error(`The specified region '${regionName}' does not exist.`);
+            return await sendErrorMessage(interaction, `The specified region '${regionName}' does not exist.`);
         }
         if (tarLocationId === undefined) {
-            throw new Error(`The specified location '${locationName}' does not exist in the region '${regionName}'.`);
+            return await sendErrorMessage(interaction, `The specified location '${locationName}' does not exist in the region '${regionName}'.`);
         }
 
         // const playerMoveManager = PlayerMovementManager.getInstance();

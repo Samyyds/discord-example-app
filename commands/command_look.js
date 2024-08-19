@@ -2,6 +2,7 @@ import { EmbedBuilder } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { RegionManager } from "../manager/region_manager.js";
+import { sendErrorMessage } from "../util/util.js";
 
 const lookCommand = async (interaction) => {
     try {
@@ -10,7 +11,7 @@ const lookCommand = async (interaction) => {
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
         const activeCharId = activeCharacter.id;
 
@@ -20,7 +21,7 @@ const lookCommand = async (interaction) => {
         const regionManager = RegionManager.getInstance();
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
         if (!room) {
-            throw new Error(`Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
+            return await sendErrorMessage(interaction, `Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
         }
         const enemies = room.getEnemies();
         const nodes = room.getNodes();

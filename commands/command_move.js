@@ -3,13 +3,14 @@ import { RegionManager } from '../manager/region_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { saveCharacterLocation } from "../db/mysql.js";
+import { sendErrorMessage } from "../util/util.js";
 
 const moveCommand = async (interaction) => {
     try {
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
         const playerMoveManager = PlayerMovementManager.getInstance();
@@ -23,7 +24,7 @@ const moveCommand = async (interaction) => {
         const isValidRoom = currentLocation.roomCount > 1;
 
         if (!isValidRoom) {
-            throw new Error('There are no additional rooms to explore in your current location!');
+            return await sendErrorMessage(interaction, 'There are no additional rooms to explore in your current location!');
         }
 
         console.log(`currentRoom.hasEnemies: ${currentRoom.hasEnemies()}`);
@@ -37,14 +38,14 @@ const moveCommand = async (interaction) => {
         if (direction === 0) { // Down
             const canMoveDown = playerMoveManager.canMoveDown(interaction.user.id, activeCharacter.id);
             if (!canMoveDown) {
-                throw new Error('You\'ve reached the last room. There\'s no way to move down!');
+                return await sendErrorMessage(interaction, 'You\'ve reached the last room. There\'s no way to move down!');
             }
             playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false);
             moved = true;
         } else if (direction === 1) { // Up
             const canMoveUp = playerMoveManager.canMoveUp(interaction.user.id, activeCharacter.id);
             if (!canMoveUp) {
-                throw new Error('You are already in the first room. There\'s no way to move up!');
+                return await sendErrorMessage(interaction, 'You are already in the first room. There\'s no way to move up!');
             }
             playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true);
             moved = true;

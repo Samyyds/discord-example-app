@@ -3,6 +3,7 @@ import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { InventoryManager } from '../manager/inventory_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
+import { sendErrorMessage } from "../util/util.js";
 
 const takeCommand = async (interaction) => {
     try {
@@ -11,7 +12,7 @@ const takeCommand = async (interaction) => {
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
         const activeCharId = activeCharacter.id;
 
@@ -22,14 +23,14 @@ const takeCommand = async (interaction) => {
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
 
         if (!room) {
-            throw new Error(`Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
+            return await sendErrorMessage(interaction, `Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
         }
 
         const items = room.getItems();
         const item = items.find(i => i.name.toLowerCase() === itemName);
 
         if (!item) {
-            throw new Error(`No '${itemName}' found in the room.`);
+            return await sendErrorMessage(interaction, `No '${itemName}' found in the room.`);
         }
 
         const itemCount = items.filter(i => i.id === item.id).length;

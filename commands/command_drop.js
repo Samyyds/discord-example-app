@@ -4,25 +4,26 @@ import { InventoryManager } from '../manager/inventory_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { RegionManager } from "../manager/region_manager.js";
 import { Item } from "../data/enums.js";
+import { sendErrorMessage } from "../util/util.js";
 
 const dropCommand = async (interaction) => {
     try {
         const object = interaction.options.getString('object').trim().toUpperCase();
         if (!object in Item) {
-            throw new Error('Invalid item!');
+            return await sendErrorMessage(interaction, 'Invalid item!');
         }
 
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
         const activeCharId = activeCharacter.id;
 
         const inventoryManager = InventoryManager.getInstance();
         console.log(`Items[object]: ${Item[object]}`);
         if (!inventoryManager.hasItem(interaction.user.id, activeCharId, Item[object])) {
-            throw new Error('No such item in your inventory!');
+            return await sendErrorMessage(interaction, 'No such item in your inventory!');
         }
         const { item: item, quantity } = inventoryManager.getItem(interaction.user.id, activeCharId, Item[object]);
         inventoryManager.removeItem(interaction.user.id, activeCharId, item, 1);

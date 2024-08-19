@@ -7,8 +7,7 @@ const inventoryCommand = async (interaction) => {
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            await interaction.reply({ content: 'You do not have an available character!', ephemeral: true });
-            return;
+            return await interaction.reply({ content: 'You do not have an available character!', ephemeral: true });
         }
 
         const inventoryManager = InventoryManager.getInstance();

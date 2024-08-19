@@ -7,7 +7,6 @@ import { RegionManager } from '../manager/region_manager.js';
 import { Item, ItemManager } from "../manager/item_manager.js";
 import { sendErrorMessage } from "../util/util.js";
 
-
 const mineCommand = async (interaction) => {
     try {
         const nodeName = interaction.options.getString('ore').trim();

@@ -2,13 +2,14 @@ import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'disc
 import { CharacterManager } from '../manager/character_manager.js';
 import { RecipeManager } from '../manager/recipe_manager.js';
 import { recipesParser } from '../util/util.js';
+import { sendErrorMessage } from "../util/util.js";
 
 const recipeCommand = async (interaction) => {
     try {
         const characterRepo = CharacterManager.getInstance();
         const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
         const recipeManager = RecipeManager.getInstance();

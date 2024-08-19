@@ -8,6 +8,7 @@ import { AbilityManager } from '../manager/ability_manager.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { Character, CharacterManager } from '../manager/character_manager.js';
+import { sendErrorMessage } from "../util/util.js";
 
 const createCommand = async (interaction) => {
     try {
@@ -16,7 +17,7 @@ const createCommand = async (interaction) => {
         const raceName = interaction.options.getString('race-name').toUpperCase();
 
         if (!(className in Class) || !(raceName in Race)) {
-            throw new Error('Invalid class or race name.');
+            return await sendErrorMessage(interaction, 'Invalid class or race name.');
         }
 
         const userId = interaction.user.id;

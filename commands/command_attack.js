@@ -4,6 +4,7 @@ import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { RegionManager } from "../manager/region_manager.js";
 import { AbilityManager } from "../manager/ability_manager.js";
 import { ItemManager } from "../manager/item_manager.js";
+import { sendErrorMessage } from "../util/util.js";
 
 const attackCommand = async (interaction) => {
     try {
@@ -12,12 +13,12 @@ const attackCommand = async (interaction) => {
         const characterManager = CharacterManager.getInstance();
         const activeChar = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeChar) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
         const enemyNameInput = interaction.options.getString('enemy-name');
         if (!enemyNameInput) {
-            throw new Error('Enemy name is required.');
+            return await sendErrorMessage(interaction, 'Enemy name is required.');
         }
         const enemyName = enemyNameInput.trim().toLowerCase();
 
@@ -27,13 +28,13 @@ const attackCommand = async (interaction) => {
         const regionManager = RegionManager.getInstance();
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
         if (!room) {
-            throw new Error(`Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
+            return await sendErrorMessage(interaction, `Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
         }
         const enemies = room.getEnemies();
 
         const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName);
         if (!enemy) {
-            throw new Error(`Enemy with name ${enemyName} not found in this room.`);
+            return await sendErrorMessage(interaction, `Enemy with name ${enemyName} not found in this room.`);
         }
 
         await interaction.editReply({ content: `Combat started with ${enemy.name}!` });
