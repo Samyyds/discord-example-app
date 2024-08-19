@@ -26,32 +26,26 @@ const goCommand = async (interaction) => {
             return await sendErrorMessage(interaction, `The specified location '${locationName}' does not exist in the region '${regionName}'.`);
         }
 
-        // const playerMoveManager = PlayerMovementManager.getInstance();
-        // const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
-
-        // if (curLocation && curLocation.regionId === tarRegionId) {
-        //     if (!playerMoveManager.canMoveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId, interaction)) {
-        //         throw new Error("Cannot move to the target location from current location.");
-        //     }
-        //     playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
-        // } else {
-        //     if (!playerMoveManager.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId)) {
-        //         throw new Error("Cannot move to the target region and location from current location.");
-        //     }
-        //     playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
-        // }
         const playerMoveManager = PlayerMovementManager.getInstance();
-        const moveResult = playerMoveManager.canMoveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId, interaction);
+        const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
 
-        if (!moveResult.canMove) {
-            const moveErrorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle('Movement Restricted')
-                .setDescription(moveResult.message);
-            await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-            return;
+        if (curLocation.regionId === tarRegionId) {
+            const moveResult = playerMoveManager.canMoveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId, interaction);
+            if (!moveResult.canMove) {
+                const moveErrorEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle('Movement Restricted')
+                    .setDescription(moveResult.message);
+                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
+                return;
+            }
+            playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
+        } else {
+            if (!playerMoveManager.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId)) {
+                return await sendErrorMessage(interaction, "Cannot move to the target region and location from current location.");
+            }
+            playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
         }
-        playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
 
         const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
