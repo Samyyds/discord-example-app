@@ -326,8 +326,8 @@ class CharacterManager {
             character.stats.hp = character.stats.hpMax / 2;
             character.stats.mp = character.stats.mpMax / 2;
 
-            const reviveRegionId = Regions['MOKUAH'];
-            const reviveLocationId = MokuahLocations['CLINIC'];
+            const reviveRegionId = 0;
+            const reviveLocationId = 4;
             const reviveRoomId = 0;
 
             const playerMoveManager = PlayerMovementManager.getInstance();
