@@ -107,7 +107,7 @@
         {
           "locationId": 4,
           "name": "Labyrinth",
-          "roomCount": 1,
+          "roomCount": 100,
           "description": "Tier 2 dungeon for players to fight enemies and get loot in."
         },
         {

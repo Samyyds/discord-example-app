@@ -27,7 +27,7 @@ const takeCommand = async (interaction) => {
         }
 
         const items = room.getItems();
-        const item = items.find(i => i.name.toLowerCase() === itemName);
+        const item = items.find(i => i.name.toLowerCase() === itemName.toLowerCase());
 
         if (!item) {
             return await sendErrorMessage(interaction, `No '${itemName}' found in the room.`);
