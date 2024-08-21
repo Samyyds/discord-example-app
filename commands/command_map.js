@@ -8,7 +8,7 @@ const mapCommand = async (interaction) => {
     try {
         const characterRepo = CharacterManager.getInstance();
         const activeCharId = characterRepo.getActiveCharacter(interaction.user.id).id;
-        if (!activeCharacter) {
+        if (!activeCharId) {
             return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
