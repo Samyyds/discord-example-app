@@ -250,6 +250,19 @@ export const Recipe = {
     "BOILED_SHELL": 13
 }
 
+export const ConsumableEffect = {
+   "PHY_ATK_BONUS": 0,
+   "MAG_ATK_BONUS": 1,
+   "PHY_DEF_BONUS": 2,
+   "MAG_DEF_BONUS": 3,
+   "INCREASE_ALL_BONUS_DURATION": 4,
+   "CURE_BLEED": 5,
+   "CURE_POISON": 6,
+   "CURE_BURN": 7,
+   "RESTORE_HP": 8,
+   "RESTORE_MP": 9
+};
+
 export const Slot = {
     "Head": 0,
     "Body": 1,

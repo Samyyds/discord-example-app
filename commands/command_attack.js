@@ -93,6 +93,10 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
             combatLog.push(`${enemy.name} dropped ${droppedItem.name}!`);
         }
 
+        const xpGain = 30;
+        player.increaseCharacterXp(xpGain);
+        combatLog.push(`${player.name} gained ${xpGain} XP!`);
+
         room.removeEnemy(enemy);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
