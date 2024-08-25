@@ -47,7 +47,7 @@ const brewCommand = async (interaction) => {
                 let foundConsumable = false;
                 const consumables = itemManager.consumableTemplates.map(c => c.id);
                 for (const id of consumables) {
-                    const itemQuantity = inventoryManager.getItem(interaction.user.id, activeCharacter.id, id);
+                    const itemQuantity = inventoryManager.getItem(interaction.user.id, activeCharacter.id, ItemType.CONSUMABLE, id);
                     if (itemQuantity && itemQuantity.quantity >= ingredient.quantity) {
                         itemsToRemove.push({ itemId: id, quantity: ingredient.quantity });
                         foundConsumable = true;
@@ -58,7 +58,7 @@ const brewCommand = async (interaction) => {
                     missingIngredients.push(`${ingredient.quantity} x any consumable`);
                 }
             } else {
-                const itemQuantity = inventoryManager.getItem(interaction.user.id, activeCharacter.id, ingredient.item);
+                const itemQuantity = inventoryManager.getItem(interaction.user.id, activeCharacter.id, ItemType.MATERIAL, ingredient.item);
                 if (!itemQuantity || itemQuantity.quantity < ingredient.quantity) {
                     const item = itemManager.getItemDataById(ingredient.item);
                     missingIngredients.push(`${ingredient.quantity} x ${item.name}`);

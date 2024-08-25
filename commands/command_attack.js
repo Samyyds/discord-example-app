@@ -5,6 +5,7 @@ import { RegionManager } from "../manager/region_manager.js";
 import { AbilityManager } from "../manager/ability_manager.js";
 import { ItemManager } from "../manager/item_manager.js";
 import { sendErrorMessage } from "../util/util.js";
+import { ItemType } from "../data/enums.js";
 
 const attackCommand = async (interaction) => {
     try {
@@ -88,19 +89,38 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
         const room = regionManager.getRoomByLocation(regionId, locationId, roomId);
         if (enemy.dropItem && Math.random() < enemy.dropChance) {
             const itemManager = ItemManager.getInstance();
-            const droppedItem = itemManager.getItemDataById(enemy.dropItem);
-            room.addItemToRoom(droppedItem);
-            combatLog.push(`${enemy.name} dropped ${droppedItem.name}!`);
+            let droppedItem;
+            
+            const dropItemType = enemy.dropItemType; 
+            switch(dropItemType) {
+                case ItemType.MATERIAL:
+                    droppedItem = itemManager.getItemDataById(enemy.dropItem);
+                    break;
+                case ItemType.CONSUMABLE:
+                    droppedItem = itemManager.getConsumableDataById(enemy.dropItem);
+                    break;
+                case ItemType.EQUIPMENT:
+                    droppedItem = itemManager.getEquipmentDataById(enemy.dropItem);
+                    break;
+                default:
+                    console.log("Unknown item type for drop.");
+                    break;
+            }
+    
+            if (droppedItem) {
+                room.addItemToRoom(droppedItem);
+                combatLog.push(`${enemy.name} dropped ${droppedItem.name}!`);
+            }
         }
-
+    
         const xpGain = 30;
         player.increaseCharacterXp(xpGain);
         combatLog.push(`${player.name} gained ${xpGain} XP!`);
-
+    
         room.removeEnemy(enemy);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
-
+    
     let enemyAbility;
     if (enemy.abilities.length === 1) {
         enemyAbility = abilityManager.getAbilityById(enemy.abilities[0]);

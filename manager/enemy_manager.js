@@ -18,6 +18,7 @@ class Enemy extends Character {
             enemyType.magicATK, enemyType.magicDEF
         );
         this.dropItem = enemyType.dropItem;
+        this.dropItemType = enemyType.dropItemType;
         this.dropChance = enemyType.dropChance;
         this.behaviourPreset = enemyType.behaviourPreset;
         this.description = enemyType.description;
@@ -68,6 +69,7 @@ class EnemyManager {
                 magicDEF: row.MAG_DEF,
                 abilities: row.ABILITIES ? row.ABILITIES.split(',').map(Number) : [],
                 dropItem: row.DROP_ITEM,
+                dropItemType: row.DROP_ITEM_TYPE,
                 dropChance: row.DROP_CHANCE,
                 behaviourPreset: row.BEHAVIOUR_PRESET,
                 description: row.DESCRIPTION,

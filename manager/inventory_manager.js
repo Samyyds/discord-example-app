@@ -28,15 +28,15 @@ class InventoryManager {
 
         return characterInventories.get(characterId);
     }
-    
-    hasItem(userId, characterId, itemId) {
+
+    hasItem(userId, characterId, type, itemId) {
         const inventory = this.getInventory(userId, characterId);
-        return inventory.hasItem(itemId);
+        return inventory.hasItem(type, itemId);
     }
 
-    getItem(userId, characterId, itemId) {
+    getItem(userId, characterId, type, itemId) {
         const inventory = this.getInventory(userId, characterId);
-        return inventory.getItem(itemId);
+        return inventory.getItem(type, itemId);
     }
 
     addItem(userId, characterId, item, quantity) {
@@ -49,11 +49,6 @@ class InventoryManager {
         const inventory = this.getInventory(userId, characterId);
         inventory.removeItem(item, quantity);
         updateInventoryToDB(userId, characterId, item, quantity, 'remove');
-    }
-
-    loadItem(item, quantity){// used only during the initial loading from database
-        const inventory = this.getInventory(userId, characterId);
-        inventory.loadItem(item, quantity);
     }
 
     useItem(userId, characterId, item) {
@@ -69,48 +64,56 @@ class InventoryManager {
 
 class Inventory {
     constructor() {
-        this.items = {}; // itemID -> { item, quantity }
-    }
-
-    hasItem(itemId) {
-        return this.items[itemId] && this.items[itemId].quantity > 0;
-    }
-
-    getItem(itemId) {
-        if (this.items[itemId]) {
-            return this.items[itemId];
-        } else {
-            return null;
-        }
+        this.itemsByType = {}; 
     }
 
     addItem(item, quantity = 1) {
-        if (this.items[item.id]) {
-            this.items[item.id].quantity += quantity;
+        const type = item.type;
+        if (!this.itemsByType[type]) {
+            this.itemsByType[type] = {};
+        }
+
+        if (this.itemsByType[type][item.id]) {
+            this.itemsByType[type][item.id].quantity += quantity;
         } else {
-            this.items[item.id] = { item, quantity };
+            this.itemsByType[type][item.id] = { item, quantity };
         }
     }
 
     removeItem(item, quantity = 1) {
-        if (this.items[item.id] && this.items[item.id].quantity >= quantity) {
-            this.items[item.id].quantity -= quantity;
-            if (this.items[item.id].quantity <= 0) {
-                delete this.items[item.id];
+        const type = item.type;
+        const itemsOfType = this.itemsByType[type];
+        if (itemsOfType && itemsOfType[item.id] && itemsOfType[item.id].quantity >= quantity) {
+            itemsOfType[item.id].quantity -= quantity;
+            if (itemsOfType[item.id].quantity <= 0) {
+                delete itemsOfType[item.id];
             }
         } else {
             console.log('Not enough item quantity or item does not exist in inventory.');
         }
     }
 
-    loadItem(item, quantity) {
-        // used only during the initial loading from database
-        this.items[item.id] = { item, quantity };
+    getItem(type, itemId) {
+        if (this.itemsByType[type] && this.itemsByType[type][itemId]) {
+            return this.itemsByType[type][itemId].item;
+        }
+        return null;
     }
 
+    hasItem(type, itemId) {
+        return this.itemsByType[type] && this.itemsByType[type][itemId] && this.itemsByType[type][itemId].quantity > 0;
+    }
+
+    loadItem(item, quantity) {
+        const type = item.type;
+        if (!this.itemsByType[type]) {
+            this.itemsByType[type] = {};
+        }
+        this.itemsByType[type][item.id] = { item, quantity };
+    }
 
     useItem(item) {
-        if (item instanceof Potion && this.items[item.id] && this.items[item.id].quantity > 0) {
+        if (this.hasItem(item.type, item.id)) {
             console.log(`Using ${item.name}`);
             this.removeItem(item, 1);
         } else {
@@ -119,20 +122,11 @@ class Inventory {
     }
 
     getItemsGroupedByType() {
-        const groupedItems = {
-            [ItemType.MATERIAL]: [],
-            [ItemType.EQUIPMENT]: [],
-            [ItemType.CONSUMABLE]: [],
-            [ItemType.QUEST]: [],
-        };
-
-        for (const { item, quantity } of Object.values(this.items)) {
-            if (groupedItems.hasOwnProperty(item.type)) {
-                groupedItems[item.type].push({ ...item, quantity });
-            }
+        const result = {};
+        for (const type in this.itemsByType) {
+            result[type] = Object.values(this.itemsByType[type]); 
         }
-
-        return groupedItems;
+        return result;
     }
 }
 

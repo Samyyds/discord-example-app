@@ -299,5 +299,26 @@ export function getRegionNameFromId(regionId) {
     throw new Error(`Region with ID '${regionId}' not found.`);
 }
 
+export function getItemTypeAndId(itemName) {
+    
+    const normalizedInput = itemName.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    for (const key in Item) {
+        const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (normalizedInput === normalizedKey) {
+            return { type: ItemType.MATERIAL, id: Item[key] };
+        }
+    }
+
+    for (const key in Consumables) {
+        const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (normalizedInput === normalizedKey) {
+            return { type: ItemType.CONSUMABLE, id: Consumables[key] };
+        }
+    }
+
+    return null;
+}
+
 
 

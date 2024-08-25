@@ -3,13 +3,15 @@ import { CharacterManager } from '../manager/character_manager.js';
 import { InventoryManager } from '../manager/inventory_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { RegionManager } from "../manager/region_manager.js";
-import { Item } from "../data/enums.js";
+import { Item, getItemTypeAndId } from "../data/enums.js";
 import { sendErrorMessage } from "../util/util.js";
 
 const dropCommand = async (interaction) => {
     try {
-        const object = interaction.options.getString('object').trim().toUpperCase();
-        if (!object in Item) {
+        const objectName = interaction.options.getString('object').trim().toUpperCase();
+
+        const itemInfo = getItemTypeAndId(objectName);
+        if (!itemInfo) {
             return await sendErrorMessage(interaction, 'Invalid item!');
         }
 
@@ -21,12 +23,12 @@ const dropCommand = async (interaction) => {
         const activeCharId = activeCharacter.id;
 
         const inventoryManager = InventoryManager.getInstance();
-        console.log(`Items[object]: ${Item[object]}`);
-        if (!inventoryManager.hasItem(interaction.user.id, activeCharId, Item[object])) {
+        if (!inventoryManager.hasItem(interaction.user.id, activeCharacter.id, itemInfo.type, itemInfo.id)) {
             return await sendErrorMessage(interaction, 'No such item in your inventory!');
         }
-        const { item: item, quantity } = inventoryManager.getItem(interaction.user.id, activeCharId, Item[object]);
-        inventoryManager.removeItem(interaction.user.id, activeCharId, item, 1);
+
+        const item = inventoryManager.getItem(interaction.user.id, activeCharacter.id, itemInfo.type, itemInfo.id);
+        inventoryManager.removeItem(interaction.user.id, activeCharacter.id, item, 1);
       
         const playerMoveManager = PlayerMovementManager.getInstance();
         const { regionId, locationId, roomId } = playerMoveManager.getLocation(interaction.user.id, activeCharId);

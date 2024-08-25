@@ -15,20 +15,16 @@ class Item {
 }
 
 class Equipment extends Item {
-    // constructor(equipmentType) {
-    //     super(equipmentType.id, equipmentType.name, equipmentType.type, equipmentType.rarity, equipmentType.value, equipmentType.isQuest, equipmentType.description);
-    // }
     constructor(equipmentType) {
         super(equipmentType);
     }
 }
 
 class Consumable extends Item {
-    // constructor(consumableType) {
-    //     super(consumableType.id, consumableType.name, consumableType.type, consumableType.rarity, consumableType.value, consumableType.isQuest, consumableType.description);
-    // }
     constructor(consumableType) {
         super(consumableType);
+        this.effect = consumableType.effect;
+        this.effectValue = consumableType.effectValue;
     }
 }
 
@@ -92,7 +88,9 @@ class ItemManager {
                 rarity: row.RARITY,
                 value: row.VALUE,
                 isQuest: row.ISQUEST,
-                description: row.DESCRIPTION
+                description: row.DESCRIPTION,
+                effect: row.EFFECT,
+                effectValue: row.EFFECT_VALUE
             }));
 
         } catch (error) {
@@ -109,6 +107,10 @@ class ItemManager {
     getConsumableDataById(consumableId) {
         return this.consumableTemplates.find(item => item.id === consumableId);
     }
+
+    getEquipmentDataById(equipmentId){
+        return this.equipmentTemplates.find(item => item.id === equipmentId);
+    } 
 
     parseYieldQuantity(yieldQuantity) {
         const [min, max] = yieldQuantity.split('-').map(Number);

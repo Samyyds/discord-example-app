@@ -23,7 +23,7 @@ export async function handleInventoryInteraction(interaction) {
 
     let description = 'No items in this category.'; 
     if (itemsInCategory && itemsInCategory.length > 0) {
-        description = itemsInCategory.map(item => `${item.name} x${item.quantity}`).join('\n');
+        description = itemsInCategory.map(entry => `${entry.item.name} x${entry.quantity}`).join('\n');
     }
 
     let embed = new EmbedBuilder()

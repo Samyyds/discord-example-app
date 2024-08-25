@@ -45,7 +45,7 @@ const cookCommand = async (interaction) => {
         const itemManager = ItemManager.getInstance();
 
         for (const ingredient of ingredients) {
-            const itemQuantity = inventoryManager.getItem(interaction.user.id, activeCharacter.id, ingredient.item);
+            const itemQuantity = inventoryManager.getItem(interaction.user.id, activeCharacter.id, ItemType.MATERIAL, ingredient.item);
             if (!itemQuantity || itemQuantity.quantity < ingredient.quantity) {
                 const item = itemManager.getItemDataById(ingredient.item);
                 missingIngredients.push(`${ingredient.quantity} x ${item.name}`);
