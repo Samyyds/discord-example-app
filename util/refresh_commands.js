@@ -136,6 +136,14 @@ const dropCommand = new SlashCommandBuilder()
       .setDescription('The name of the item you want to drop.')
       .setRequired(true));
 
+const useCommand = new SlashCommandBuilder()
+  .setName('use')
+  .setDescription('Use a consumable object.')
+  .addStringOption(option =>
+    option.setName('consumable_name')
+      .setDescription('The name of consumable object you want to use.')
+      .setRequired(true));
+
 const unequipCommand = new SlashCommandBuilder()
   .setName('unequip')
   .setDescription('Unequip an equipment.')
@@ -181,6 +189,7 @@ const guildCommands =
     cookCommand.toJSON(),
     brewCommand.toJSON(),
     dropCommand.toJSON(),
+    useCommand.toJSON(),
     unequipCommand.toJSON(),
     equipCommand.toJSON(),
     recipeCommand.toJSON()

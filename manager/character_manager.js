@@ -1,5 +1,5 @@
 import { increaseXp } from '../util/util.js';
-import { Class, Race, Personality, Regions, MokuahLocations } from '../data/enums.js';
+import { Class, Race, Personality, ConsumableEffect } from '../data/enums.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 
 const CLASS_BASE_STATS = {
@@ -200,6 +200,42 @@ class Character {
         this.skills = new SkillContainer();
         this.status = new StatusContainer();
         this.equippedItems = {};
+    }
+
+    applyStatBonus(effectType, value) {
+        switch (effectType) {
+            case ConsumableEffect.PHY_ATK_BONUS:
+                this.stats.physicalATK *= (1 + value / 100);
+                break;
+            case ConsumableEffect.MAG_ATK_BONUS:
+                this.stats.magicATK *= (1 + value / 100);
+                break;
+            case ConsumableEffect.PHY_DEF_BONUS:
+                this.stats.physicalDEF += value;
+                break;
+            case ConsumableEffect.MAG_DEF_BONUS:
+                this.stats.magicDEF += value;
+                break;
+            default:
+                console.log('Effect not recognized');
+                break;
+        }
+    }
+
+    removeStatusEffect(effectType) {
+        switch (effectType) {
+            case 'CURE_BLEED':
+                this.status.bleedMag = 0; 
+                break;
+            case 'CURE_POISON':
+                this.status.poisonMag = 0; 
+                break;
+            case 'CURE_BURN':
+                break;
+            default:
+                console.log('Status effect not recognized');
+                break;
+        }
     }
 
     equipItem(item) {
