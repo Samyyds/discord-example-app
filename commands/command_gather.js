@@ -56,7 +56,7 @@ const gatherCommand = async (interaction) => {
             return await sendErrorMessage(interaction, 'Failed to gather.');
         }
 
-        activeCharacter.skills.increaseSkillXp('gathering', 30);
+        activeCharacter.skills.increaseSkillXp('gathering', node.skillXP);
 
     } catch (error) {
         console.error('Error in gatherCommand:', error);

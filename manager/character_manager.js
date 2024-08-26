@@ -1,4 +1,4 @@
-import { increaseXp } from '../util/util.js';
+import { calculateLevelFromXp } from '../util/util.js';
 import { Class, Race, Personality, ConsumableEffect } from '../data/enums.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 
@@ -90,24 +90,35 @@ class StatContainer {
 }
 
 class SkillContainer {
-    constructor(mining = { level: 0, xp: 0 }, smithing = { level: 0, xp: 0 }, crafting = { level: 0, xp: 0 }, fishing = { level: 0, xp: 0 }, gathering = { level: 0, xp: 0 }, farming = { level: 0, xp: 0 }, cooking = { level: 0, xp: 0 }, brewing = { level: 0, xp: 0 }) {
-        this.mining = mining;
-        this.smithing = smithing;
-        this.crafting = crafting;
-        this.fishing = fishing;
-        this.gathering = gathering;
-        this.farming = farming;
-        this.cooking = cooking;
-        this.brewing = brewing;
+    // constructor(mining = { level: 0, xp: 0 }, smithing = { level: 0, xp: 0 }, crafting = { level: 0, xp: 0 }, fishing = { level: 0, xp: 0 }, gathering = { level: 0, xp: 0 }, farming = { level: 0, xp: 0 }, cooking = { level: 0, xp: 0 }, brewing = { level: 0, xp: 0 }) {
+    //     this.mining = mining;
+    //     this.smithing = smithing;
+    //     this.crafting = crafting;
+    //     this.fishing = fishing;
+    //     this.gathering = gathering;
+    //     this.farming = farming;
+    //     this.cooking = cooking;
+    //     this.brewing = brewing;
+    // }
+    constructor() {
+        this.skills = {
+            mining: { xp: 0, level: 0 },
+            smithing: { xp: 0, level: 0 },
+            crafting: { xp: 0, level: 0 },
+            fishing: { xp: 0, level: 0 },
+            gathering: { xp: 0, level: 0 },
+            farming: { xp: 0, level: 0 },
+            cooking: { xp: 0, level: 0 },
+            brewing: { xp: 0, level: 0 }
+        };
     }
 
+
     increaseSkillXp(skillName, amount) {
-        if (!this[skillName]) return;
-
-        const { newLevel, newXp, xpForNextLevel } = increaseXp(this[skillName].xp, this[skillName].level, amount);
-
-        this[skillName].level = newLevel;
-        this[skillName].xp = newXp;
+        if (skillName in this.skills) {
+            this.skills[skillName].xp += amount;
+            this.skills[skillName].level = calculateLevelFromXp(this.skills[skillName].xp);
+        }
     }
 }
 
@@ -299,12 +310,9 @@ class Character {
         return false;
     }
 
-
     increaseCharacterXp(amount) {
-        const { newLevel, newXp, xpForNextLevel } = increaseXp(this.xp, this.level, amount);
-
-        this.level = newLevel;
-        this.xp = newXp;
+        this.xp += amount;
+        this.level = calculateLevelFromXp(this.xp);
     }
 }
 

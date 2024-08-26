@@ -56,7 +56,7 @@ const mineCommand = async (interaction) => {
             return await sendErrorMessage(interaction, 'Failed to mine.');
         }
 
-        activeCharacter.skills.increaseSkillXp('mining', 30);
+        activeCharacter.skills.increaseSkillXp('mining', node.skillXP);
 
     } catch (error) {
         console.error('Error in mineCommand:', error);

@@ -12,6 +12,7 @@ class Node {
         this.yieldQuantity = nodeType.yieldQuantity;
         this.requiredSkillType = nodeType.requiredSkillType;
         this.requiredSkillValue = nodeType.requiredSkillValue;
+        this.skillXP = nodeType.skillXP;
         this.requiredItem = nodeType.requiredItem;
         this.subscriberOnly = nodeType.subscriberOnly;
         this.description = nodeType.description;
@@ -55,6 +56,7 @@ class NodeManager {
                 yieldQuantity: row.YIELD_QUANTITY,
                 requiredSkillType: row.REQUIRED_SKILL_TYPE,
                 requiredSkillValue: row.REQUIRED_SKILL_VALUE,
+                skillXP: row.SKILL_XP,
                 requiredItem: row.REQUIRED_ITEM,
                 description: row.DESCRIPTION,
                 subscriberOnly: row.SUBSCRIBER_ONLY

@@ -3,24 +3,32 @@ import itemsData from '../json/items.json' assert { type: 'json' };
 import { RegionManager } from '../manager/region_manager.js';
 import { EmbedBuilder } from 'discord.js';
 
-export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
-    const baseSkillRequirement = 100;
-    let xp = currentXp + amount;
-    let level = currentLevel;
+// export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
+//     const baseSkillRequirement = 100;
+//     let xp = currentXp + amount;
+//     let level = currentLevel;
 
-    let xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
+//     let xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
 
-    while (xp >= xpNeededForNextLevel && level < levelCap) {
-        xp -= xpNeededForNextLevel;
-        level++;
-        xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
-    }
+//     while (xp >= xpNeededForNextLevel && level < levelCap) {
+//         xp -= xpNeededForNextLevel;
+//         level++;
+//         xpNeededForNextLevel = Math.floor(baseSkillRequirement * Math.pow(1.063, level));
+//     }
 
-    return {
-        newLevel: level,
-        newXp: xp,
-        xpForNextLevel: xpNeededForNextLevel
-    };
+//     return {
+//         newLevel: level,
+//         newXp: xp,
+//         xpForNextLevel: xpNeededForNextLevel
+//     };
+// }
+
+export function calculateLevelFromXp(xp) {
+    return Math.floor(Math.pow(xp, 0.5));
+}
+
+function xpRequiredForLevel(level) {
+    return Math.pow(level, 2);
 }
 
 function createProgressBar(currentXp, totalXpForNextLevel, barLength = 10) {
@@ -38,8 +46,13 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
             description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase()}\n`;
             description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase()}\n`;
             description += `Level : ${activeChar.level}\n`;
-            const { newXp, xpForNextLevel } = increaseXp(activeChar.xp, activeChar.level, 0);
-            description += `XP: ${createProgressBar(newXp, xpForNextLevel)}\n`;
+
+            const xpForCurrentLevel = xpRequiredForLevel(activeChar.level);
+            const xpForNextLevel = xpRequiredForLevel(activeChar.level + 1);
+            const currentXp = activeChar.xp - xpForCurrentLevel;
+
+            description += `XP: ${createProgressBar(currentXp, xpForNextLevel - xpForCurrentLevel)}\n`;
+
             description += "\n**Equipped Items:**\n";
             let hasEquippedItems = false;
             for (const slot in activeChar.equippedItems) {
@@ -52,6 +65,7 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
                 description += "No items equipped.\n";
             }
             break;
+
         case 'stats':
             Object.keys(activeChar.stats).forEach(stat => {
                 if (typeof activeChar.stats[stat] !== 'object' && activeChar.stats[stat] !== undefined) {
@@ -61,19 +75,26 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
                 }
             });
             break;
+
         case 'skills':
-            Object.keys(activeChar.skills).forEach(skill => {
-                const skillData = activeChar.skills[skill];
-                const skillXpInfo = increaseXp(skillData.xp, skillData.level, 0);
-                description += `${skill.charAt(0).toUpperCase() + skill.slice(1)}: \nLevel: ${skillData.level}\nXP: ${createProgressBar(skillXpInfo.newXp, skillXpInfo.xpForNextLevel)}\n`;
+            Object.keys(activeChar.skills.skills).forEach(skill => {
+                const skillData = activeChar.skills.skills[skill];
+                const skillLevel = calculateLevelFromXp(skillData.xp);
+                const xpForSkillLevel = xpRequiredForLevel(skillLevel);
+                const xpForNextSkillLevel = xpRequiredForLevel(skillLevel + 1);
+                const currentSkillXp = skillData.xp - xpForSkillLevel;
+        
+                description += `${skill.charAt(0).toUpperCase() + skill.slice(1)}: \nLevel: ${skillLevel}\nXP: ${createProgressBar(currentSkillXp, xpForNextSkillLevel - xpForSkillLevel)}\n`;
             });
             break;
+
         case 'abilities':
             description += "\n**Abilities:**\n";
             activeChar.abilities.forEach(abilityId => {
                 description += `${formatAbilityName(abilityId)}\n`;
             });
             break;
+
         default:
             description = 'No information available.';
     }
