@@ -26,30 +26,37 @@ const lookCommand = async (interaction) => {
         const enemies = room.getEnemies();
         const nodes = room.getNodes();
         const items = room.getItems();
+        const npcs = room.getNPCs();
 
         let description = '';
-
-        if (roomId === 0) {
-            const location = regionManager.getLocationById(regionId, locationId);
-            description += location.description ? `${location.description}\n\n` : '';
-        } else {
-            description += room.description ? `${room.description}\n\n` : '';
-        }
 
         if (objectName) {
             const enemy = enemies.find(enemy => enemy.name.toLowerCase() === objectName.toLowerCase());
             const node = nodes.find(node => node.name.toLowerCase() === objectName.toLowerCase());
             const item = items.find(item => item.name.toLowerCase() === objectName.toLowerCase());
+            const npc = npcs.find(npc => npc.name.toLowerCase() === objectName.toLowerCase());
+
             if (enemy) {
                 description += `${enemy.description}\n`;
             } else if (node) {
                 description += `${node.description}\n`;
             } else if (item) {
                 description += `${item.description}\n`;
-            } else {
+            } else if (npc) {
+                description += `${npc.description}\n`;
+            }
+            else {
                 description = `No '${objectName}' found.`;
             }
         } else {
+
+            if (roomId === 0) {
+                const location = regionManager.getLocationById(regionId, locationId);
+                description += location.description ? `${location.description}\n\n` : '';
+            } else {
+                description += room.description ? `${room.description}\n\n` : '';
+            }
+
             if (enemies.length) {
                 description += '**Enemies in the room:**\n';
                 description += enemies.map(enemy => `${enemy.name}`).join(', ') + '\n\n';
@@ -72,8 +79,13 @@ const lookCommand = async (interaction) => {
                     description += `${item.name} (x${count})\n`;
                 }
             }
+
+            if (npcs.length) {
+                description += '**NPCs in the room:**\n';
+                description += npcs.map(npc => `${npc.name}`).join(', ') + '\n';
+            }
         }
-        
+
         let embed = new EmbedBuilder();
         if (description.trim().length > 0) {
             embed.setDescription(description);

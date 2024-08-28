@@ -1,5 +1,6 @@
 import { Enemy, EnemyManager } from "../manager/enemy_manager.js";
-import { Node, NodeManager } from "../manager/node_manager.js";
+import { Node } from "../manager/node_manager.js";
+import { NPCManager } from "../manager/npc_manager.js";
 
 class Region {
     constructor(id, name, description) {
@@ -66,6 +67,7 @@ class Room {
         this.uniqueEnemiesSpawned = new Set();
         this.nodes = [];
         this.items = [];
+        this.npcs = [];
     }
 
     calculateAttenuatedWeight(weight, attenuation, floor) {
@@ -184,11 +186,11 @@ class Room {
 
     spawnNodes(nodeTemplates) {
         nodeTemplates.forEach(template => {
-            this.nodes.push( new Node(template));
+            this.nodes.push(new Node(template));
         });
     }
 
-    getNodes(){
+    getNodes() {
         return this.nodes;
     }
 
@@ -205,6 +207,29 @@ class Room {
 
     getItems() {
         return this.items;
+    }
+
+    generateNPCs(regionId, locationId, roomId) {
+        const npcManager = NPCManager.getInstance();
+
+        npcManager.npcTemplates.forEach(npcTemplate => {
+            if (npcTemplate.location.regionId === regionId &&
+                npcTemplate.location.locationId === locationId &&
+                npcTemplate.location.roomId === roomId) {
+
+                const npcInstance = npcManager.createNpcInstance(npcTemplate.id);
+                if (npcInstance) {
+                    this.npcs.push(npcInstance);
+                    console.log(`NPC generated: ${npcInstance.name}`);
+                } else {
+                    console.log(`Failed to create NPC instance for ID: ${npcTemplate.id}`);
+                }
+            }
+        });
+    }
+
+    getNPCs() {
+        return this.npcs;
     }
 }
 
