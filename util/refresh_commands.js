@@ -144,6 +144,14 @@ const useCommand = new SlashCommandBuilder()
       .setDescription('The name of consumable object you want to use.')
       .setRequired(true));
 
+const talkCommand = new SlashCommandBuilder()
+  .setName('talk')
+  .setDescription('Talk to a NPC.')
+  .addStringOption(option =>
+    option.setName('npc_name')
+      .setDescription('The name of the NPC you want to talk to.')
+      .setRequired(true));
+
 const unequipCommand = new SlashCommandBuilder()
   .setName('unequip')
   .setDescription('Unequip an equipment.')
@@ -164,7 +172,7 @@ const attackCommand = new SlashCommandBuilder()
   .setName('attack')
   .setDescription('Launch an attack! Prove your strength against the adversaries.')
   .addStringOption(option =>
-    option.setName('enemy-name')
+    option.setName('enemy_name')
       .setDescription('The name of the enemy you want to have a fight with')
       .setRequired(true));
 
@@ -190,6 +198,7 @@ const guildCommands =
     brewCommand.toJSON(),
     dropCommand.toJSON(),
     useCommand.toJSON(),
+    talkCommand.toJSON(),
     unequipCommand.toJSON(),
     equipCommand.toJSON(),
     recipeCommand.toJSON()

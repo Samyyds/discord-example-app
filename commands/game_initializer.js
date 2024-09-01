@@ -5,6 +5,7 @@ import { NodeManager } from "../manager/node_manager.js";
 import { ItemManager } from "../manager/item_manager.js";
 import { RecipeManager } from "../manager/recipe_manager.js";
 import { NPCManager } from "../manager/npc_manager.js";
+import { QuestManager } from "../manager/quest_manager.js";
 
 function initializeGame() {
     //load region
@@ -18,6 +19,10 @@ function initializeGame() {
     //load NPCs
     const npcManager = NPCManager.getInstance();
     npcManager.loadFromJson();
+
+    //load quests
+    const questManager = QuestManager.getInstance();
+    questManager.loadFromJson();
 
     //load abilities
     const abilityManager = AbilityManager.getInstance();

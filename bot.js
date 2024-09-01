@@ -17,6 +17,7 @@ import { initializeGame } from './commands/game_initializer.js';
 import { inventoryCommands } from './commands/command_inventory.js';
 import { dropCommands } from './commands/command_drop.js';
 import { useCommands } from "./commands/command_use.js";
+import { talkCommands } from "./commands/command_talk.js";
 import { unequipCommands } from "./commands/command_unequip.js";
 import { equipCommands } from "./commands/command_equip.js";
 import { recipeCommands } from "./commands/command_recipe.js";
@@ -26,6 +27,7 @@ import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
 import { handleRecipeInteraction } from "./handler/recipe_handler.js";
+import { handleTalkInteraction } from "./handler/talk_handler.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
@@ -164,7 +166,10 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case "use":
         commandHandler = useCommands[commandName];
-        break;  
+        break;
+      case "talk":
+        commandHandler = talkCommands[commandName];
+        break;
       case "unequip":
         commandHandler = unequipCommands[commandName];
         break;
@@ -198,8 +203,10 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleCharacterInteraction(interaction);
     } else if (interaction.customId.startsWith('attack_')) {
       await handleAttackInteraction(interaction);
-    }else if(interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_')){
+    } else if (interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_')) {
       await handleRecipeInteraction(interaction);
+    }else if(interaction.customId.startsWith('talk_')){
+      await handleTalkInteraction(interaction);
     }
     else {
       console.log('Unrecognized button interaction:', interaction.customId);

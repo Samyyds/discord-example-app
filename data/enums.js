@@ -251,17 +251,24 @@ export const Recipe = {
 }
 
 export const ConsumableEffect = {
-   "PHY_ATK_BONUS": 0,
-   "MAG_ATK_BONUS": 1,
-   "PHY_DEF_BONUS": 2,
-   "MAG_DEF_BONUS": 3,
-   "INCREASE_ALL_BONUS_DURATION": 4,
-   "CURE_BLEED": 5,
-   "CURE_POISON": 6,
-   "CURE_BURN": 7,
-   "RESTORE_HP": 8,
-   "RESTORE_MP": 9
+    "PHY_ATK_BONUS": 0,
+    "MAG_ATK_BONUS": 1,
+    "PHY_DEF_BONUS": 2,
+    "MAG_DEF_BONUS": 3,
+    "INCREASE_ALL_BONUS_DURATION": 4,
+    "CURE_BLEED": 5,
+    "CURE_POISON": 6,
+    "CURE_BURN": 7,
+    "RESTORE_HP": 8,
+    "RESTORE_MP": 9
 };
+
+export const QuestStatus = {
+    "NOT_STARTED": 0,
+    "IN_PROGRESS": 1,
+    "COMPLETED": 2,
+    "DECLINED": 3
+}
 
 export const Slot = {
     "Head": 0,
@@ -300,7 +307,7 @@ export function getRegionNameFromId(regionId) {
 }
 
 export function getItemTypeAndId(itemName) {
-    
+
     const normalizedInput = itemName.toLowerCase().replace(/[^a-z0-9]/g, '');
 
     for (const key in Item) {

@@ -7,8 +7,8 @@ export async function handleInventoryInteraction(interaction) {
     if (!interaction.isButton()) return;
 
     const userId = interaction.user.id;
-    const characterRepo = CharacterManager.getInstance();
-    const activeCharacter = characterRepo.getActiveCharacter(userId);
+    const characterManager = CharacterManager.getInstance();
+    const activeCharacter = characterManager.getActiveCharacter(userId);
     if (!activeCharacter) {
         await interaction.reply({ content: "You do not have an available character!", ephemeral: true });
         return;

@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "name": "Failed Sacrifice",
+        "description": "Defeat Failed Sacrifice.",
+        "requirements": {
+            "action": "Kill",
+            "target": "Failed Sacrifice"
+        },
+        "rewards": {
+            "item": "Map to Nyra"
+        }
+    }
+]

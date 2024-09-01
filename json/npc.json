@@ -15,57 +15,42 @@
             "1": {
                 "quest_not_started": {
                     "start": {
-                        "text": "Greetings, traveler. There have been dark whispers coming from the Moku'ah Jungle. Kala the Necromancer is rising again, threatening our village's peace. Would you be brave enough to confront this menace?",
+                        "text": "Greetings, traveler. There have been dark whispers coming from the Moku'ah Jungle. Would you be brave enough to confront this menace?",
                         "options": {
-                            "Yes": "acceptQuest",
-                            "No": "declineQuest"
+                            "Yes": {
+                                "next": "acceptQuest",
+                                "action": "startQuest"
+                            },
+                            "No": {
+                                "next": "declineQuest",
+                                "action": "ignoreQuest"
+                            }
                         }
                     },
                     "acceptQuest": {
-                        "text": "Your courage gives us hope. Please, venture into the jungle and put an end to Kala's reign of terror. The fate of Moku'ah rests in your hands.",
-                        "options": {
-                            "continue": "end"
-                        }
+                        "text": "Your courage gives us hope. Please, venture into the jungle and put an end to Failed Sacrifice's reign of terror.",
+                        "options": {}
                     },
                     "declineQuest": {
-                        "text": "I understand your hesitation. Kala is a formidable foe. Should you change your mind, we will be here, hoping for a hero.",
-                        "options": {
-                            "continue": "end"
-                        }
-                    },
-                    "end": {
-                        "text": "May the spirits guide you, whatever you decide.",
+                        "text": "I understand your hesitation. Should you change your mind, we will be here, hoping for a hero.",
                         "options": {}
                     }
                 },
                 "quest_in_progress": {
                     "start": {
-                        "text": "Have you faced Kala yet? The jungle grows darker with every passing moment. Our village's safety depends on your success.",
-                        "options": {
-                            "continue": "end"
-                        }
-                    },
-                    "end": {
-                        "text": "Please, do not delay. Every moment counts.",
+                        "text": "Have you faced Failed Sacrifice yet?",
                         "options": {}
                     }
                 },
                 "quest_completed": {
                     "start": {
-                        "text": "You have done it! Kala the Necromancer has been defeated. The darkness in the jungle has receded, and the villagers are safe once more.",
+                        "text": "You have done it! Failed Sacrifice has been defeated.",
                         "options": {
-                            "continue": "reward"
+                            "Continue": {
+                                "next": "reward",
+                                "action": "completeQuest"
+                            }
                         }
-                    },
-                    "reward": {
-                        "text": "As a token of our gratitude, I present to you the Map to Nyra. This map will unlock the path from Moku'ah Docks to Nyra Beach. May your journey continue with success.",
-                        "options": {
-                            "continue": "end"
-                        }
-                    },
-                    "end": {
-                        "text": "Thank you, hero. The people of Moku'ah will always remember your bravery.",
-                        "options": {}
                     }
                 }
             }
