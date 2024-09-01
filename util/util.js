@@ -204,8 +204,14 @@ export function serializeObject(instance, properties) {
 
 export async function sendErrorMessage(interaction, message) {
     const embed = new EmbedBuilder()
-        .setColor(0xFF0000) // Red color for error
+        .setColor(0xFF0000)
         .setDescription(message);
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+
+    if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+    } else {
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+    }
 }
+
 

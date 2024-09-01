@@ -62,6 +62,11 @@ class QuestManager {
         return this.questTemplates.find(quest => quest.id === questId);
     }
 
+    getQuestIdByName(name) {
+        const questTemplate = this.questTemplates.find(quest => quest.name === name);
+        return questTemplate ? questTemplate.id : null;
+    }
+
     createQuestInstance(questId) {
         const template = this.getQuestTemplateById(questId);
         return template ? new Quest(template) : null;
@@ -76,6 +81,11 @@ class QuestManager {
             charQuests.set(characterId, []);
         }
         return charQuests.get(characterId);
+    }
+
+    getQuestByID(userId, characterId, questId) {
+        const quests = this.getCharQuests(userId, characterId);
+        return quests.find(q => q.id === questId);
     }
 
     hasQuest(userId, characterId, questId) {

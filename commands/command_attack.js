@@ -3,9 +3,10 @@ import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { RegionManager } from "../manager/region_manager.js";
 import { AbilityManager } from "../manager/ability_manager.js";
+import { QuestManager } from "../manager/quest_manager.js";
 import { ItemManager } from "../manager/item_manager.js";
 import { sendErrorMessage } from "../util/util.js";
-import { ItemType } from "../data/enums.js";
+import { ItemType, QuestStatus } from "../data/enums.js";
 
 const attackCommand = async (interaction) => {
     try {
@@ -90,9 +91,9 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
         if (enemy.dropItem && Math.random() < enemy.dropChance) {
             const itemManager = ItemManager.getInstance();
             let droppedItem;
-            
-            const dropItemType = enemy.dropItemType; 
-            switch(dropItemType) {
+
+            const dropItemType = enemy.dropItemType;
+            switch (dropItemType) {
                 case ItemType.MATERIAL:
                     droppedItem = itemManager.getItemDataById(enemy.dropItem);
                     break;
@@ -106,21 +107,33 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
                     console.log("Unknown item type for drop.");
                     break;
             }
-    
+
             if (droppedItem) {
                 room.addItemToRoom(droppedItem);
                 combatLog.push(`${enemy.name} dropped ${droppedItem.name}!`);
             }
+
+            if (enemy.name === "Failed Sacrifice") {
+                const questManager = QuestManager.getInstance();
+                const questId = questManager.getQuestIdByName("Failed Sacrifice");
+                if (questId) {
+                    const quest = questManager.getQuestByID(interaction.user.id, player.id, questId);
+                    if (quest.stats != QuestStatus.COMPLETED) {
+                        quest.complete();
+                        combatLog.push(`Quest '${quest.name}' completed!`);
+                    }
+                }
+            }
         }
-    
+
         const xpGain = 30;
         player.increaseCharacterXp(xpGain);
         combatLog.push(`${player.name} gained ${xpGain} XP!`);
-    
+
         room.removeEnemy(enemy);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
-    
+
     let enemyAbility;
     if (enemy.abilities.length === 1) {
         enemyAbility = abilityManager.getAbilityById(enemy.abilities[0]);

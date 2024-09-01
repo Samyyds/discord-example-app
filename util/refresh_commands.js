@@ -172,7 +172,7 @@ const attackCommand = new SlashCommandBuilder()
   .setName('attack')
   .setDescription('Launch an attack! Prove your strength against the adversaries.')
   .addStringOption(option =>
-    option.setName('enemy_name')
+    option.setName('enemy-name')
       .setDescription('The name of the enemy you want to have a fight with')
       .setRequired(true));
 
