@@ -8,8 +8,8 @@ const unequipCommand = async (interaction) => {
     try {
         const object = interaction.options.getString('object').trim().toUpperCase();
 
-        const characterRepo = CharacterManager.getInstance();
-        const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
+        const characterManager = CharacterManager.getInstance();
+        const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
             throw new Error('You do not have an available character!');
         }

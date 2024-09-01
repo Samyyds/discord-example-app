@@ -11,8 +11,8 @@ const gatherCommand = async (interaction) => {
     try {
         const nodeName = interaction.options.getString('resource').trim();
 
-        const characterRepo = CharacterManager.getInstance();
-        const activeCharacter = characterRepo.getActiveCharacter(interaction.user.id);
+        const characterManager = CharacterManager.getInstance();
+        const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
             return await sendErrorMessage(interaction, 'You do not have an available character!');
         }

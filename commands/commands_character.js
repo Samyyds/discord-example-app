@@ -34,9 +34,9 @@ const createCommand = async (interaction) => {
 
         const character = await createCharacter(userId, charName, className, raceName);
 
-        const characterRepo = CharacterManager.getInstance();
-        characterRepo.addCharacter(userId, character);
-        characterRepo.setActiveCharacter(userId, character.id);
+        const characterManager = CharacterManager.getInstance();
+        characterManager.addCharacter(userId, character);
+        characterManager.setActiveCharacter(userId, character.id);
 
         let embed = new EmbedBuilder()
             .setTitle("Huzzah! Your hero has emerged into the realm, ready for adventure!")
