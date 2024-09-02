@@ -46,11 +46,17 @@
                     "start": {
                         "text": "You have done it! Failed Sacrifice has been defeated.",
                         "options": {
-                            "Continue": {
-                                "next": "reward",
-                                "action": "completeQuest"
+                            "Claim rewards": {
+                                "next": "quest_turned_in",
+                                "action": "turnInQuest"
                             }
                         }
+                    }
+                },
+                "quest_turned_in": {
+                    "start": {
+                        "text": "Thank you for defeating Failed Sacrifice. Our village is safe, thanks to your bravery.",
+                        "options": {}
                     }
                 }
             }

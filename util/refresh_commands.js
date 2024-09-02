@@ -180,6 +180,10 @@ const recipeCommand = new SlashCommandBuilder()
   .setName('recipe')
   .setDescription('Displays recipes available to your character.');
 
+const questCommand = new SlashCommandBuilder()
+  .setName('quest')
+  .setDescription('Displays quests you have accepted.');
+
 const guildCommands =
   [
     //accountCommand.toJSON(),
@@ -201,7 +205,8 @@ const guildCommands =
     talkCommand.toJSON(),
     unequipCommand.toJSON(),
     equipCommand.toJSON(),
-    recipeCommand.toJSON()
+    recipeCommand.toJSON(),
+    questCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

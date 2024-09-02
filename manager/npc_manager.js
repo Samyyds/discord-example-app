@@ -27,6 +27,9 @@ class NPC {
                 case QuestStatus.COMPLETED:
                     statusKey = 'quest_completed';
                     break;
+                case QuestStatus.COMPLETED_AND_TURNED_IN:
+                    statusKey = 'quest_turned_in';
+                    break;
             }
         }
 
@@ -40,15 +43,18 @@ class NPC {
         let quests = questManager.getCharQuests(userId, characterId);
         let quest = quests.find(q => q.id === questId);
         let dialogueOptions = this.dialogueTree[questId];
-    
-        let statusKey = quest ? quest.status.toLowerCase().replace('_', ' ') : 'quest_not_started';
+        
+        let statusKey = this.getStatusKey(quest);
         let optionDetails = dialogueOptions[statusKey]['start']['options'][option];
     
         if (optionDetails.action) {
             if (optionDetails.action === 'startQuest' && !quest) {
-                quest = questManager.startQuest(userId, characterId, questId);
+                questManager.startQuest(userId, characterId, questId);
             } else if (quest) {
                 quest.updateStatus(optionDetails.action);
+                if (optionDetails.action === 'turnInQuest') {
+                    quest.status = QuestStatus.COMPLETED_AND_TURNED_IN;
+                }
             }
         }
     
@@ -59,9 +65,23 @@ class NPC {
             }
         }
     
-        return "No further actions found for this option.";
-    }   
-}
+        return "No actual reward has been implemented for now.";
+    }
+
+    getStatusKey(quest) {
+        if (!quest) return 'quest_not_started';
+        switch (quest.status) {
+            case QuestStatus.IN_PROGRESS:
+                return 'quest_in_progress';
+            case QuestStatus.COMPLETED:
+                return 'quest_completed';
+            case QuestStatus.COMPLETED_AND_TURNED_IN:
+                return 'quest_turned_in';
+            default:
+                return 'quest_not_started';
+        }
+    }
+}    
 
 class NPCManager {
     constructor() {

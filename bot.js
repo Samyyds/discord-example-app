@@ -23,11 +23,13 @@ import { equipCommands } from "./commands/command_equip.js";
 import { recipeCommands } from "./commands/command_recipe.js";
 import { cookCommands } from "./commands/command_cook.js";
 import { brewCommands } from "./commands/command_brew.js";
+import { questCommands } from "./commands/command_quest.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
 import { handleRecipeInteraction } from "./handler/recipe_handler.js";
 import { handleTalkInteraction } from "./handler/talk_handler.js";
+import { handleQuestInteraction } from "./handler/quest_handler.js";
 
 // Create and configure the Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
@@ -182,6 +184,9 @@ client.on(Events.InteractionCreate, async interaction => {
       case "recipe":
         commandHandler = recipeCommands[commandName];
         break;
+      case "quest":
+        commandHandler = questCommands[commandName];
+        break;
       default:
         const subCommandName = interaction.options.getSubcommand();
         commandHandler = compoundCommand[commandName]?.[subCommandName];
@@ -207,6 +212,8 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleRecipeInteraction(interaction);
     }else if(interaction.customId.startsWith('talk_')){
       await handleTalkInteraction(interaction);
+    }else if(interaction.customId.startsWith('quest_')){
+      handleQuestInteraction(interaction);
     }
     else {
       console.log('Unrecognized button interaction:', interaction.customId);

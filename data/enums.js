@@ -267,7 +267,8 @@ export const QuestStatus = {
     "NOT_STARTED": 0,
     "IN_PROGRESS": 1,
     "COMPLETED": 2,
-    "DECLINED": 3
+    "DECLINED": 3,
+    "COMPLETED_AND_TURNED_IN": 4
 }
 
 export const Slot = {

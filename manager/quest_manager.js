@@ -22,6 +22,9 @@ class Quest {
             case 'completeQuest':
                 this.status = QuestStatus.COMPLETED;
                 break;
+            case 'turnInQuest':
+                this.status = QuestStatus.COMPLETED_AND_TURNED_IN;
+                break;
             default:
                 console.log("Unhandled status update:", nextStatus);
         }
@@ -33,6 +36,10 @@ class Quest {
 
     complete() {
         this.status = QuestStatus.COMPLETED;
+    }
+
+    turnIn() {
+        this.status = QuestStatus.COMPLETED_AND_TURNED_IN;
     }
 }
 
@@ -107,9 +114,11 @@ class QuestManager {
         let quest = charQuests.find(q => q.id === questId);
         if (!quest) {
             quest = this.createQuestInstance(questId);
-            charQuests.push(quest);
+            this.addCharQuest(userId, characterId, quest);
+            quest.start();
+        } else {
+            console.log(`Quest '${quest.name}' already started for character ${characterId} of user ${userId}.`);
         }
-        quest.start();
     }
 }
 
