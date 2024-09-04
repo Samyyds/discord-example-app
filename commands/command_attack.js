@@ -49,7 +49,7 @@ const attackCommand = async (interaction) => {
 
 export function turnBasedCombat(interaction, player, enemy, abilityId, regionManager, regionId, locationId, roomId) {
     const combatLog = [];
-
+    console.log(`Before combat: hpMax: ${player.stats.hpMax}, mpMax: ${player.stats.mpMax}`);
     const abilityManager = AbilityManager.getInstance();
     const ability = abilityManager.getAbilityById(abilityId);
 
@@ -118,9 +118,11 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
                 const questId = questManager.getQuestIdByName("Failed Sacrifice");
                 if (questId) {
                     const quest = questManager.getQuestByID(interaction.user.id, player.id, questId);
-                    if (quest.stats != QuestStatus.COMPLETED) {
-                        quest.complete();
-                        combatLog.push(`Quest '${quest.name}' completed!`);
+                    if (quest) {
+                        if (quest.status === QuestStatus.IN_PROGRESS) {
+                            quest.complete();
+                            combatLog.push(`Quest '${quest.name}' completed!`);
+                        }
                     }
                 }
             }
@@ -131,6 +133,7 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
         combatLog.push(`${player.name} gained ${xpGain} XP!`);
 
         room.removeEnemy(enemy);
+        console.log(`Before combat: hpMax: ${player.stats.hpMax}, mpMax: ${player.stats.mpMax}`);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
 

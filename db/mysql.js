@@ -70,7 +70,7 @@ async function saveCharacterData(userId, character, location) {
         const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status } = character;
         const battleBarJson = JSON.stringify(battleBar);
         const abilitiesJson = JSON.stringify(abilities);
-        const serializedStats = serializeObject(character.stats, ['hp', 'mp', 'spd', 'physicalATK', 'physicalDEF', 'magicATK', 'magicDEF', 'fireATK', 'fireDEF', 'lightATK', 'lightDEF', 'darkATK', 'darkDEF']);
+        const serializedStats = serializeObject(character.stats, ['hpMax', 'mpMax', 'hp', 'mp', 'spd', 'physicalATK', 'physicalDEF', 'magicATK', 'magicDEF', 'fireATK', 'fireDEF', 'lightATK', 'lightDEF', 'darkATK', 'darkDEF']);
         const serializedSkills = serializeObject(character.skills, ['mining', 'smithing', 'crafting', 'fishing', 'gathering', 'farming', 'cooking', 'brewing']);
         const serializedStatus = serializeObject(character.status, ['spdMult', 'phyDefBuffMag', 'phyDefBuffTimer', 'bleedMag', 'bleedTimer', 'poisonMag', 'poisonTimer']);
 

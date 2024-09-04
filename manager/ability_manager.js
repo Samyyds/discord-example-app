@@ -34,7 +34,7 @@ class AbilityManager {
                 acc[row.ID] = {
                     id: row.ID,
                     name: row.NAME,
-                    mp_cost: row.MP_COST,
+                    mpCost: row.MP_COST,
                     intensity: row.INTENSITY,
                     is_passive: row.IS_PASSIVE,
                     item_restriction: row.ITEM_RESTRICTION,
