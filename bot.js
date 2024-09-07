@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
-const { Client, GatewayIntentBits, EmbedBuilder } = pkg;
+const { Client, GatewayIntentBits, EmbedBuilder, Partials, PermissionsBitField } = pkg;
 import { MysqlDB, getAllUserIds, hasCharacters, loadCharactersForUser, loadInventoryForUser } from "./db/mysql.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
@@ -32,7 +32,16 @@ import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
 
 // Create and configure the Discord client
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
+const client = new Client({
+  intents:
+    [GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions
+    ],
+    partials: [Partials.Message, Partials.Reaction, Partials.Channel] 
+});
 
 const compoundCommand = {
   character: charactercommands,
@@ -61,6 +70,45 @@ client.once('ready', async () => {
   } catch (error) {
     console.error('Failed to initialize bot:', error);
   }
+
+  client.on(Events.GuildMemberAdd, async (member) => {
+    console.log(`New member added: ${member.displayName}`);
+  });
+
+  client.on(Events.MessageReactionAdd, async (reaction, user) => {
+    console.log("A reaction has been added!");
+    if (reaction.partial) {
+      try {
+        await reaction.fetch();
+      } catch (error) {
+        console.error('Something went wrong when fetching the message:', error);
+        return;
+      }
+    }
+    if (reaction.message.channelId === process.env.FREE_ACCESS_CHANNEL) {
+      const member = await reaction.message.guild.members.fetch(user.id);
+      await member.roles.add(process.env.FREE_MEMBER_ROLE); 
+    
+      const updatedMember = await reaction.message.guild.members.fetch(user.id);
+      if (updatedMember.roles.cache.has(process.env.FREE_MEMBER_ROLE)) {
+        const freeAccessChannel = member.guild.channels.cache.find(channel => channel.name === 'free-access');
+        if (freeAccessChannel) {
+          try {
+            await freeAccessChannel.permissionOverwrites.edit(member, {
+              [PermissionsBitField.Flags.ViewChannel]: true,
+              [PermissionsBitField.Flags.SendMessages]: true
+            });
+            console.log(`Access granted to ${member.displayName} for #free-access channel.`);
+          } catch (error) {
+            console.error('Failed to edit permissions:', error);
+          }
+        }
+      } else {
+        console.log(`Failed to add role to ${member.displayName}`);
+      }
+    }
+  });
+
   // const channelId = '1232231036054667286';
   // const channel = client.channels.cache.get(channelId);
   // if (!channel) {
@@ -82,17 +130,6 @@ client.once('ready', async () => {
   // } catch (error) {
   //   console.error('Failed to send or pin the message:', error);
   // }
-});
-
-//assign "free member" role to new users
-client.on(Events.GuildMemberAdd, async (member) => {
-  const roleId = '1232243211846811658';
-  try {
-    await member.roles.add(roleId);
-    console.log(`Assigned role to new member: ${member.displayName}`);
-  } catch (error) {
-    console.error('Failed to assign role:', error);
-  }
 });
 
 client.on(Events.InteractionCreate, async interaction => {
@@ -210,9 +247,9 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleAttackInteraction(interaction);
     } else if (interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_')) {
       await handleRecipeInteraction(interaction);
-    }else if(interaction.customId.startsWith('talk_')){
+    } else if (interaction.customId.startsWith('talk_')) {
       await handleTalkInteraction(interaction);
-    }else if(interaction.customId.startsWith('quest_')){
+    } else if (interaction.customId.startsWith('quest_')) {
       handleQuestInteraction(interaction);
     }
     else {
