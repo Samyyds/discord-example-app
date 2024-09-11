@@ -2,7 +2,7 @@ import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 const { Client, GatewayIntentBits, EmbedBuilder, Partials, PermissionsBitField } = pkg;
 import { MysqlDB, getAllUserIds, hasCharacters, loadCharactersForUser, loadInventoryForUser } from "./db/mysql.js";
-import { sendWelcomeMessage } from "./util/util.js";
+import { TutorialManager } from "./manager/tutorial_manager.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
@@ -79,7 +79,7 @@ client.once('ready', async () => {
     }
 
     console.log('Bot is ready!');
-  
+
   } catch (error) {
     console.error('Failed to initialize bot:', error);
   }
@@ -160,6 +160,22 @@ client.on(Events.InteractionCreate, async interaction => {
   if (interaction.isCommand()) {
     const commandName = interaction.commandName;
     let commandHandler;
+
+    const tutorialManager = TutorialManager.getInstance();
+    const tutorial = tutorialManager.getTutorialForUser(interaction.user.id);
+
+    if (tutorial && tutorial.isInTutorial()) {
+      const expectedCommandId = tutorial.getCurrentCommandId();
+      console.log(`interaction.commandId: ${interaction.commandId}`);
+      console.log(`expectedCommandId: ${expectedCommandId}`);
+      if (interaction.commandId !== expectedCommandId) {
+        await interaction.reply({
+          content: "It seems you've entered an incorrect command. Please use the correct command to continue the tutorial.",
+          ephemeral: true
+        });
+        return;
+      }
+    }
 
     if (interaction.commandName === "start") {
       commandHandler = startCommands[interaction.commandName];

@@ -32,10 +32,20 @@ class Tutorial {
         this.processStep();
     }
 
+    isInTutorial() {
+        return this.currentStep < this.steps.length;
+    }
+
+    getCurrentCommandId() {
+        if (this.steps[this.currentStep - 1] && this.steps[this.currentStep - 1].command) {
+            return this.steps[this.currentStep - 1].command;
+        }
+        return null;
+    }
+
     async processStep() {
         if (this.isProcessing) return;
         this.isProcessing = true;
-
         if (this.currentStep < this.steps.length) {
             const step = this.steps[this.currentStep];
             const embed = new EmbedBuilder()
@@ -62,7 +72,7 @@ class Tutorial {
     }
 
     waitForCommand(commandId) {
-        this.cleanupListener(); 
+        this.cleanupListener();
 
         this.commandListener = (commandInteraction) => {
             if (commandInteraction.commandId === commandId) {
@@ -70,7 +80,7 @@ class Tutorial {
                 this.cleanupListener();
                 this.currentStep++;
                 this.processStep();
-            }else {
+            } else {
                 this.retry(commandId);
             }
         };
@@ -89,10 +99,6 @@ class Tutorial {
 
     retry(commandId) {
         this.cleanupListener();
-        this.interaction.followUp({
-            content: "It seems you've entered an incorrect command. Please try the correct command to continue the tutorial.",
-            ephemeral: true
-        });
         this.waitForCommand(commandId);
     }
 
@@ -131,7 +137,7 @@ class TutorialManager {
     startTutorialForUser(interaction, client) {
         let tutorial = this.tutorials.get(interaction.user.id);
         if (!tutorial) {
-            tutorial = new Tutorial(interaction, client); 
+            tutorial = new Tutorial(interaction, client);
             this.tutorials.set(interaction.user.id, tutorial);
         }
         tutorial.processStep();
