@@ -1,7 +1,7 @@
 import { Class, Race, Personality, Item, Skill, Ability } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { RegionManager } from '../manager/region_manager.js';
-import { EmbedBuilder } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 
 // export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
 //     const baseSkillRequirement = 100;
@@ -83,7 +83,7 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
                 const xpForSkillLevel = xpRequiredForLevel(skillLevel);
                 const xpForNextSkillLevel = xpRequiredForLevel(skillLevel + 1);
                 const currentSkillXp = skillData.xp - xpForSkillLevel;
-        
+
                 description += `${skill.charAt(0).toUpperCase() + skill.slice(1)}: \nLevel: ${skillLevel}\nXP: ${createProgressBar(currentSkillXp, xpForNextSkillLevel - xpForSkillLevel)}\n`;
             });
             break;
@@ -158,7 +158,7 @@ export function recipesParser(recipes, embed) {
 
         if (!skillName) {
             console.warn(`Skill not found for skill value: ${recipe.skill}`);
-            return; 
+            return;
         }
 
         let ingredientsText = recipe.ingredients.map(ing => {
@@ -169,7 +169,7 @@ export function recipesParser(recipes, embed) {
             }
 
             return `${itemName.toLowerCase()} x${ing.quantity}`;
-        }).filter(Boolean).join(', '); 
+        }).filter(Boolean).join(', ');
 
 
         let recipeText = `**${recipe.name}**\nSkill: ${skillName.toLowerCase()} (Min: ${recipe.minSkill})\nIngredients: ${ingredientsText}\n\n`;
@@ -213,5 +213,31 @@ export async function sendErrorMessage(interaction, message) {
         await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 }
+
+export async function sendWelcomeMessage(channel) {
+    const button = new ButtonBuilder()
+        .setCustomId('start_game')
+        .setLabel('Start Game')
+        .setStyle(ButtonStyle.Success);
+
+    const row = new ActionRowBuilder().addComponents(button);
+
+    const welcomeText = '\n\nHello, welcome to Merfolk & Magic, a text-based adventure game.\n\n' +
+        'To start playing, press the button below to unlock the game channel.\n\n' + 
+        'Then go to the game and type /start to begin playing. Have fun!\n\n';
+
+    try {
+        const message = await channel.send({
+            content: welcomeText,
+            components: [row]
+        });
+        await message.pin();
+        console.log('Message pinned successfully.');
+    } catch (error) {
+        console.error('Failed to send or pin the message:', error);
+    }
+}
+
+
 
 

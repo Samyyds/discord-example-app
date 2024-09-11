@@ -2,6 +2,7 @@ import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 const { Client, GatewayIntentBits, EmbedBuilder, Partials, PermissionsBitField } = pkg;
 import { MysqlDB, getAllUserIds, hasCharacters, loadCharactersForUser, loadInventoryForUser } from "./db/mysql.js";
+import { sendWelcomeMessage } from "./util/util.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
@@ -24,12 +25,14 @@ import { recipeCommands } from "./commands/command_recipe.js";
 import { cookCommands } from "./commands/command_cook.js";
 import { brewCommands } from "./commands/command_brew.js";
 import { questCommands } from "./commands/command_quest.js";
+import { startCommands } from "./commands/command_start.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
 import { handleRecipeInteraction } from "./handler/recipe_handler.js";
 import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
+import { handleStartGameInteraction } from "./handler/startGame_handler.js";
 
 // Create and configure the Discord client
 const client = new Client({
@@ -40,7 +43,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions
     ],
-    partials: [Partials.Message, Partials.Reaction, Partials.Channel] 
+  partials: [Partials.Message, Partials.Reaction, Partials.Channel]
 });
 
 const compoundCommand = {
@@ -51,6 +54,15 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
   try {
+
+    // const channelId = process.env.START_HERE_CHANNEL;
+    // const channel = client.channels.cache.get(channelId);
+    // if (channel) {
+    //     sendWelcomeMessage(channel);
+    // } else {
+    //     console.log('Channel not found');
+    // }//send pinned message to channel
+
     const connection = await MysqlDB.getConnection();
     const hasData = await hasCharacters(connection);
 
@@ -67,6 +79,7 @@ client.once('ready', async () => {
     }
 
     console.log('Bot is ready!');
+  
   } catch (error) {
     console.error('Failed to initialize bot:', error);
   }
@@ -75,65 +88,47 @@ client.once('ready', async () => {
     console.log(`New member added: ${member.displayName}`);
   });
 
-  client.on(Events.MessageReactionAdd, async (reaction, user) => {
-    console.log("A reaction has been added!");
-    if (reaction.partial) {
-      try {
-        await reaction.fetch();
-      } catch (error) {
-        console.error('Something went wrong when fetching the message:', error);
-        return;
-      }
-    }
-    if (reaction.message.channelId === process.env.FREE_ACCESS_CHANNEL) {
-      const member = await reaction.message.guild.members.fetch(user.id);
-      await member.roles.add(process.env.FREE_MEMBER_ROLE); 
-    
-      const updatedMember = await reaction.message.guild.members.fetch(user.id);
-      if (updatedMember.roles.cache.has(process.env.FREE_MEMBER_ROLE)) {
-        const freeAccessChannel = member.guild.channels.cache.find(channel => channel.name === 'free-access');
-        if (freeAccessChannel) {
-          try {
-            await freeAccessChannel.permissionOverwrites.edit(member, {
-              [PermissionsBitField.Flags.ViewChannel]: true,
-              [PermissionsBitField.Flags.SendMessages]: true
-            });
-            console.log(`Access granted to ${member.displayName} for #free-access channel.`);
-          } catch (error) {
-            console.error('Failed to edit permissions:', error);
-          }
-        }
-      } else {
-        console.log(`Failed to add role to ${member.displayName}`);
-      }
-    }
-  });
+  // client.on(Events.MessageReactionAdd, async (reaction, user) => {
+  //   console.log("A reaction has been added!");
+  //   if (reaction.partial) {
+  //     try {
+  //       await reaction.fetch();
+  //     } catch (error) {
+  //       console.error('Something went wrong when fetching the message:', error);
+  //       return;
+  //     }
+  //   }
+  //   if (reaction.message.channelId === process.env.START_HERE_CHANNEL) {
+  //     const member = await reaction.message.guild.members.fetch(user.id);
+  //     await member.roles.add(process.env.FREE_MEMBER_ROLE); 
 
-  // const channelId = '1232231036054667286';
-  // const channel = client.channels.cache.get(channelId);
-  // if (!channel) {
-  //   console.error('Channel not found');
-  //   return;
-  // }
-  // try {
-  //   const message = await channel.send(
-  //     '**Welcome to the Free Access Area of Merfolk & Magic!**\n\n' +
-  //     'This channel allows you to experience the trial version of our game.\n\n' +
-  //     '**Interacting in the Game:**\n' +
-  //     '👉 All gameplay interactions are performed via slash commands.\n' +
-  //     '👉 Type `/help` at any time to learn more about how to play.\n\n' +
-  //     'Enjoy your journey!'
-  //   );
-
-  //   await message.pin();
-  //   console.log('Message pinned successfully.');
-  // } catch (error) {
-  //   console.error('Failed to send or pin the message:', error);
-  // }
+  //     const updatedMember = await reaction.message.guild.members.fetch(user.id);
+  //     if (updatedMember.roles.cache.has(process.env.FREE_MEMBER_ROLE)) {
+  //       const freeAccessChannel = member.guild.channels.cache.find(channel => channel.name === 'free-access');
+  //       if (freeAccessChannel) {
+  //         try {
+  //           await freeAccessChannel.permissionOverwrites.edit(member, {
+  //             [PermissionsBitField.Flags.ViewChannel]: true,
+  //             [PermissionsBitField.Flags.SendMessages]: true
+  //           });
+  //           console.log(`Access granted to ${member.displayName} for #free-access channel.`);
+  //           let tutorial = new Tutorial(freeAccessChannel);
+  //           tutorial.processStep();
+  //         } catch (error) {
+  //           console.error('Failed to edit permissions:', error);
+  //         }
+  //       }
+  //     } else {
+  //       console.log(`Failed to add role to ${member.displayName}`);
+  //     }
+  //   }
+  // });
 });
 
 client.on(Events.InteractionCreate, async interaction => {
   console.log('Interaction created:', interaction);
+
+  client.emit('commandExecuted', interaction);
 
   if (interaction.isStringSelectMenu()) {
     const userId = interaction.user.id;
@@ -166,75 +161,82 @@ client.on(Events.InteractionCreate, async interaction => {
     const commandName = interaction.commandName;
     let commandHandler;
 
-    switch (commandName) {
-      case "go":
-        commandHandler = goCommands[commandName];
-        break;
-      case "move":
-        commandHandler = moveCommands[commandName];
-        break;
-      case "map":
-        commandHandler = mapCommands[commandName];
-        break;
-      case "attack":
-        commandHandler = attackCommands[commandName];
-        break;
-      case "look":
-        commandHandler = lookCommands[commandName];
-        break;
-      case "take":
-        commandHandler = takeCommands[commandName];
-        break;
-      case "inventory":
-        commandHandler = inventoryCommands[commandName];
-        break;
-      case "mine":
-        commandHandler = mineCommands[commandName];
-        break;
-      case "gather":
-        commandHandler = gatherCommands[commandName];
-        break;
-      case "cook":
-        commandHandler = cookCommands[commandName];
-        break;
-      case "brew":
-        commandHandler = brewCommands[commandName];
-        break;
-      case "drop":
-        commandHandler = dropCommands[commandName];
-        break;
-      case "use":
-        commandHandler = useCommands[commandName];
-        break;
-      case "talk":
-        commandHandler = talkCommands[commandName];
-        break;
-      case "unequip":
-        commandHandler = unequipCommands[commandName];
-        break;
-      case "equip":
-        commandHandler = equipCommands[commandName];
-        break;
-      case "sub":
-        commandHandler = subCommands[commandName];
-        break;
-      case "recipe":
-        commandHandler = recipeCommands[commandName];
-        break;
-      case "quest":
-        commandHandler = questCommands[commandName];
-        break;
-      default:
-        const subCommandName = interaction.options.getSubcommand();
-        commandHandler = compoundCommand[commandName]?.[subCommandName];
-        break;
-    }
-
-    if (commandHandler) {
-      await commandHandler(interaction);
+    if (interaction.commandName === "start") {
+      commandHandler = startCommands[interaction.commandName];
+      if (commandHandler) {
+        await commandHandler(interaction, client);
+      }
     } else {
-      console.log(`Command '${commandName}' with subcommand '${subCommandName}' not found.`);
-      await interaction.reply({ content: "Sorry, I didn't recognize that command.", ephemeral: true });
+      switch (commandName) {
+        case "go":
+          commandHandler = goCommands[commandName];
+          break;
+        case "move":
+          commandHandler = moveCommands[commandName];
+          break;
+        case "map":
+          commandHandler = mapCommands[commandName];
+          break;
+        case "attack":
+          commandHandler = attackCommands[commandName];
+          break;
+        case "look":
+          commandHandler = lookCommands[commandName];
+          break;
+        case "take":
+          commandHandler = takeCommands[commandName];
+          break;
+        case "inventory":
+          commandHandler = inventoryCommands[commandName];
+          break;
+        case "mine":
+          commandHandler = mineCommands[commandName];
+          break;
+        case "gather":
+          commandHandler = gatherCommands[commandName];
+          break;
+        case "cook":
+          commandHandler = cookCommands[commandName];
+          break;
+        case "brew":
+          commandHandler = brewCommands[commandName];
+          break;
+        case "drop":
+          commandHandler = dropCommands[commandName];
+          break;
+        case "use":
+          commandHandler = useCommands[commandName];
+          break;
+        case "talk":
+          commandHandler = talkCommands[commandName];
+          break;
+        case "unequip":
+          commandHandler = unequipCommands[commandName];
+          break;
+        case "equip":
+          commandHandler = equipCommands[commandName];
+          break;
+        case "sub":
+          commandHandler = subCommands[commandName];
+          break;
+        case "recipe":
+          commandHandler = recipeCommands[commandName];
+          break;
+        case "quest":
+          commandHandler = questCommands[commandName];
+          break;
+        default:
+          const subCommandName = interaction.options.getSubcommand();
+          commandHandler = compoundCommand[commandName]?.[subCommandName];
+          break;
+      }
+      if (commandHandler) {
+        await commandHandler(interaction);
+      }
+      else {
+        console.log(`Command '${commandName}' with subcommand '${subCommandName}' not found.`);
+        await interaction.reply({ content: "Sorry, I didn't recognize that command.", ephemeral: true });
+      }
     }
   }
 
@@ -251,6 +253,8 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleTalkInteraction(interaction);
     } else if (interaction.customId.startsWith('quest_')) {
       handleQuestInteraction(interaction);
+    } else if (interaction.customId.startsWith('start_')) {
+      handleStartGameInteraction(interaction);
     }
     else {
       console.log('Unrecognized button interaction:', interaction.customId);

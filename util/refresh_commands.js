@@ -184,6 +184,10 @@ const questCommand = new SlashCommandBuilder()
   .setName('quest')
   .setDescription('Displays quests you have accepted.');
 
+const startCommand = new SlashCommandBuilder()
+  .setName('start')
+  .setDescription('Start the game!');  
+
 const guildCommands =
   [
     //accountCommand.toJSON(),
@@ -206,7 +210,8 @@ const guildCommands =
     unequipCommand.toJSON(),
     equipCommand.toJSON(),
     recipeCommand.toJSON(),
-    questCommand.toJSON()
+    questCommand.toJSON(),
+    startCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

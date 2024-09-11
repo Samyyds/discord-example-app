@@ -5,12 +5,18 @@ import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { sendErrorMessage } from "../util/util.js";
 
 const talkCommand = async (interaction) => {
-    const npcName = interaction.options.getString('npc_name').trim();
+    const npcName = interaction.options.getString('npc_name').trim().toLowerCase();
 
     const characterManager = CharacterManager.getInstance();
     const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
     if (!activeCharacter) {
         return await sendErrorMessage(interaction, 'You do not have an available character!');
+    }
+
+    if (npcName === 'feleti') {
+        await interaction.deferReply({ ephemeral: true });
+        await interaction.deleteReply();
+        return;
     }
 
     const playerMoveManager = PlayerMovementManager.getInstance();
