@@ -188,6 +188,10 @@ const startCommand = new SlashCommandBuilder()
   .setName('start')
   .setDescription('Start the game!');  
 
+const helpCommand = new SlashCommandBuilder()
+  .setName('help')
+  .setDescription('To get a brief guide on how to play the game.');   
+
 const guildCommands =
   [
     //accountCommand.toJSON(),
@@ -211,7 +215,8 @@ const guildCommands =
     equipCommand.toJSON(),
     recipeCommand.toJSON(),
     questCommand.toJSON(),
-    startCommand.toJSON()
+    startCommand.toJSON(),
+    helpCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
