@@ -74,7 +74,7 @@ async function createCharacter(userId, name, className, raceName, personality = 
     character.equipItem(initSword);
 
     const playerMoveManager = PlayerMovementManager.getInstance();
-    playerMoveManager.setLocation(userId, currentCharacterId);
+    playerMoveManager.setLocation(userId, currentCharacterId, 0, 3, 0);
     const location = playerMoveManager.getLocation(userId, currentCharacterId);
 
     saveCharacterData(userId, character, location);

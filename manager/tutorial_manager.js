@@ -1,4 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
+import { Race, Class } from "../data/enums.js";
+import { CharacterManager } from "../manager/character_manager.js";
 
 class Tutorial {
     constructor(interaction, client) {
@@ -48,9 +50,19 @@ class Tutorial {
         this.isProcessing = true;
         if (this.currentStep < this.steps.length) {
             const step = this.steps[this.currentStep];
+
+            const characterManager = CharacterManager.getInstance();
+            const activeCharacter = characterManager.getActiveCharacter(this.interaction.user.id);
+
+            let description = step.text;
+            if (activeCharacter) {
+                description = description.replace('{$name}', activeCharacter.name)
+                                         .replace('{$race}', Object.keys(Race).find(key => Race[key] === activeCharacter.raceId).toLowerCase())
+                                         .replace('{$class}', Object.keys(Class).find(key => Class[key] === activeCharacter.classId).toLowerCase());
+            }
             const embed = new EmbedBuilder()
                 .setColor(0x0099FF)
-                .setDescription(step.text);
+                .setDescription(description);
 
             try {
                 await this.interaction.followUp({ embeds: [embed], ephemeral: true });
