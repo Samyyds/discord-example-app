@@ -27,7 +27,7 @@ class Tutorial {
             { text: "Type /map to see where you are. The map will also show you areas that are connected to where you currently are. Use the map to navigate the world, and determine how to travel from one location to another.", command: "1200693908859006987" },
             { text: "/go to the village center.", command: "1199966654533218345" },
             { text: "/look around the village center for the village elder.", command: "1201779927050092614" },
-            { text: "/talk to the village elder.", command: "1278618188665458709" }
+            { text: "/talk to the Moku'ah Village Elder.", command: "1278618188665458709" }
         ];
         this.isProcessing = false;
         this.currentStep = 0;

@@ -1,7 +1,7 @@
 import { Class, Race, Personality, Item, Skill, Ability } from '../data/enums.js';
 import itemsData from '../json/items.json' assert { type: 'json' };
 import { RegionManager } from '../manager/region_manager.js';
-import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder } from 'discord.js';
 
 // export function increaseXp(currentXp, currentLevel, amount, levelCap = 100) {
 //     const baseSkillRequirement = 100;
