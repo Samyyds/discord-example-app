@@ -582,5 +582,1178 @@
             "item": 13
         },
         "subscriberOnly": false
+    },
+    {
+        "id": 29,
+        "name": "reclaimed sword",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 1
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 30,
+        "name": "reclaimed greataxe",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 2
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 31,
+        "name": "reclaimed staff",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 3
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 32,
+        "name": "reclaimed spear",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 4
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 33,
+        "name": "reclaimed bow",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 5
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 34,
+        "name": "reclaimed shield",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 6
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 35,
+        "name": "reclaimed helmet",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 7
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 36,
+        "name": "reclaimed breastplate",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 8
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 37,
+        "name": "reclaimed gauntlets",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 9
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 38,
+        "name": "reclaimed greaves",
+        "skill": 1,
+        "minSkill": 0,
+        "ingredients": [
+            {
+                "item": 1,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 10
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 39,
+        "name": "hardshell sword",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 11
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 40,
+        "name": "hardshell greataxe",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 12
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 41,
+        "name": "hardshell staff",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 13
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 42,
+        "name": "hardshell spear",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 14
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 43,
+        "name": "hardshell bow",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 15
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 43,
+        "name": "hardshell shield",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 16
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 44,
+        "name": "hardshell helmet",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 17
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 45,
+        "name": "hardshell breastplate",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 18
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 46,
+        "name": "hardshell gauntlets",
+        "skill": 1,
+        "minSkill": 10,
+        "ingredients": [
+            {
+                "item": 24,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 19
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 47,
+        "name": "coral sword",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 21
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 48,
+        "name": "coral greatsword",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 22
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 49,
+        "name": "coral staff",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 23
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 50,
+        "name": "coral spear",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 24
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 51,
+        "name": "coral bow",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 25
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 52,
+        "name": "coral shield",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 26
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 53,
+        "name": "coral helmet",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 27
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 54,
+        "name": "coral breastplate",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 28
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 55,
+        "name": "coral gauntlets",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 29
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 56,
+        "name": "coral greaves",
+        "skill": 1,
+        "minSkill": 20,
+        "ingredients": [
+            {
+                "item": 3,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 30
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 57,
+        "name": "bone sword",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 31
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 58,
+        "name": "bone greataxe",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 32
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 59,
+        "name": "bone staff",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 33
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 59,
+        "name": "bone spear",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 34
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 60,
+        "name": "bone bow",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 35
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 61,
+        "name": "bone shield",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 36
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 62,
+        "name": "bone helmet",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 37
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 63,
+        "name": "bone breastplate",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 38
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 64,
+        "name": "bone gauntlets",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 39
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 65,
+        "name": "bone greaves",
+        "skill": 1,
+        "minSkill": 30,
+        "ingredients": [
+            {
+                "item": 4,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 40
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 66,
+        "name": "lava sword",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 41
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 67,
+        "name": "lava greataxe",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 42
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 68,
+        "name": "lava staff",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 43
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 69,
+        "name": "lava spear",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 44
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 70,
+        "name": "lava bow",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 45
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 71,
+        "name": "lava shield",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 46
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 72,
+        "name": "lava helmet",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 47
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 73,
+        "name": "lava breastplate",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 48
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 74,
+        "name": "lava gauntlets",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 49
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 75,
+        "name": "lava greaves",
+        "skill": 1,
+        "minSkill": 40,
+        "ingredients": [
+            {
+                "item": 5,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 50
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 76,
+        "name": "obsidian sword",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 51
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 77,
+        "name": "obsidian greataxe",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 52
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 78,
+        "name": "obsidian staff",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 53
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 79,
+        "name": "obsidian spear",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 54
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 80,
+        "name": "obsidian bow",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 55
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 81,
+        "name": "obsidian shield",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 56
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 82,
+        "name": "obsidian helmet",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 57
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 83,
+        "name": "obsidian breastplate",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 58
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 84,
+        "name": "obsidian gauntlets",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 59
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 85,
+        "name": "obsidian greaves",
+        "skill": 1,
+        "minSkill": 50,
+        "ingredients": [
+            {
+                "item": 6,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 60
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 86,
+        "name": "fossil sword",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 61
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 87,
+        "name": "fossil greatsword",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 62
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 88,
+        "name": "fossil staff",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 63
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 89,
+        "name": "fossil spear",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 64
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 90,
+        "name": "fossil bow",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 65
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 91,
+        "name": "fossil shield",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 66
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 92,
+        "name": "fossil helmet",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 67
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 93,
+        "name": "fossil breastplate",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 68
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 94,
+        "name": "fossil gauntlets",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 69
+        },
+        "subscriberOnly": false
+    },
+    {
+        "id": 95,
+        "name": "fossil greaves",
+        "skill": 1,
+        "minSkill": 60,
+        "ingredients": [
+            {
+                "item": 7,
+                "quantity": 3
+            }
+        ],
+        "result": {
+            "type": 1,
+            "item": 70
+        },
+        "subscriberOnly": false
     }
 ]

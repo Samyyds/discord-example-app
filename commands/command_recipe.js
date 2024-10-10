@@ -15,7 +15,7 @@ const recipeCommand = async (interaction) => {
         const recipeManager = RecipeManager.getInstance();
 
         // Grant player all recipes for testing
-        for (let index = 1; index <= 28; index++) {
+        for (let index = 1; index <= 95; index++) {
             const testRecipe = recipeManager.getRecipeById(index);
             recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe);
         }

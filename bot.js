@@ -34,6 +34,7 @@ import { handleRecipeInteraction } from "./handler/recipe_handler.js";
 import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
+import { smithCommands } from './commands/command_smith.js';
 
 // Create and configure the Discord client
 const client = new Client({
@@ -217,6 +218,9 @@ client.on(Events.InteractionCreate, async interaction => {
           break;
         case "brew":
           commandHandler = brewCommands[commandName];
+          break;
+        case 'smith':
+          commandHandler = smithCommands[commandName];
           break;
         case "drop":
           commandHandler = dropCommands[commandName];

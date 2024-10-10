@@ -128,6 +128,14 @@ const brewCommand = new SlashCommandBuilder()
       .setDescription('The name of the recipe you want to use.')
       .setRequired(true));
 
+const smithCommand = new SlashCommandBuilder()
+  .setName('smith')
+  .setDescription('Smelt better things using diverse ingredients')
+  .addStringOption(option =>
+    option.setName('recipe_name')
+      .setDescription('The name of the recipe you want to use.')
+      .setRequired(true));
+
 const dropCommand = new SlashCommandBuilder()
   .setName('drop')
   .setDescription('Drop item from inventory onto the floor.')
@@ -186,11 +194,11 @@ const questCommand = new SlashCommandBuilder()
 
 const startCommand = new SlashCommandBuilder()
   .setName('start')
-  .setDescription('Start the game!');  
+  .setDescription('Start the game!');
 
 const helpCommand = new SlashCommandBuilder()
   .setName('help')
-  .setDescription('To get a brief guide on how to play the game.');   
+  .setDescription('To get a brief guide on how to play the game.');
 
 const guildCommands =
   [
@@ -208,6 +216,7 @@ const guildCommands =
     gatherCommand.toJSON(),
     cookCommand.toJSON(),
     brewCommand.toJSON(),
+    smithCommand.toJSON(),
     dropCommand.toJSON(),
     useCommand.toJSON(),
     talkCommand.toJSON(),

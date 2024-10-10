@@ -1,4 +1,5 @@
 import { calculateLevelFromXp } from '../util/util.js';
+import { Slots } from "../data/enums.js";
 import { Class, Race, Personality, ConsumableEffect } from '../data/enums.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 
@@ -210,7 +211,14 @@ class Character {
         }
         this.skills = new SkillContainer();
         this.status = new StatusContainer();
-        this.equippedItems = {};
+        this.equippedItems = {
+            [Slots.MAIN_HAND]: null,
+            [Slots.OFF_HAND]: null,
+            [Slots.ARMS]: null,
+            [Slots.BODY]: null,
+            [Slots.HEAD]: null,
+            [Slots.LEGS]: null,
+        };
     }
 
     applyStatBonus(effectType, value) {
@@ -236,10 +244,10 @@ class Character {
     removeStatusEffect(effectType) {
         switch (effectType) {
             case 'CURE_BLEED':
-                this.status.bleedMag = 0; 
+                this.status.bleedMag = 0;
                 break;
             case 'CURE_POISON':
-                this.status.poisonMag = 0; 
+                this.status.poisonMag = 0;
                 break;
             case 'CURE_BURN':
                 break;
@@ -250,60 +258,48 @@ class Character {
     }
 
     equipItem(item) {
-        if (item && item.slot && item.attributes) {
-            if (this.equippedItems[item.slot]) {
-                this.unequipItem(item.slot);
-            }
-            this.equippedItems[item.slot] = item;
-            this.updateAttributes(item.attributes, 'add');
+        if (this.equippedItems[item.slot]) {
+            this.unequipItem(item.slot);
         }
+        this.equippedItems[item.slot] = item;
+        this.updateAttributes(item, 'add');
+        console.log(`${item.name} equipped to ${item.slot}.`);
     }
 
     unequipItem(slot) {
         const item = this.equippedItems[slot];
         if (item) {
-            this.updateAttributes(item.attributes, 'subtract');
-            delete this.equippedItems[slot];
+            this.updateAttributes(item, 'subtract');
+            this.equippedItems[slot] = null;
+            console.log(`${item.name} unequipped from ${slot}.`);
             return item;
         }
         return null;
     }
 
-    updateAttributes(attributes, operation = 'add') {
-        const statAttributes = {};
-        const statusAttributes = {};
-
-        for (const key in attributes) {
-            if (key in attributeMapping) {
-                const mappedKey = attributeMapping[key];
-                if (mappedKey in this.stats) {
-                    statAttributes[mappedKey] = attributes[key];
-                } else if (mappedKey in this.status) {
-                    statusAttributes[mappedKey] = attributes[key];
-                }
-            }
-        }
-
-        if (Object.keys(statAttributes).length > 0) {
+    updateAttributes(equipment, operation) {
+        const attributes = {
+            hp: equipment.hp,
+            mp: equipment.mp,
+            spd: equipment.spd,
+            physicalATK: equipment.physicalATK,
+            physicalDEF: equipment.physicalDEF,
+            magicATK: equipment.magicATK,
+            magicDEF: equipment.magicDEF
+        };
+        Object.entries(attributes).forEach(([key, value]) => {
             if (operation === 'add') {
-                this.stats.addAttributes(statAttributes);
-            } else {
-                this.stats.subtractAttributes(statAttributes);
+                this.stats[key] += value;
+            } else if (operation === 'subtract') {
+                this.stats[key] -= value;
             }
-        }
-        if (Object.keys(statusAttributes).length > 0) {
-            if (operation === 'add') {
-                this.status.addAttributes(statusAttributes);
-            } else {
-                this.status.subtractAttributes(statusAttributes);
-            }
-        }
+        });
     }
 
     isEquipped(itemId) {
         for (const slot in this.equippedItems) {
             const item = this.equippedItems[slot];
-            if (item.id === itemId) {
+            if (item && item.id === itemId) {
                 return true;
             }
         }

@@ -1,36 +1,58 @@
 import { EmbedBuilder } from 'discord.js';
-import { Items } from "../data/enums.js";
-import { getItemDataById } from '../util/util.js';
+import { Equipments, getItemTypeAndId, ItemType, Slots } from "../data/enums.js";
 import { CharacterManager } from '../manager/character_manager.js';
-import { InventoryRepository } from '../data/repository_inventory.js';
+import { InventoryManager } from '../manager/inventory_manager.js';
+import { sendErrorMessage } from "../util/util.js";
 
 const equipCommand = async (interaction) => {
     try {
         const object = interaction.options.getString('object').trim().toUpperCase();
 
+        const itemInfo = getItemTypeAndId(object);
+
+        if (!itemInfo) {
+            return await sendErrorMessage(interaction, 'Invalid item!');
+        }
+
+        if (itemInfo.type !== ItemType.EQUIPMENT) {
+            return await sendErrorMessage(interaction, ' Only weapons armors can be equipped!');
+        }
+
         const characterManager = CharacterManager.getInstance();
         const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            throw new Error('You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
-        if (activeCharacter.isEquipped(Items[object])) {
-            throw new Error('The equipment is already equipped!');
+        if (activeCharacter.isEquipped(Equipments[itemInfo.id])) {
+            return await sendErrorMessage(interaction, 'The equipment is already equipped!');
         }
 
-        const itemData = getItemDataById(Items[object]);
-        if (itemData.type.toUpperCase() != "EQUIPMENT") {
-            throw new Error('Only equipment can be equipped!');
+        const inventoryManager = InventoryManager.getInstance();
+        if (!inventoryManager.hasItem(interaction.user.id, activeCharacter.id, itemInfo.type, itemInfo.id)) {
+            return await sendErrorMessage(interaction, 'No equipment in your inventory!');
         }
 
-        const inventoryRepo = InventoryRepository.getInstance();
-        if (!inventoryRepo.hasItem(interaction.user.id, activeCharacter.id, Items[object])) {
-            throw new Error('No equipment in your inventory!');
+        const itemToEquip = inventoryManager.getItem(interaction.user.id, activeCharacter.id, itemInfo.type, itemInfo.id);
+
+        if (!Object.values(Slots).includes(itemToEquip.slot)) {
+            return await sendErrorMessage(interaction, 'Invalid item slot.');
         }
 
-        const { item: equippedItem, quantity } = inventoryRepo.getItem(interaction.user.id, activeCharacter.id, Items[object]);
-        activeCharacter.equipItem(equippedItem);
-        inventoryRepo.removeItem(interaction.user.id, activeCharacter.id, equippedItem, 1);
+        if (itemToEquip.slot === Slots.MAIN_HAND && itemToEquip.isTwoHanded === 1) {
+            activeCharacter.unequipItem(Slots.OFF_HAND);
+        }
+        if (itemToEquip.slot === Slots.OFF_HAND && activeCharacter.equippedItems[Slots.MAIN_HAND] && activeCharacter.equippedItems[Slots.MAIN_HAND].isTwoHanded === 1) {
+            return await sendErrorMessage(interaction, 'Cannot equip off-hand item while wielding a two-handed weapon.');
+        }
+
+        const currentEquippedItem = activeCharacter.unequipItem(itemToEquip.slot);
+        if (currentEquippedItem) {
+            inventoryManager.addItem(interaction.user.id, activeCharacter.id, currentEquippedItem, 1);
+        }
+
+        activeCharacter.equipItem(itemToEquip);
+        inventoryManager.removeItem(interaction.user.id, activeCharacter.id, itemToEquip, 1);
 
         let embed = new EmbedBuilder().setDescription(`You equipped ${object.toLowerCase()}.`);
         await interaction.reply({ embeds: [embed], ephemeral: true });

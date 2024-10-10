@@ -17,6 +17,17 @@ class Item {
 class Equipment extends Item {
     constructor(equipmentType) {
         super(equipmentType);
+        this.slot = equipmentType.slot;
+        this.isTwoHanded = equipmentType.isTwoHanded;
+        this.hp = equipmentType.hp;
+        this.mp = equipmentType.mp;
+        this.spd = equipmentType.spd;
+        this.physicalATK = equipmentType.physicalATK;
+        this.physicalDEF = equipmentType.physicalDEF;
+        this.magicATK = equipmentType.magicATK;
+        this.magicDEF = equipmentType.magicDEF;
+        this.enableAbility = equipmentType.enableAbility;
+        this.isSub = equipmentType.isSub;
     }
 }
 
@@ -76,7 +87,18 @@ class ItemManager {
                 rarity: row.RARITY,
                 value: row.VALUE,
                 isQuest: row.ISQUEST,
-                description: row.DESCRIPTION
+                description: row.DESCRIPTION,
+                slot: row.SLOT,
+                isTwoHanded: row.ISTWOHANDED,
+                hp: row.HP,
+                mp: row.MP,
+                spd: row.SPD,
+                physicalATK: row.PHY_ATK,
+                physicalDEF: row.PHY_DEF,
+                magicATK: row.MAG_ATK,
+                magicDEF: row.MAG_DEF,
+                enableAbility: row.ABILITY,
+                isSub: row.ISSUB
             }));
 
             const consumableStmt = db.prepare('SELECT * FROM Consumables');
@@ -108,9 +130,9 @@ class ItemManager {
         return this.consumableTemplates.find(item => item.id === consumableId);
     }
 
-    getEquipmentDataById(equipmentId){
+    getEquipmentDataById(equipmentId) {
         return this.equipmentTemplates.find(item => item.id === equipmentId);
-    } 
+    }
 
     parseYieldQuantity(yieldQuantity) {
         const [min, max] = yieldQuantity.split('-').map(Number);

@@ -1,14 +1,14 @@
 import pkg from 'discord.js';
 import { saveCharacterData, getNextCharacterId } from "../db/mysql.js";
 const { EmbedBuilder, StringSelectMenuBuilder } = pkg;
-import itemsData from '../json/items.json' assert { type: 'json' };
-import { Equipment } from '../data/repository_item.js';
 import { Class, Race, Personality } from '../data/enums.js';
 import { AbilityManager } from '../manager/ability_manager.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { Character, CharacterManager } from '../manager/character_manager.js';
 import { sendErrorMessage } from "../util/util.js";
+
+//let currentCharacterId = 0;
 
 const createCommand = async (interaction) => {
     try {
@@ -53,6 +53,7 @@ const createCommand = async (interaction) => {
 async function createCharacter(userId, name, className, raceName, personality = 'NO_PERSONALITY') {
    
     let currentCharacterId = await getNextCharacterId();
+    //currentCharacterId ++;
 
     const character = new Character(
         currentCharacterId,
@@ -68,10 +69,6 @@ async function createCharacter(userId, name, className, raceName, personality = 
 
     const abilityManager = AbilityManager.getInstance();
     abilityManager.assignAbilitiesToCharacter(character);
-
-    const itemData = itemsData.find(item => item.id === "weap_001_shortsword");
-    const initSword = new Equipment(itemData);
-    character.equipItem(initSword);
 
     const playerMoveManager = PlayerMovementManager.getInstance();
     playerMoveManager.setLocation(userId, currentCharacterId, 0, 3, 0);

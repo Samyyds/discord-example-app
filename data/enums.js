@@ -234,6 +234,81 @@ export const Consumables = {
     "KLEPTOMANIA_POTION": 20
 }
 
+export const Equipments = {
+    "RECLAIMED_SWORD": 1,
+    "RECLAIMED_GREATAXE": 2,
+    "RECLAIMED_STAFF": 3,
+    "RECLAIMED_SPEAR": 4,
+    "RECLAIMED_BOW": 5,
+    "RECLAIMED_SHIELD": 6,
+    "RECLAIMED_HELMET": 7,
+    "RECLAIMED_BREASTPLATE": 8,
+    "RECLAIMED_GAUNTLETS": 9,
+    "RECLAIMED_GREAVES": 10,
+    "HARDSHELL_SWORD": 11,
+    "HARDSHELL_GREATAXE": 12,
+    "HARDSHELL_STAFF": 13,
+    "HARDSHELL_SPEAR": 14,
+    "HARDSHELL_BOW": 15,
+    "HARDSHELL_SHIELD": 16,
+    "HARDSHELL_HELMET": 17,
+    "HARDSHELL_BREASTPLATE": 18,
+    "HARDSHELL_GAUNTLETS": 19,
+    "HARDSHELL_GREAVES": 20,
+    "CORAL_SWORD": 21,
+    "CORAL_GREATAXE": 22,
+    "CORAL_STAFF": 23,
+    "CORAL_SPEAR": 24,
+    "CORAL_BOW": 25,
+    "CORAL_SHIELD": 26,
+    "CORAL_HELMET": 27,
+    "CORAL_BREASTPLATE": 28,
+    "CORAL_GAUNTLETS": 29,
+    "CORAL_GREAVES": 30,
+    "BONE_SWORD": 31,
+    "BONE_GREATAXE": 32,
+    "BONE_STAFF": 33,
+    "BONE_SPEAR": 34,
+    "BONE_BOW": 35,
+    "BONE_SHIELD": 36,
+    "BONE_HELMET": 37,
+    "BONE_BREASTPLATE": 38,
+    "BONE_GAUNTLETS": 39,
+    "BONE_GREAVES": 40,
+    "LAVA_SWORD": 41,
+    "LAVA_GREATAXE": 42,
+    "LAVA_STAFF": 43,
+    "LAVA_SPEAR": 44,
+    "LAVA_BOW": 45,
+    "LAVA_SHIELD": 46,
+    "LAVA_HELMET": 47,
+    "LAVA_BREASTPLATE": 48,
+    "LAVA_GAUNTLETS": 49,
+    "LAVA_GREAVES": 50,
+    "OBSIDIAN_SWORD": 51,
+    "OBSIDIAN_GREATAXE": 52,
+    "OBSIDIAN_STAFF": 53,
+    "OBSIDIAN_SPEAR": 54,
+    "OBSIDIAN_BOW": 55,
+    "OBSIDIAN_SHIELD": 56,
+    "OBSIDIAN_HELMET": 57,
+    "OBSIDIAN_BREASTPLATE": 58,
+    "OBSIDIAN_GAUNTLETS": 59,
+    "OBSIDIAN_GREAVES": 60,
+    "FOSSIL_SWORD": 61,
+    "FOSSIL_GREATAXE": 62,
+    "FOSSIL_STAFF": 63,
+    "FOSSIL_SPEAR": 64,
+    "FOSSIL_BOW": 65,
+    "FOSSIL_SHIELD": 66,
+    "FOSSIL_HELMET": 67,
+    "FOSSIL_BREASTPLATE": 68,
+    "FOSSIL_GAUNTLETS": 69,
+    "FOSSIL_GREAVES": 70,
+    "KALAS_STAFF": 71,
+    "KALAS_ROBES": 72
+}
+
 export const Recipe = {
     "KELP_BROTH": 1,
     "BOILED_CRAB_W/_DICED_KELP": 2,
@@ -271,10 +346,13 @@ export const QuestStatus = {
     "COMPLETED_AND_TURNED_IN": 4
 }
 
-export const Slot = {
-    "Head": 0,
-    "Body": 1,
-    "Weapon": 2
+export const Slots = {
+    "MAIN_HAND": 0,
+    "OFF_HAND": 1,
+    "HEAD": 2,
+    "BODY": 3,
+    "ARMS": 4,
+    "LEGS": 5
 };
 
 export function getLocationFromInput(regionNameInput, roomNameInput) {
@@ -315,6 +393,13 @@ export function getItemTypeAndId(itemName) {
         const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
         if (normalizedInput === normalizedKey) {
             return { type: ItemType.MATERIAL, id: Item[key] };
+        }
+    }
+
+    for (const key in Equipments) {
+        const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (normalizedInput === normalizedKey) {
+            return { type: ItemType.EQUIPMENT, id: Equipments[key] };
         }
     }
 

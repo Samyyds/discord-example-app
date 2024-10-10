@@ -1,6 +1,7 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { InventoryManager } from '../manager/inventory_manager.js';
+import { Item,ItemManager } from "../manager/item_manager.js";
 
 const inventoryCommand = async (interaction) => {
     try {
@@ -13,6 +14,11 @@ const inventoryCommand = async (interaction) => {
         const inventoryManager = InventoryManager.getInstance();
         const inventory = inventoryManager.getInventory(interaction.user.id, activeCharacter.id);
         const groupedItems = inventory.getItemsGroupedByType();
+
+        //for test only
+        const itemManager = ItemManager.getInstance();
+        const cheatItem = new Item(itemManager.getItemDataById(1));
+        inventoryManager.addItem(interaction.user.id, activeCharacter.id, cheatItem, 3);
 
         const row = new ActionRowBuilder()
             .addComponents(

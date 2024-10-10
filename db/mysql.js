@@ -49,7 +49,7 @@ class MysqlDB {
 async function hasCharacters() {
     const connection = await MysqlDB.getConnection();
     try {
-        const [rows] = await connection.execute('SELECT COUNT(*) AS count FROM mm_characters');
+        const [rows] = await connection.execute(`SELECT COUNT(*) AS count FROM ${process.env.CHARACTERS_DB} `);
         return rows[0].count > 0;
     } catch (error) {
         console.error('Failed to check characters:', error);
@@ -64,7 +64,7 @@ async function saveCharacterData(userId, character, location) {
     const { regionId, locationId, roomId } = location;
     try {
         const sql = `
-            INSERT INTO mm_characters (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, region_id, location_id, room_id)
+            INSERT INTO ${process.env.CHARACTERS_DB} (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, region_id, location_id, room_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         `;
         const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status } = character;
@@ -93,7 +93,7 @@ async function saveCharacterLocation(userId, characterId, location) {
 
     try {
         const sql = `
-            UPDATE mm_characters
+            UPDATE ${process.env.CHARACTERS_DB}
             SET region_id = ?, location_id = ?, room_id = ?
             WHERE user_id = ? AND id = ?
         `;
@@ -117,7 +117,7 @@ async function saveCharacterLocation(userId, characterId, location) {
 async function getAllUserIds() {
     const connection = await MysqlDB.getConnection();
     try {
-        const [rows] = await connection.execute('SELECT DISTINCT user_id FROM mm_characters');
+        const [rows] = await connection.execute(`SELECT DISTINCT user_id FROM ${process.env.CHARACTERS_DB}`);
         return rows.map(row => row.user_id);
     } catch (error) {
         console.error('Failed to get user IDs:', error);
@@ -132,7 +132,7 @@ async function loadCharactersForUser(userId) {
     const charManager = CharacterManager.getInstance();
     const moveManager = PlayerMovementManager.getInstance();
     try {
-        const [rows] = await connection.execute('SELECT * FROM mm_characters WHERE user_id = ?', [userId.toString()]);
+        const [rows] = await connection.execute(`SELECT * FROM ${process.env.CHARACTERS_DB} WHERE user_id = ?`, [userId.toString()]);
 
         const characters = rows.map(row => {
             const character = new Character(
@@ -189,7 +189,7 @@ async function loadCharactersForUser(userId) {
 async function getNextCharacterId() {
     const connection = await MysqlDB.getConnection();
     try {
-        const [rows] = await connection.execute('SELECT MAX(id) AS max_id FROM mm_characters');
+        const [rows] = await connection.execute(`SELECT MAX(id) AS max_id FROM ${process.env.CHARACTERS_DB}`);
         const maxId = rows[0].max_id || 0;
         return maxId + 1;
     } catch (error) {
@@ -206,7 +206,7 @@ async function updateInventoryToDB(userId, characterId, item, quantity, operatio
         await connection.beginTransaction();
  
         const [existingRows] = await connection.query(
-            'SELECT quantity FROM mm_inventory WHERE user_id = ? AND character_id = ? AND item_id = ?',
+            `SELECT quantity FROM ${process.env.INVENTORY_DB} WHERE user_id = ? AND character_id = ? AND item_id = ?`,
             [userId, characterId, item.id]
         );
 
@@ -221,18 +221,18 @@ async function updateInventoryToDB(userId, characterId, item, quantity, operatio
 
         if (newQuantity <= 0) {
             await connection.query(
-                'DELETE FROM mm_inventory WHERE user_id = ? AND character_id = ? AND item_id = ?',
+                `DELETE FROM ${process.env.INVENTORY_DB} WHERE user_id = ? AND character_id = ? AND item_id = ?`,
                 [userId, characterId, item.id]
             );
         } else {
             if (existingRows && existingRows.length > 0) {
                 await connection.query(
-                    'UPDATE mm_inventory SET quantity = ? WHERE user_id = ? AND character_id = ? AND item_id = ?',
+                    `UPDATE ${process.env.INVENTORY_DB} SET quantity = ? WHERE user_id = ? AND character_id = ? AND item_id = ?`,
                     [newQuantity, userId, characterId, item.id]
                 );
             } else {
                 await connection.query(
-                    'INSERT INTO mm_inventory (user_id, character_id, item_type, item_id, quantity) VALUES (?, ?, ?, ?, ?)',
+                    `INSERT INTO ${process.env.INVENTORY_DB} (user_id, character_id, item_type, item_id, quantity) VALUES (?, ?, ?, ?, ?)`,
                     [userId, characterId, item.type, item.id, newQuantity]
                 );
             }
@@ -252,7 +252,7 @@ async function loadInventoryForUser(userId) {
     const connection = await MysqlDB.getConnection();
     try {
         const [characterInventories] = await connection.query(
-            'SELECT character_id, item_type, item_id, quantity FROM mm_inventory WHERE user_id = ?',
+            `SELECT character_id, item_type, item_id, quantity FROM ${process.env.INVENTORY_DB} WHERE user_id = ?`,
             [userId]
         );
 
