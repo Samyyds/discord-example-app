@@ -222,7 +222,7 @@ const guildCommands =
     inventoryCommand.toJSON(),
     mineCommand.toJSON(),
     gatherCommand.toJSON(),
-    farmCommand.toJson(),
+    farmCommand.toJSON(),
     cookCommand.toJSON(),
     brewCommand.toJSON(),
     smithCommand.toJSON(),
