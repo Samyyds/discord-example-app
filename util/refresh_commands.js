@@ -106,10 +106,18 @@ const mineCommand = new SlashCommandBuilder()
 
 const gatherCommand = new SlashCommandBuilder()
   .setName('gather')
-  .setDescription('Collect resources from a specified node.')
+  .setDescription('Gather resources from a specified node.')
   .addStringOption(option =>
     option.setName('resource')
       .setDescription('The name of the node you want to gather.')
+      .setRequired(true));
+
+const farmCommand = new SlashCommandBuilder()
+  .setName('farm')
+  .setDescription('Farm resources from a specified node.')
+  .addStringOption(option =>
+    option.setName('resource')
+      .setDescription('The name of the node you want to farm.')
       .setRequired(true));
 
 const cookCommand = new SlashCommandBuilder()
@@ -214,6 +222,7 @@ const guildCommands =
     inventoryCommand.toJSON(),
     mineCommand.toJSON(),
     gatherCommand.toJSON(),
+    farmCommand.toJson(),
     cookCommand.toJSON(),
     brewCommand.toJSON(),
     smithCommand.toJSON(),
