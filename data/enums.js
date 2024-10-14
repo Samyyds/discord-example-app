@@ -93,7 +93,16 @@ export const ItemType = {
     "MATERIAL": 0,
     "EQUIPMENT": 1,
     "CONSUMABLE": 2,
-    "QUEST": 3
+    "QUEST": 3,
+    "FISH": 4
+};
+
+export const Tier = {
+    "TIER_1": 0,
+    "TIER_2": 1,
+    "TIER_3": 2,
+    "TIER_4": 3,
+    "TIER_5": 4
 };
 
 export const Rarity = {
@@ -324,6 +333,27 @@ export const Recipe = {
     "BRINEAPPLE_BLAST_BOWL": 12,
     "BOILED_SHELL": 13
 }
+
+export const Fishes = {
+    "MOONDEW_GUPPY": 1,
+    "HORNED_MATSYA": 2,
+    "SHADOWFIN": 3,
+    "AZURE_FROGFOOT": 4,
+    "SAPPHIRE_TROUT": 5,
+    "CRYPTID_JELLY": 6,
+    "WHISPERING_GHOST_SHARK": 7,
+    "MANTIS_MACKEREL": 8,
+    "3_EYED_SWORDTAIL": 9,
+    "AMBERGLOW_DISCUS": 10,
+    "SPECTRAL_ANGLER": 11,
+    "DUSKBLADE_MARLIN": 12,
+    "FINNED_LIONHEAD": 13,
+    "GEYSER_EEL": 14,
+    "EVERGLOW_LANTERNFISH": 15,
+    "OBSIDIAN_DRAGONFISH": 16,
+    "ABYSSAL_CATSHARK": 17,
+    "CHIMERA_TRENCH_WORM": 18
+};
 
 export const ConsumableEffect = {
     "PHY_ATK_BONUS": 0,

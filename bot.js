@@ -36,6 +36,7 @@ import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
 import { smithCommands } from './commands/command_smith.js';
+import { fishCommands } from "./commands/command_fish.js";
 
 // Create and configure the Discord client
 const client = new Client({
@@ -216,7 +217,10 @@ client.on(Events.InteractionCreate, async interaction => {
           break;
         case "farm":
           commandHandler = farmCommands[commandName];
-          break;  
+          break;
+        case "fish":
+          commandHandler = fishCommands[commandName];
+          break;
         case "cook":
           commandHandler = cookCommands[commandName];
           break;

@@ -3,7 +3,7 @@ import { serializeObject } from "../util/util.js";
 import { Character, CharacterManager, SkillContainer, StatContainer, StatusContainer } from "../manager/character_manager.js";
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { InventoryManager } from "../manager/inventory_manager.js";
-import { ItemManager, Item, Consumable, Equipment } from "../manager/item_manager.js";
+import { ItemManager, Item, Consumable, Equipment, Fish } from "../manager/item_manager.js";
 import { ItemType } from "../data/enums.js";
 
 const dbConfig = {
@@ -274,6 +274,10 @@ async function loadInventoryForUser(userId) {
                     let equipmentInfo = itemManager.getEquipmentDataById(item_id);
                     newItem = equipmentInfo ? new Equipment(equipmentInfo) : null;
                     break;
+                case ItemType.FISH:
+                        let fishInfo = itemManager.getFishDataById(item_id);
+                        newItem = fishInfo ? new Fish(fishInfo) : null;
+                        break;    
                 default:
                     console.log(`Unrecognized item type for item_id: ${item_id}`);
                     newItem = null;

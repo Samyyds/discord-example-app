@@ -39,6 +39,16 @@ class Consumable extends Item {
     }
 }
 
+class Fish {
+    constructor(fishType) {
+        this.id = fishType.id;
+        this.name = fishType.name;
+        this.type = fishType.type;
+        this.tier = fishType.tier;
+        this.description = fishType.description;
+    }
+}
+
 class ItemManager {
     constructor() {
         if (ItemManager.instance) {
@@ -48,6 +58,7 @@ class ItemManager {
         this.itemTemplates = [];
         this.equipmentTemplates = [];
         this.consumableTemplates = [];
+        this.fishTemplates = [];
 
         ItemManager.instance = this;
     }
@@ -115,6 +126,16 @@ class ItemManager {
                 effectValue: row.EFFECT_VALUE
             }));
 
+            const fishStmt = db.prepare('SELECT * FROM Fishes');
+            const fishRows = fishStmt.all();
+            this.fishTemplates = fishRows.map(row => ({
+                id: row.ID,
+                name: row.NAME,
+                type: row.TYPE,
+                tier: row.TIER,
+                description: row.DESCRIPTION
+            }));
+
         } catch (error) {
             console.error('Error loading nodes from database:', error);
         } finally {
@@ -134,6 +155,10 @@ class ItemManager {
         return this.equipmentTemplates.find(item => item.id === equipmentId);
     }
 
+    getFishDataById(fishId) {
+        return this.fishTemplates.find(item => item.id === fishId);
+    }
+
     parseYieldQuantity(yieldQuantity) {
         const [min, max] = yieldQuantity.split('-').map(Number);
         return { min, max };
@@ -141,4 +166,4 @@ class ItemManager {
 
 }
 
-export { Item, Equipment, Consumable, ItemManager };
+export { Item, Equipment, Consumable, Fish, ItemManager };

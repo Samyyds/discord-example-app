@@ -120,6 +120,14 @@ const farmCommand = new SlashCommandBuilder()
       .setDescription('The name of the node you want to farm.')
       .setRequired(true));
 
+const fishCommand = new SlashCommandBuilder()
+  .setName('fish')
+  .setDescription('Fish resources from a specified node.')
+  .addStringOption(option =>
+    option.setName('resource')
+      .setDescription('The name of the node you want to fish.')
+      .setRequired(true));
+
 const cookCommand = new SlashCommandBuilder()
   .setName('cook')
   .setDescription('Cook raw materials according to the recipe.')
@@ -223,6 +231,7 @@ const guildCommands =
     mineCommand.toJSON(),
     gatherCommand.toJSON(),
     farmCommand.toJSON(),
+    fishCommand.toJSON(),
     cookCommand.toJSON(),
     brewCommand.toJSON(),
     smithCommand.toJSON(),

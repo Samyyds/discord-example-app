@@ -4,10 +4,10 @@ import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { InventoryManager } from '../manager/inventory_manager.js';
 import { Skill } from '../data/enums.js';
 import { RegionManager } from '../manager/region_manager.js';
-import { Item, ItemManager } from "../manager/item_manager.js";
+import { Fish, ItemManager } from "../manager/item_manager.js";
 import { sendErrorMessage } from "../util/util.js";
 
-const farmCommand = async (interaction) => {
+const fishCommand = async (interaction) => {
     try {
         const nodeName = interaction.options.getString('resource').trim();
 
@@ -29,8 +29,8 @@ const farmCommand = async (interaction) => {
             return await sendErrorMessage(interaction, `No node named ${nodeName} found in your current location.`)
         }
 
-        if (node.requiredSkillType != Skill.FARMING) {
-            return await sendErrorMessage(interaction, 'Requires farming skill.');
+        if (node.requiredSkillType != Skill.FISHING) {
+            return await sendErrorMessage(interaction, 'Requires fishing skill.');
         }
 
         // if (activeCharacter.skills[node.requiredSkillType].level < node.requiredSkillValue) {
@@ -38,32 +38,33 @@ const farmCommand = async (interaction) => {
         // }
 
         if (node.requiredItem && !activeCharacter.inventory.includes(node.requiredItem)) {
-            return await sendErrorMessage(interaction, `You do not have the required item: ${node.requiredItem} to farm ${nodeName}.`);
+            return await sendErrorMessage(interaction, `You do not have the required item: ${node.requiredItem} to fish ${nodeName}.`);
         }
 
         const itemManager = ItemManager.getInstance();
-        const newItem = new Item(itemManager.getItemDataById(Number(node.yieldEntry)));
-
-        const { min, max } = itemManager.parseYieldQuantity(node.yieldQuantity);
-        const quantity = Math.floor(Math.random() * (max - min + 1) + min);
+        const yieldEntries = node.yieldEntry.split(',').map(Number);
+        const randomYieldEntry = yieldEntries[Math.floor(Math.random() * yieldEntries.length)];        
+        const newItem = new Fish(itemManager.getFishDataById(Number(randomYieldEntry)));
+        //TODO
+        const quantity = 1;
 
         if (newItem) {
             const inventoryManager = InventoryManager.getInstance();
             inventoryManager.addItem(interaction.user.id, activeCharacter.id, newItem, Math.round(quantity));
-            let embed = new EmbedBuilder().setDescription(`You successfully farmed ${Math.round(quantity)} ${newItem.name}. Your farming skill has increased.`);
+            let embed = new EmbedBuilder().setDescription(`You successfully fished ${Math.round(quantity)} ${newItem.name}. Your fishing skill has increased.`);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         } else {
-            return await sendErrorMessage(interaction, 'Failed to farm.');
+            return await sendErrorMessage(interaction, 'Failed to fish.');
         }
 
-        activeCharacter.skills.increaseSkillXp('farming', node.skillXP);
+        activeCharacter.skills.increaseSkillXp('fishing', node.skillXP);
 
     } catch (error) {
-        console.error('Error in farmCommand:', error);
+        console.error('Error in fishCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
 }
 
-export const farmCommands = {
-    farm: farmCommand
+export const fishCommands = {
+    fish: fishCommand
 }
