@@ -69,10 +69,10 @@ class PlayerMovementManager {
         const region = this.regionManager.getRegionById(destRegionId);
         const targetLocation = region.getLocation(destLocationId);
 
-        const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
-        if (targetLocation.subscriberOnly && !hasSubscriberRole) {
-            return { canMove: false, message: "This area is only available to subscribers." };
-        }
+        // const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
+        // if (targetLocation.subscriberOnly && !hasSubscriberRole) {
+        //     return { canMove: false, message: "This area is only available to subscribers." };
+        // }
 
         if (location.regionId === destRegionId && location.locationId !== destLocationId && location.roomId === 0) {
             return { canMove: true };

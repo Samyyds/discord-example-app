@@ -31,7 +31,7 @@ export const IsfjallLocations = {
 };
 
 export const TheTrenchLocations = {
-    'TRENCH_ENTRANCE': 0,
+    'ENTRANCE': 0,
     'THE_SHALLOWS': 1,
     'THE_DEPTHS': 2,
     'OBSIDIAN_CITY': 3

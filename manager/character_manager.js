@@ -105,12 +105,12 @@ class SkillContainer {
         this.skills = {
             mining: { xp: 0, level: 0 },
             smithing: { xp: 0, level: 0 },
-            crafting: { xp: 0, level: 0 },
             fishing: { xp: 0, level: 0 },
             gathering: { xp: 0, level: 0 },
             farming: { xp: 0, level: 0 },
             cooking: { xp: 0, level: 0 },
-            brewing: { xp: 0, level: 0 }
+            brewing: { xp: 0, level: 0 },
+            waterbreathing: { xp: 0, level: 0 }
         };
     }
 

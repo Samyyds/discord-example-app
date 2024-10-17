@@ -4,6 +4,7 @@ import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
 import { saveCharacterLocation } from "../db/mysql.js";
 import { sendErrorMessage } from "../util/util.js";
+import { Regions, TheTrenchLocations } from "../data/enums.js";
 
 const moveCommand = async (interaction) => {
     try {
@@ -51,6 +52,8 @@ const moveCommand = async (interaction) => {
             moved = true;
         }
 
+        let embed = new EmbedBuilder();
+
         if (moved) {
             const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
             const locationName = regionManager.getLocationById(newLocation.regionId, newLocation.locationId).name;
@@ -62,10 +65,27 @@ const moveCommand = async (interaction) => {
                 distanceDescription = `You are now ${newLocation.roomId} miles away from ${locationName}.`;
             }
 
+            const parts = currentLocation.id.split('-').map(part => part.trim());
+            const locationId = parseInt(parts[1]);
+
+            if (currentRegion.id === Regions.THE_TRENCH && locationId === TheTrenchLocations.THE_DEPTHS) {
+                const waterbreathingLevel = activeCharacter.skills.skills.waterbreathing.level;
+
+                const depth = curLocation.roomId;
+                const depthDifference = depth - waterbreathingLevel;
+
+                if (depthDifference > 0 && direction === 0) { // Only apply if moving deeper
+                    activeCharacter.stats.applyDamage(depthDifference);
+                    if (activeCharacter.stats.hp <= 0) {
+                        return await sendErrorMessage(interaction, 'You have succumbed to the pressures of the depths!');
+                    }
+                    embed.addFields({ name: 'Warning', value: `You took ${depthDifference} damage. Please return to a safer depth and improve your waterbreathing skill.` });
+                }
+            }
+
             saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
-            let embed = new EmbedBuilder()
-                .setTitle('Journey Continues!')
+            embed.setTitle('Journey Continues!')
                 .setDescription(distanceDescription);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         }
