@@ -51,7 +51,7 @@ const attributeMapping = {
 };
 
 class StatContainer {
-    constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF) {
+    constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF, status) {
         this.hpMax = Math.max(0, Math.round(hpMax));
         this.mpMax = Math.max(0, Math.round(mpMax));
         this.hp = Math.max(0, Math.round(hp));
@@ -67,27 +67,25 @@ class StatContainer {
         this.lightDEF = Math.max(0, Math.round(lightDEF));
         this.darkATK = Math.max(0, Math.round(darkATK));
         this.darkDEF = Math.max(0, Math.round(darkDEF));
+        this.status = status;
     }
 
     applyDamage(damageAmount) {
         this.hp = Math.max(0, Math.round(this.hp - damageAmount));
     }
 
-    addAttributes(attributes) {
-        for (const key in attributes) {
-            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
-                this[key] = Math.max(0, Math.round(this[key] + attributes[key]));
-            }
-        }
-    }
-
-    subtractAttributes(attributes) {
-        for (const key in attributes) {
-            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
-                this[key] = Math.max(0, Math.round(this[key] - attributes[key]));
-            }
-        }
-    }
+    applyBoost() {
+        this.physicalATK += this.status.physicalATKBoost || 0;
+        this.physicalDEF += this.status.physicalDEFBoost || 0;
+        this.magicATK += this.status.magicATKBoost || 0;
+        this.magicDEF += this.status.magicDEFBoost || 0;
+        this.fireATK += this.status.fireATKBoost || 0;
+        this.fireDEF += this.status.fireDEFBoost || 0;
+        this.lightATK += this.status.lightATKBoost || 0;
+        this.lightDEF += this.status.lightDEFBoost || 0;
+        this.darkATK += this.status.darkATKBoost || 0;
+        this.darkDEF += this.status.darkDEFBoost || 0;
+    } 
 }
 
 class SkillContainer {
@@ -124,30 +122,19 @@ class SkillContainer {
 }
 
 class StatusContainer {
-    constructor(spdMult, phyDefBuffMag, phyDefBuffTimer, bleedMag, bleedTimer, poisonMag, poisonTimer) {
-        this.spdMult = spdMult;
-        this.phyDefBuffMag = phyDefBuffMag;
-        this.phyDefBuffTimer = phyDefBuffTimer;
-        this.bleedMag = bleedMag;
-        this.bleedTimer = bleedTimer;
-        this.poisonMag = poisonMag;
-        this.poisonTimer = poisonTimer;
-    }
-
-    addAttributes(attributes) {
-        for (const key in attributes) {
-            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
-                this[key] += attributes[key];
-            }
-        }
-    }
-
-    subtractAttributes(attributes) {
-        for (const key in attributes) {
-            if (this.hasOwnProperty(key) && attributes[key] !== undefined) {
-                this[key] -= attributes[key];
-            }
-        }
+    constructor(poison, bleed, physicalATKBoost, physicalDEFBoost, magicATKBoost, magicDEFBoost, fireATKBoost, fireDEFBoost, lightATKBoost, lightDEFBoost, darkATKBoost, darkDEFBoost ){
+        this.poison =  Math.max(0, Math.round(poison));
+        this.bleed = Math.max(0, Math.round(bleed));
+        this.physicalATKBoost = Math.max(0, Math.round(physicalATKBoost));
+        this.physicalDEFBoost = Math.max(0, Math.round(physicalDEFBoost));
+        this.magicATKBoost = Math.max(0, Math.round(magicATKBoost));
+        this.magicDEFBoost = Math.max(0, Math.round(magicDEFBoost));
+        this.fireATKBoost = Math.max(0, Math.round(fireATKBoost));
+        this.fireDEFBoost = Math.max(0, Math.round(fireDEFBoost));
+        this.lightATKBoost = Math.max(0, Math.round(lightATKBoost));
+        this.lightDEFBoost = Math.max(0, Math.round(lightDEFBoost));
+        this.darkATKBoost = Math.max(0, Math.round(darkATKBoost));
+        this.darkDEFBoost = Math.max(0, Math.round(darkDEFBoost));
     }
 }
 
@@ -189,6 +176,19 @@ class Character {
             const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
             const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
 
+            this.skills = new SkillContainer();
+            this.status = new StatusContainer(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            this.equippedItems = {
+                [Slots.MAIN_HAND]: null,
+                [Slots.OFF_HAND]: null,
+                [Slots.ARMS]: null,
+                [Slots.BODY]: null,
+                [Slots.HEAD]: null,
+                [Slots.LEGS]: null,
+            };
+            this.buffs = [];
+            this.debuffs = [];
+
             this.stats = new StatContainer(
                 Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
                 Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
@@ -205,21 +205,54 @@ class Character {
                 0, // TODO lightDEF
                 0, // TODO darkATK
                 0, // TODO darkDEF
+                this.status
             );
         } else {
             this.stats = new StatContainer();
         }
-        this.skills = new SkillContainer();
-        this.status = new StatusContainer();
-        this.equippedItems = {
-            [Slots.MAIN_HAND]: null,
-            [Slots.OFF_HAND]: null,
-            [Slots.ARMS]: null,
-            [Slots.BODY]: null,
-            [Slots.HEAD]: null,
-            [Slots.LEGS]: null,
-        };
     }
+
+    applyBuff(buff) {
+        const existingBuffIndex = this.buffs.findIndex(b => b.type === buff.type);
+        if (existingBuffIndex !== -1) {
+            this.buffs[existingBuffIndex].duration = Math.max(this.buffs[existingBuffIndex].duration, buff.duration);
+        } else {
+            this.buffs.push(buff);
+            this.updateStatus(buff, 'add');
+        }
+    }
+
+    removeBuff(buff) {
+        this.buffs = this.buffs.filter(b => b.type !== buff.type);
+        this.updateStatus(buff, 'subtract');
+    }
+
+    clearAllDebuffs() {
+        this.debuffs.forEach(debuff => {
+            this.updateStatus(debuff, 'subtract');
+        });
+        this.debuffs = []; 
+    }
+
+    updateStatus(buff, operation) {
+        if (!buff) {
+            console.error('No buff provided for updateStatus.');
+            return;
+        }
+        const { type, value } = buff;
+    
+        if (this.status.hasOwnProperty(type)) {
+            if (operation === 'add') {
+                this.status[type] +=  value;
+            } else if (operation === 'subtract') {
+                this.status[type] -= value;
+            }
+        } else {
+            console.error(`Invalid status key: ${type}`);
+        }
+
+        this.stats.applyBoost();
+    }    
 
     applyStatBonus(effectType, value) {
         switch (effectType) {
@@ -376,4 +409,45 @@ class CharacterManager {
     }
 }
 
-export { Character, StatContainer, SkillContainer, CharacterManager, StatusContainer, Combatant };
+class CombatSession {
+    constructor(characters) {
+        this.characters = characters; 
+        this.currentRound = 1; 
+        this.active = true;
+    }
+
+    nextRound() {
+        this.currentRound++;
+        this.updateEffects(); 
+    }
+
+    endCombat() {
+        this.active = false;
+        this.clearAllEffects(); 
+    }
+
+    updateEffects() {
+        this.characters.forEach(character => {
+            character.buffs.forEach(buff => {
+                if (--buff.duration <= 0) {
+                    character.removeBuff(buff);
+                }
+            });
+            character.debuffs.forEach(debuff => {
+                if (--debuff.duration <= 0) { 
+                    character.removeDebuff(debuff);
+                }
+            });
+        });
+    }
+
+    clearAllEffects() {
+        this.characters.forEach(character => {
+            character.buffs = []; 
+            character.debuffs = []; 
+            character.updateStatus(); 
+        });
+    }
+}
+
+export { Character, StatContainer, SkillContainer, CharacterManager, StatusContainer, Combatant, CombatSession };

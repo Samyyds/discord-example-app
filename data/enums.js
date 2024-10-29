@@ -63,6 +63,12 @@ export const Personality = {
     "WISE": 2
 };
 
+export const EffectType = {
+    "BUFF": 0,
+    "DEBUFF": 1,
+    "HEAL": 2
+};
+
 export const Ability = {
     "PUNCH": 1,
     "DRAIN": 2,

@@ -2,13 +2,28 @@ import Database from "better-sqlite3";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+class Ability {
+    constructor(id, name, mpCost, intensity, isPassive, itemRestriction, classRestriction, levelRestriction, override, description) {
+        this.id = id;
+        this.name = name;
+        this.mpCost = mpCost;
+        this.intensity = intensity;
+        this.isPassive = isPassive;
+        this.itemRestriction = itemRestriction;
+        this.classRestriction = classRestriction;
+        this.levelRestriction = levelRestriction;
+        this.override = override;
+        this.description = description;
+    }
+}
+
 class AbilityManager {
     constructor() {
         if (AbilityManager.instance) {
             return AbilityManager.instance;
         }
 
-        this.abilities = {};
+        this.abilityTemplates = [];
     }
 
     static getInstance() {
@@ -21,29 +36,24 @@ class AbilityManager {
     loadFromDB() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        console.log('Current Directory:', __dirname);
         const dbPath = path.join(__dirname, '../db/merfolk_and_magic_db.db');
-        console.log('Database Path:', dbPath);
         const db = new Database(dbPath, { verbose: console.log });
 
         try {
-            const stmt = db.prepare('SELECT * FROM Abilities');
-            const rows = stmt.all();
-
-            this.abilities = rows.reduce((acc, row) => {
-                acc[row.ID] = {
-                    id: row.ID,
-                    name: row.NAME,
-                    mpCost: row.MP_COST,
-                    intensity: row.INTENSITY,
-                    is_passive: row.IS_PASSIVE,
-                    item_restriction: row.ITEM_RESTRICTION,
-                    class_restriction: row.CLASS_RESTRICTION,
-                    level_restriction: row.LEVEL_RESTRICTION,
-                    override: row.OVERRIDE
-                };
-                return acc;
-            }, {});
+            const abilityStmt = db.prepare('SELECT * FROM Abilities');
+            const abilityRows = abilityStmt.all();
+            this.abilityTemplates = abilityRows.map(row => ({
+                id: row.ID,
+                name: row.NAME,
+                mpCost: row.MP_COST,
+                intensity: row.INTENSITY,
+                isPassive: row.IS_PASSIVE,
+                itemRestriction: row.ITEM_RESTRICTION,
+                classRestriction: row.CLASS_RESTRICTION,
+                levelRestriction: row.LEVEL_RESTRICTION,
+                override: row.OVERRIDE,
+                description: row.DESCRIPTION
+            }));
 
         } catch (error) {
             console.error('Error loading abilities from database:', error);
@@ -53,9 +63,20 @@ class AbilityManager {
     }
 
     assignAbilitiesToCharacter(character) {
-        character.abilities = Object.values(this.abilities).filter(ability => {
-            return this.isAbilityAvailable(character, ability);
-        }).map(ability => ability.id);
+        character.abilities = Object.values(this.abilityTemplates)
+            .filter(abilityData => this.isAbilityAvailable(character, abilityData))
+            .map(abilityData => new Ability(
+                abilityData.id,
+                abilityData.name,
+                abilityData.mpCost,
+                abilityData.intensity,
+                abilityData.isPassive,
+                abilityData.itemRestriction,
+                abilityData.classRestriction,
+                abilityData.levelRestriction,
+                abilityData.override,
+                abilityData.description
+            ));
     }
 
     isAbilityAvailable(character, ability) {
@@ -72,13 +93,13 @@ class AbilityManager {
     }
 
     getAbilityById(abilityId) {
-        return this.abilities[abilityId] || null;
-    }
-
+        return this.abilityTemplates.find(ability => ability.id === abilityId);
+    }    
+    
     getAbilityByName(name) {
-        const normalized = name.toLowerCase().replace(/_/g, ' '); 
-        return Object.values(this.abilities).find(ability => ability.name.toLowerCase() === normalized);
-    }
+        const normalized = name.toLowerCase().replace(/_/g, ' ');
+        return Object.values(this.abilityTemplates).find(ability => ability.name.toLowerCase() === normalized);
+    }    
 }
 
-export { AbilityManager };
+export { Ability, AbilityManager };

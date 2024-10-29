@@ -19,9 +19,10 @@ export async function handleAttackInteraction(interaction) {
             return;
         }
 
-        const [action, abilityKey, ...enemyNameParts] = interaction.customId.split('_');
-        const fullAction = `${action}_${abilityKey}`;
-        const enemyName = enemyNameParts.join(' ');
+        const parts = interaction.customId.split('_');
+        const action = parts[0];
+        const abilityKey = parts.slice(1, parts.length - 1).join(' '); 
+        const enemyName = parts[parts.length - 1]; 
 
         const playerMovementManager = PlayerMovementManager.getInstance();
         const { regionId, locationId, roomId } = playerMovementManager.getLocation(interaction.user.id, activeChar.id);
@@ -43,12 +44,14 @@ export async function handleAttackInteraction(interaction) {
 
         const abilityManager = AbilityManager.getInstance();
         const ability = abilityManager.getAbilityByName(abilityKey.replace('_', ' '));
-
-        switch (fullAction) {
-            case `attack_punch`:
-            case `attack_drain`:
-            case `attack_bite`:
-            case `attack_slash`:
+        switch (action) {
+            // case `attack_punch`:
+            // case `attack_drain`:
+            // case `attack_bite`:
+            // case `attack_slash`:
+            // case `attack_martial_strike`:
+            // case `attack_disarm`:
+            case 'attack':
 
                 const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, ability.id, regionManager, regionId, locationId, roomId);
                 await sendCombatLog(interaction, combatLog);

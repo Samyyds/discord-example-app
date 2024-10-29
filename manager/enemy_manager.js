@@ -1,7 +1,8 @@
-import { Character, StatContainer } from '../manager/character_manager.js';
+import { Character, StatContainer, StatusContainer } from '../manager/character_manager.js';
 import Database from "better-sqlite3";
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { Status } from 'discord.js';
 
 class Enemy extends Character {
     constructor(enemyType) {
@@ -17,6 +18,7 @@ class Enemy extends Character {
             enemyType.spd, enemyType.physicalATK, enemyType.physicalDEF,
             enemyType.magicATK, enemyType.magicDEF
         );
+        this.status = new StatusContainer();
         this.dropItem = enemyType.dropItem;
         this.dropItemType = enemyType.dropItemType;
         this.dropChance = enemyType.dropChance;
@@ -27,6 +29,19 @@ class Enemy extends Character {
         this.fixedRooms = this.fixedRooms;
         this.isUnique = enemyType.isUnique;
         this.isPriority = enemyType.isPriority;
+        this.buffs = [];
+        this.debuffs = [];
+    }
+
+    applyDebuff(debuff) {
+        this.debuffs.push(debuff);
+        this.updateStatus(debuff.type, debuff.value);
+    }
+
+    updateStatus(key, value) {
+        if (this.status.hasOwnProperty(key)) {
+            this.status[key] += value;
+        }
     }
 }
 

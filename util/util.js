@@ -90,8 +90,10 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
 
         case 'abilities':
             description += "\n**Abilities:**\n";
-            activeChar.abilities.forEach(abilityId => {
-                description += `${formatAbilityName(abilityId)}\n`;
+            activeChar.abilities.forEach(ability => {
+                let abilityName = ability.name.charAt(0).toUpperCase() + ability.name.slice(1).toLowerCase();
+                let abilityDescription = ability.description;
+                description += `${abilityName}:\n*${abilityDescription}*\n\n`;
             });
             break;
 
@@ -102,11 +104,9 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
     return embed;
 }
 
-export function formatAbilityName(abilityId) {
-    for (const [key, value] of Object.entries(Ability)) {
-        if (value === abilityId) {
-            return key.toLowerCase().replace(/_/g, ' ');
-        }
+export function formatAbilityName(ability) {
+    if (ability && ability.name) {
+        return ability.name;
     }
     return 'Unknown Ability';
 }
@@ -223,7 +223,7 @@ export async function sendWelcomeMessage(channel) {
     const row = new ActionRowBuilder().addComponents(button);
 
     const welcomeText = '\n\nHello, welcome to Merfolk & Magic, a text-based adventure game.\n\n' +
-        'To start playing, press the button below to unlock the game channel.\n\n' + 
+        'To start playing, press the button below to unlock the game channel.\n\n' +
         'Then go to the game and type /start to begin playing. Have fun!\n\n';
 
     try {
