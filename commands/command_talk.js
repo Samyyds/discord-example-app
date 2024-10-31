@@ -27,31 +27,64 @@ const talkCommand = async (interaction) => {
     const npcs = room.getNPCs();
     const npc = npcs.find(npc => npc.name.toLowerCase() === npcName.toLowerCase());
 
-    if (npc) {
-        const dialogue = npc.talk(interaction.user.id, activeCharacter.id);
-
-        const embed = new EmbedBuilder()
-            .setColor(0x00FF00)
-            .setDescription(`**${npc.name}:** ${dialogue.text}`);
-
-        const components = [];
-        if (dialogue.options && Object.keys(dialogue.options).length > 0) {
-            const row = new ActionRowBuilder();
-            Object.keys(dialogue.options).forEach(option => {
-                row.addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`talk_${npc.id}_${option}`)
-                        .setLabel(option)
-                        .setStyle(ButtonStyle.Primary)
-                );
-            });
-            components.push(row);
-        }
-
-        await interaction.reply({ embeds: [embed], components: components, ephemeral: true });
-    } else {
+    if (!npc) {
         return await sendErrorMessage(interaction, 'No such character found here. Please check the name and try again.', true);
     }
+
+    await interaction.deferReply({ ephemeral: true });
+
+    const dialogue = npc.talk(interaction.user.id, activeCharacter.id);  
+    const segments = parseDialogue(dialogue.text);
+
+    for (const segment of segments) {
+        const descriptionText = segment.type === 'dialogue' 
+            ? `**${npc.name} says:** ${segment.text}` 
+            : segment.text;
+    
+        const embed = new EmbedBuilder()
+            .setColor(0x00FF00)
+            .setDescription(descriptionText);
+        await interaction.followUp({ embeds: [embed], ephemeral: true });
+        await new Promise(resolve => setTimeout(resolve, 2000)); 
+    }
+
+    if (dialogue.options && Object.keys(dialogue.options).length > 0) {
+        const components = [new ActionRowBuilder()];
+        Object.keys(dialogue.options).forEach(option => {
+            components[0].addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`talk_${npc.id}_${option}`)
+                    .setLabel(option)
+                    .setStyle(ButtonStyle.Primary)
+            );
+        });
+        await interaction.followUp({ content: "What will you do?", components: components, ephemeral: true });
+    }
+}
+
+function parseDialogue(text) {
+    const segments = [];
+    let position = 0;
+    let inDialogue = false;
+
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === "\"" && (i === 0 || text[i - 1] !== '\\')) {
+            if (inDialogue) {
+                segments.push({ type: 'dialogue', text: text.substring(position, i) });
+                position = i + 1;
+            } else {
+                if (i > position) {
+                    segments.push({ type: 'narrative', text: text.substring(position, i) });
+                }
+                position = i + 1;
+            }
+            inDialogue = !inDialogue;
+        }
+    }
+    if (position < text.length) {
+        segments.push({ type: inDialogue ? 'dialogue' : 'narrative', text: text.substring(position) });
+    }
+    return segments;
 }
 
 export const talkCommands = {

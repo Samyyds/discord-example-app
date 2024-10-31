@@ -1,14 +1,26 @@
 [
     {
         "id": 1,
-        "name": "Failed Sacrifice",
-        "description": "Defeat Failed Sacrifice.",
+        "name": "Enlightenment",
+        "description": "Investigate the source of the rot in the Moku'ah Jungle.",
         "requirements": {
             "action": "Kill",
-            "target": "Failed Sacrifice"
+            "target": "Kala the Enlightened"
         },
         "rewards": {
-            "item": "Map to Nyra"
+            "item": "Access to Nyra"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Curiousity",
+        "description": "Investigate Nyra for evidence of the scholar.",
+        "requirements": {
+            "action": "Kill",
+            "target": "Arunashti the Sphynx"
+        },
+        "rewards": {
+            "item": "Access to Volcano"
         }
     }
 ]

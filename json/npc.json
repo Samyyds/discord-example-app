@@ -15,20 +15,20 @@
             "1": {
                 "quest_not_started": {
                     "start": {
-                        "text": "Greetings, traveler. There have been dark whispers coming from the Moku'ah Jungle. Would you be brave enough to confront this menace?",
+                        "text": "Akoni is leaning on a wrangled walking stick, watching dockworkers moving around. As you approach him, Akoni looks up with a smile on his face. \"Thank you for meeting with me.\" His teal eyes are fixed to yours. \"As you're no doubt aware, a powerful rot has been infesting this town for the past three months. It's been compromising the livelihoods of locals and stifling outward trade and travel.\" He heaves a slow, heavy sigh. \"People are starving, especially with the influx of the refugees. I've asked several capable men to investigate the island. All of the men who went to the jungle have not returned. It is my belief that something suspicious and dangerous is happening in there, but I don't know what.\" Akoni maintains his level gaze, his eyes bright despite his age. \"I ask you to check the jungle for evidence of both the men and the source of this malaise. There is likely a great danger within, but circumstance is forcing my hand in this uneven exchange.\" Akoni's expression remains firm, although he his brow is now furrowed. \"If you can find the source of this blight, I will personally give you the necessary forms to return to your home outside of Moku'ah, as well as my gratitude.\" Tapping his staff on the ground, he makes it clear that he has said what he wants to say. \"I would not blame you if you instead return to your regular life of fishing. And if you do venture into the jungle, expect violence.\" With that simple goodbye, he turns away and begins talking to an exhausted looking dock worker who has clearly been waiting for your conversation to end in order to talk to the village elder.",
                         "options": {
-                            "Yes": {
+                            "Accept": {
                                 "next": "acceptQuest",
                                 "action": "startQuest"
                             },
-                            "No": {
+                            "Decline": {
                                 "next": "declineQuest",
                                 "action": "ignoreQuest"
                             }
                         }
                     },
                     "acceptQuest": {
-                        "text": "Your courage gives us hope. Please, venture into the jungle and put an end to Failed Sacrifice's reign of terror.",
+                        "text": "Your courage gives us hope. Please, venture into the jungle and put an end to Kala the Enlightened's reign of terror.",
                         "options": {}
                     },
                     "declineQuest": {
@@ -38,13 +38,13 @@
                 },
                 "quest_in_progress": {
                     "start": {
-                        "text": "Have you faced Failed Sacrifice yet?",
+                        "text": "Akoni nods as you approach him. \"Any word on whether you've found the missing men or the source of the blight? Well, at least you're not dead yet.\" He chuckles. \"What can I do for you?\"",
                         "options": {}
                     }
                 },
                 "quest_completed": {
                     "start": {
-                        "text": "You have done it! Failed Sacrifice has been defeated.",
+                        "text": "When Akoni sees you, he turns to you as a big smile slowly spreads across his face. With an excited flourish of his walking stick, he shuffles over to you. \"[playername], a hero stands before me!\" His eyes are wide with excitement. \"All the fishermen tell me the thick mist has lifted from the waters, and they have seen the first untainted fish for years, albeit sparingly.\" He pauses as he notices the blackened veins around your throat. The excited look on his face slips away, as he realises the infection has made its way into you. \"Ah...so there is a price to everything. You have done this village a great service. But I know not how to heal your affliction.\" He taps the side of his temple and looks away, seemingly wondering whether to say what is on his mind. \"I cannot promise you that you will find any peace from what I am about to tell you, but you deserve to try.\" He taps his temple once again, his gaze askew. \"There is a scholar in Nyra that is said to know the answer to everything. Clearly, it is a myth. But from the look of you, you need something of a miracle healer.\" He once again fixes his ageless eyes on yours. \"The boats are still not open to refugees, but I have let the harbourmaster know to make an exception for you. Don't expect any exceptional treatment from her though!\" He chuckles. \"I know not your lifespan with your affliction, but I implore you to at least find out what has happened to you. Thank you for what you have done, and know that you will always be welcome here in Moku'ah.\" He shakes your hand firmly, and with a soft smile, turns away to attend to the matters of the townspeople.",
                         "options": {
                             "Claim rewards": {
                                 "next": "quest_turned_in",
@@ -55,7 +55,7 @@
                 },
                 "quest_turned_in": {
                     "start": {
-                        "text": "Thank you for defeating Failed Sacrifice. Our village is safe, thanks to your bravery.",
+                        "text": "Ah, what an honour it is to see you again. How can I help you?",
                         "options": {}
                     }
                 }
