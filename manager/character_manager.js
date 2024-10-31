@@ -85,7 +85,7 @@ class StatContainer {
         this.lightDEF += this.status.lightDEFBoost || 0;
         this.darkATK += this.status.darkATKBoost || 0;
         this.darkDEF += this.status.darkDEFBoost || 0;
-    } 
+    }
 }
 
 class SkillContainer {
@@ -122,8 +122,8 @@ class SkillContainer {
 }
 
 class StatusContainer {
-    constructor(poison, bleed, physicalATKBoost, physicalDEFBoost, magicATKBoost, magicDEFBoost, fireATKBoost, fireDEFBoost, lightATKBoost, lightDEFBoost, darkATKBoost, darkDEFBoost ){
-        this.poison =  Math.max(0, Math.round(poison));
+    constructor(poison, bleed, physicalATKBoost, physicalDEFBoost, magicATKBoost, magicDEFBoost, fireATKBoost, fireDEFBoost, lightATKBoost, lightDEFBoost, darkATKBoost, darkDEFBoost) {
+        this.poison = Math.max(0, Math.round(poison));
         this.bleed = Math.max(0, Math.round(bleed));
         this.physicalATKBoost = Math.max(0, Math.round(physicalATKBoost));
         this.physicalDEFBoost = Math.max(0, Math.round(physicalDEFBoost));
@@ -190,15 +190,15 @@ class Character {
             this.debuffs = [];
 
             this.stats = new StatContainer(
-                Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-                Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-                Math.round(classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-                Math.round(classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-                Math.round(classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
-                Math.round(classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
-                Math.round(classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
-                Math.round(classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
-                Math.round(classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),
+                Math.round(100 + Math.max(0, (this.level - 1)) * 3.2 * classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
+                Math.round(100 + Math.max(0, (this.level - 1)) * 0.75 * classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
+                Math.round(100 + Math.max(0, (this.level - 1)) * 3.2 * classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
+                Math.round(100 + Math.max(0, (this.level - 1)) * 0.75 * classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
+                Math.round(10 * classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
+                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
+                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
+                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
+                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),                
                 0, // TODO fireATK
                 0, // TODO fireDEF
                 0, // lTODO ightATK
@@ -231,7 +231,7 @@ class Character {
         this.debuffs.forEach(debuff => {
             this.updateStatus(debuff, 'subtract');
         });
-        this.debuffs = []; 
+        this.debuffs = [];
     }
 
     updateStatus(buff, operation) {
@@ -240,10 +240,10 @@ class Character {
             return;
         }
         const { type, value } = buff;
-    
+
         if (this.status.hasOwnProperty(type)) {
             if (operation === 'add') {
-                this.status[type] +=  value;
+                this.status[type] += value;
             } else if (operation === 'subtract') {
                 this.status[type] -= value;
             }
@@ -252,7 +252,7 @@ class Character {
         }
 
         this.stats.applyBoost();
-    }    
+    }
 
     applyStatBonus(effectType, value) {
         switch (effectType) {
@@ -411,19 +411,19 @@ class CharacterManager {
 
 class CombatSession {
     constructor(characters) {
-        this.characters = characters; 
-        this.currentRound = 1; 
+        this.characters = characters;
+        this.currentRound = 1;
         this.active = true;
     }
 
     nextRound() {
         this.currentRound++;
-        this.updateEffects(); 
+        this.updateEffects();
     }
 
     endCombat() {
         this.active = false;
-        this.clearAllEffects(); 
+        this.clearAllEffects();
     }
 
     updateEffects() {
@@ -434,7 +434,7 @@ class CombatSession {
                 }
             });
             character.debuffs.forEach(debuff => {
-                if (--debuff.duration <= 0) { 
+                if (--debuff.duration <= 0) {
                     character.removeDebuff(debuff);
                 }
             });
@@ -443,9 +443,9 @@ class CombatSession {
 
     clearAllEffects() {
         this.characters.forEach(character => {
-            character.buffs = []; 
-            character.debuffs = []; 
-            character.updateStatus(); 
+            character.buffs = [];
+            character.debuffs = [];
+            character.updateStatus();
         });
     }
 }

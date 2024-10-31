@@ -24,7 +24,15 @@ import { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder } from 'disc
 // }
 
 export function calculateLevelFromXp(xp) {
-    return Math.floor(Math.pow(xp, 0.5));
+    const xpOffset = 5;
+
+    if (xp < xpOffset) {
+        return 0;
+    }
+    else {
+        return Math.floor(Math.pow(xp - xpOffset, 0.3332));
+    }
+    //return Math.floor(Math.pow(xp, 0.5));
 }
 
 function xpRequiredForLevel(level) {
@@ -46,7 +54,6 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
             description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase()}\n`;
             description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase()}\n`;
             description += `Level : ${activeChar.level}\n`;
-
             const xpForCurrentLevel = xpRequiredForLevel(activeChar.level);
             const xpForNextLevel = xpRequiredForLevel(activeChar.level + 1);
             const currentXp = activeChar.xp - xpForCurrentLevel;

@@ -19,6 +19,7 @@ class Enemy extends Character {
             enemyType.magicATK, enemyType.magicDEF
         );
         this.status = new StatusContainer();
+        this.xpReward = enemyType.xpReward;
         this.dropItem = enemyType.dropItem;
         this.dropItemType = enemyType.dropItemType;
         this.dropChance = enemyType.dropChance;
@@ -92,7 +93,8 @@ class EnemyManager {
                 attenuation: row.ATTENUATION,
                 fixedRooms: row.FIXED_ROOMS ? row.FIXED_ROOMS.split(',').map(Number) : [],
                 isUnique: row.IS_UNIQUE,
-                isPriority: row.IS_PRIORITY
+                isPriority: row.IS_PRIORITY,
+                xpReward: row.XP_REWARD
             }));
 
             const locationStmt = db.prepare('SELECT * FROM LocationEnemies');

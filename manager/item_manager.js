@@ -26,7 +26,6 @@ class Equipment extends Item {
         this.physicalDEF = equipmentType.physicalDEF;
         this.magicATK = equipmentType.magicATK;
         this.magicDEF = equipmentType.magicDEF;
-        this.enableAbility = equipmentType.enableAbility;
         this.isSub = equipmentType.isSub;
     }
 }
@@ -108,7 +107,6 @@ class ItemManager {
                 physicalDEF: row.PHY_DEF,
                 magicATK: row.MAG_ATK,
                 magicDEF: row.MAG_DEF,
-                enableAbility: row.ABILITY,
                 isSub: row.ISSUB
             }));
 
