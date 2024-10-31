@@ -20,7 +20,7 @@ class Region {
 }
 
 class Location {
-    constructor(id, name, regionId, locationId, roomCount = 1, description = '', subscriberOnly = false) {
+    constructor(id, name, regionId, locationId, roomCount = 1, description = '', subscriberOnly = false, questRequired = {}) {
         this.id = `${regionId}-${id}`;
         this.name = name;
         this.regionId = regionId;
@@ -29,6 +29,7 @@ class Location {
         this.description = description;
         this.rooms = new Map();
         this.subscriberOnly = subscriberOnly;
+        this.questRequired = questRequired;
     }
 
     initializeRooms() {
@@ -54,6 +55,10 @@ class Location {
             this.rooms.set(roomId, new Room(roomId, this.id));
         }
         this.rooms.get(roomId).description = description;
+    }
+
+    getRequiredQuest() {
+        return this.questRequired;
     }
 }
 

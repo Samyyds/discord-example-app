@@ -51,8 +51,12 @@ class RegionManager {
                     locationData.locationId,
                     locationData.roomCount,
                     locationData.description,
-                    locationData.subscriberOnly
+                    locationData.subscriberOnly,
+                    locationData.questRequired
                 );
+
+                console.log(`Location: ${location.name}, questRequired:`, location.questRequired);
+
                 region.addLocation(location);
             });
 

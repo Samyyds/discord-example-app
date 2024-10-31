@@ -10,56 +10,64 @@
           "name": "Village Center",
           "roomCount": 1,
           "description": "The village center contains useful tutorial NPCs, and questgiver NPCs.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 1,
           "name": "Blacksmith",
           "roomCount": 1,
           "description": "Players can use the services of the blacksmith to craft items and equipment.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 2,
           "name": "Farm",
           "roomCount": 1,
           "description": "Players can use the farm to grow crops for use in crafting.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         },
         {
           "locationId": 3,
           "name": "Tavern",
           "roomCount": 1,
           "description": "Players can cook and brew here.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 4,
           "name": "Clinic",
           "roomCount": 1,
           "description": "Players respawn here if they die in this region.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 5,
           "name": "Dock",
           "roomCount": 1,
           "description": "Player can travel to other specified regions at the dock.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 6,
           "name": "Jungle",
           "roomCount": 100,
           "description": "Tier 1 dungeon for players to fight enemies and get loot in.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 7,
           "name": "Volcano",
           "roomCount": 100,
           "description": "Tier 3 dungeon for players to fight enemies and get loot in. Mixed subscriber content",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         }
       ],
       "paths": {
@@ -84,37 +92,52 @@
           "locationId": 0,
           "name": "Town",
           "roomCount": 1,
-          "description": "The village center contains useful tutorial NPCs."
+          "description": "The village center contains useful tutorial NPCs.",
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 1,
           "name": "Crafthouse",
           "roomCount": 1,
-          "description": "Players can use the services of the crafthouse to craft items and equipment."
+          "description": "Players can use the services of the crafthouse to craft items and equipment.",
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 2,
           "name": "Tavern",
           "roomCount": 1,
-          "description": "Contains questgiver NPCs."
+          "description": "Contains questgiver NPCs.",
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 3,
           "name": "Beach",
           "roomCount": 1,
-          "description": "The beautiful beach of Nyra."
+          "description": "The beautiful beach of Nyra.",
+          "subscriberOnly": false,
+          "questRequired": {
+            "questId": 1,
+            "status": 4
+          }
         },
         {
           "locationId": 4,
           "name": "Labyrinth",
           "roomCount": 100,
-          "description": "Tier 2 dungeon for players to fight enemies and get loot in."
+          "description": "Tier 2 dungeon for players to fight enemies and get loot in.",
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 5,
           "name": "Hospital",
           "roomCount": 1,
-          "description": "Players respawn here if they die in this region."
+          "description": "Players respawn here if they die in this region.",
+          "subscriberOnly": false,
+          "questRequired": {}
         }
       ],
       "paths": {
@@ -144,35 +167,40 @@
           "name": "City Center",
           "roomCount": 1,
           "description": "The center of the city.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         },
         {
           "locationId": 1,
           "name": "Blacksmith",
           "roomCount": 1,
           "description": "A place to forge weapons and armor.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         },
         {
           "locationId": 2,
           "name": "Dock",
           "roomCount": 1,
           "description": "The dock of Isfjall.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         },
         {
           "locationId": 3,
           "name": "Tundra",
           "roomCount": 100,
           "description": "A vast and frozen tundra.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         },
         {
           "locationId": 4,
           "name": "Hospital",
           "roomCount": 1,
           "description": "Players respawn here if they die in this region.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         }
       ],
       "paths": {
@@ -198,28 +226,32 @@
           "name": "Entrance",
           "roomCount": 1,
           "description": "The entrance to The Trench.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 1,
           "name": "The Shallows",
           "roomCount": 50,
           "description": "The shallow part of the trench.",
-          "subscriberOnly": false
+          "subscriberOnly": false,
+          "questRequired": {}
         },
         {
           "locationId": 2,
           "name": "The Depths",
           "roomCount": 50,
           "description": "The deep part of the trench.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         },
         {
           "locationId": 3,
           "name": "Obsidian City",
           "roomCount": 1,
           "description": "A city made of obsidian.",
-          "subscriberOnly": true
+          "subscriberOnly": true,
+          "questRequired": {}
         }
       ],
       "paths": {

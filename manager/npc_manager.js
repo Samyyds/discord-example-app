@@ -54,6 +54,7 @@ class NPC {
                 quest.updateStatus(optionDetails.action);
                 if (optionDetails.action === 'turnInQuest') {
                     quest.status = QuestStatus.COMPLETED_AND_TURNED_IN;
+                    return quest.getRewardText();
                 }
             }
         }

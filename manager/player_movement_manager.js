@@ -1,4 +1,6 @@
 import { RegionManager } from '../manager/region_manager.js';
+import { QuestManager } from '../manager/quest_manager.js';
+import { QuestStatus } from '../data/enums.js';
 
 class PlayerMovementManager {
     constructor() {
@@ -44,11 +46,24 @@ class PlayerMovementManager {
     canMoveRegion(userId, characterId, targetRegionId, targetLocationId) {
         const location = this.getLocation(userId, characterId);
         if (!location) {
-            console.error("No location found for this user/character.");
-            return false;
+            return { canMove: false, message: "No location found for this user/character." };
         }
 
-        return this.regionManager.canMoveTo(location.regionId, location.locationId, targetRegionId, targetLocationId);
+        const targetRegion = this.regionManager.getRegionById(targetRegionId);
+        const targetLocation = targetRegion.getLocation(targetLocationId);
+
+        const questRequirement = targetLocation.getRequiredQuest();
+        if (questRequirement && questRequirement.questId) {
+            const questManager = QuestManager.getInstance();
+            const quest = questManager.getQuestByID(userId, characterId, questRequirement.questId);
+
+            if (!quest || quest.status !== questRequirement.status) {
+                return { canMove: false, message: "You need to complete the required quest to access this region." };
+            }
+        }
+
+        const canMove = this.regionManager.canMoveTo(location.regionId, location.locationId, targetRegionId, targetLocationId);
+        return canMove ? { canMove: true, message: "" } : { canMove: false, message: "Invalid movement path or region/location ID." };
     }
 
     moveLocation(userId, characterId, regionId, locationId) {

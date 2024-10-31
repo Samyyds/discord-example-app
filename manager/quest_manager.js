@@ -41,6 +41,10 @@ class Quest {
     turnIn() {
         this.status = QuestStatus.COMPLETED_AND_TURNED_IN;
     }
+
+    getRewardText() {
+        return this.rewards?.text || "No reward text available.";
+    }
 }
 
 class QuestManager {

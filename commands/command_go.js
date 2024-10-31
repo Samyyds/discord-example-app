@@ -41,8 +41,14 @@ const goCommand = async (interaction) => {
             }
             playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
         } else {
-            if (!playerMoveManager.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId)) {
-                return await sendErrorMessage(interaction, "Cannot move to the target region and location from current location.");
+            const canMoveResult = playerMoveManager.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
+            if (!canMoveResult.canMove) {
+                const moveErrorEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle('Movement Restricted')
+                    .setDescription(canMoveResult.message || "Movement not allowed."); 
+                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
+                return;
             }
             playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
         }
