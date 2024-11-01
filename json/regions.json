@@ -67,7 +67,10 @@
           "roomCount": 100,
           "description": "Tier 3 dungeon for players to fight enemies and get loot in. Mixed subscriber content",
           "subscriberOnly": true,
-          "questRequired": {}
+          "questRequired": {
+            "questId": 2,
+            "status": 4
+          }
         }
       ],
       "paths": {

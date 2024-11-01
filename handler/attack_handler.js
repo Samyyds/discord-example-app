@@ -45,14 +45,7 @@ export async function handleAttackInteraction(interaction) {
         const abilityManager = AbilityManager.getInstance();
         const ability = abilityManager.getAbilityByName(abilityKey.replace('_', ' '));
         switch (action) {
-            // case `attack_punch`:
-            // case `attack_drain`:
-            // case `attack_bite`:
-            // case `attack_slash`:
-            // case `attack_martial_strike`:
-            // case `attack_disarm`:
             case 'attack':
-
                 const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, ability.id, regionManager, regionId, locationId, roomId);
                 await sendCombatLog(interaction, combatLog);
 
@@ -60,11 +53,11 @@ export async function handleAttackInteraction(interaction) {
                     await sendAbilityButtons(interaction, activeChar, enemy);
                 } else {
                     const endEmbed = new EmbedBuilder()
-                        .setTitle('Combat Ended')
-                        .setDescription(playerAlive
-                            ? 'You defeated the enemy!'
+                       .setTitle('Combat Ended')
+                       .setDescription(playerAlive
+                           ? 'You defeated the enemy!'
                             : 'You died!')
-                        .setColor(playerAlive ? 0x00FF00 : 0xFF0000);
+                       .setColor(playerAlive? 0x00FF00 : 0xFF0000);
                     await interaction.followUp({ embeds: [endEmbed], ephemeral: true });
                 }
                 break;
@@ -74,7 +67,7 @@ export async function handleAttackInteraction(interaction) {
         }
     } catch (error) {
         console.error(error);
-        if (!interaction.replied && !interaction.deferred) {
+        if (!interaction.replied &&!interaction.deferred) {
             await interaction.editReply({ content: 'An error occurred while processing your interaction.', ephemeral: true });
         }
     }

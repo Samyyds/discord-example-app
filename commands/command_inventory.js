@@ -19,7 +19,7 @@ const inventoryCommand = async (interaction) => {
                 new ButtonBuilder().setCustomId('inventory_equipment').setLabel('Equipment').setStyle(ButtonStyle.Primary),
                 new ButtonBuilder().setCustomId('inventory_consumable').setLabel('Consumable').setStyle(ButtonStyle.Success),
                 new ButtonBuilder().setCustomId('inventory_material').setLabel('Material').setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder().setCustomId('inventory_quest').setLabel('Quest').setStyle(ButtonStyle.Danger),
+                new ButtonBuilder().setCustomId('inventory_key').setLabel('Key').setStyle(ButtonStyle.Danger),
                 new ButtonBuilder().setCustomId('inventory_fish').setLabel('Fish').setStyle(ButtonStyle.Primary)
             );
 

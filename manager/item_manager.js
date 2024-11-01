@@ -48,6 +48,16 @@ class Fish {
     }
 }
 
+class Key {
+    constructor(keyType) {
+        this.id = keyType.id;
+        this.name = keyType.name;
+        this.type = keyType.type;
+        this.tier = keyType.rarity;
+        this.description = keyType.description;
+    }
+}
+
 class ItemManager {
     constructor() {
         if (ItemManager.instance) {
@@ -58,6 +68,7 @@ class ItemManager {
         this.equipmentTemplates = [];
         this.consumableTemplates = [];
         this.fishTemplates = [];
+        this.keyTemplates = [];
 
         ItemManager.instance = this;
     }
@@ -134,6 +145,16 @@ class ItemManager {
                 description: row.DESCRIPTION
             }));
 
+            const keyStmt = db.prepare('SELECT * FROM Keys');
+            const keyRows = keyStmt.all();
+            this.keyTemplates = keyRows.map(row => ({
+                id: row.ID,
+                name: row.NAME,
+                type: row.TYPE,
+                tier: row.RARITY,
+                description: row.DESCRIPTION
+            }));
+
         } catch (error) {
             console.error('Error loading nodes from database:', error);
         } finally {
@@ -157,11 +178,14 @@ class ItemManager {
         return this.fishTemplates.find(item => item.id === fishId);
     }
 
+    getKeyDataById(keyId) {
+        return this.keyTemplates.find(item => item.id === keyId);
+    }
+
     parseYieldQuantity(yieldQuantity) {
         const [min, max] = yieldQuantity.split('-').map(Number);
         return { min, max };
     }
-
 }
 
-export { Item, Equipment, Consumable, Fish, ItemManager };
+export { Item, Equipment, Consumable, Fish, Key, ItemManager };

@@ -124,6 +124,27 @@ class QuestManager {
             console.log(`Quest '${quest.name}' already started for character ${characterId} of user ${userId}.`);
         }
     }
+
+    completeQuest(userId, characterId, questId) {
+        const quest = this.getQuestByID(userId, characterId, questId);
+        if (quest && quest.status === QuestStatus.IN_PROGRESS) {
+            quest.complete();
+            return quest.getRewardText();
+        }
+        return null;
+    }
+
+    startNextQuest(userId, characterId, nextQuestId) {
+        if (!this.hasQuest(userId, characterId, nextQuestId)) {
+            const nextQuest = this.createQuestInstance(nextQuestId);
+            if (nextQuest) {
+                this.addCharQuest(userId, characterId, nextQuest);
+                nextQuest.start();
+                return `Quest '${nextQuest.name}' has started!`;
+            }
+        }
+        return null;
+    }
 }
 
 export { Quest, QuestManager };

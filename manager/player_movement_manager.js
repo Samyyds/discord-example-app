@@ -52,15 +52,8 @@ class PlayerMovementManager {
         const targetRegion = this.regionManager.getRegionById(targetRegionId);
         const targetLocation = targetRegion.getLocation(targetLocationId);
 
-        const questRequirement = targetLocation.getRequiredQuest();
-        if (questRequirement && questRequirement.questId) {
-            const questManager = QuestManager.getInstance();
-            const quest = questManager.getQuestByID(userId, characterId, questRequirement.questId);
-
-            if (!quest || quest.status !== questRequirement.status) {
-                return { canMove: false, message: "You need to complete the required quest to access this region." };
-            }
-        }
+        const questCheck = this.checkQuestRequirement(userId, characterId, targetLocation.questRequired);
+        if (!questCheck.canMove) return questCheck;
 
         const canMove = this.regionManager.canMoveTo(location.regionId, location.locationId, targetRegionId, targetLocationId);
         return canMove ? { canMove: true, message: "" } : { canMove: false, message: "Invalid movement path or region/location ID." };
@@ -83,6 +76,9 @@ class PlayerMovementManager {
 
         const region = this.regionManager.getRegionById(destRegionId);
         const targetLocation = region.getLocation(destLocationId);
+
+        const questCheck = this.checkQuestRequirement(userId, characterId, targetLocation.questRequired);
+        if (!questCheck.canMove) return questCheck;
 
         // const hasSubscriberRole = interaction.member.roles.cache.some(role => role.name === 'Subscriber');
         // if (targetLocation.subscriberOnly && !hasSubscriberRole) {
@@ -122,6 +118,19 @@ class PlayerMovementManager {
         const locationData = region.getLocation(location.locationId);
         const roomCount = locationData.roomCount;
         return location.roomId < roomCount;
+    }
+
+    checkQuestRequirement(userId, characterId, questRequirement) {
+        if (questRequirement && questRequirement.questId) {
+            const questManager = QuestManager.getInstance();
+            const questTemplate = questManager.getQuestTemplateById(questRequirement.questId);
+            const quest = questManager.getQuestByID(userId, characterId, questRequirement.questId);
+
+            if (!quest || quest.status !== QuestStatus.COMPLETED_AND_TURNED_IN) {
+                return { canMove: false, message: `You need to complete the "${questTemplate.name}" quest to access this location.` };
+            }
+        }
+        return { canMove: true, message: "" };
     }
 }
 

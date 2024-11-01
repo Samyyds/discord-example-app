@@ -99,7 +99,7 @@ export const ItemType = {
     "MATERIAL": 0,
     "EQUIPMENT": 1,
     "CONSUMABLE": 2,
-    "QUEST": 3,
+    "KEY": 3,
     "FISH": 4
 };
 
@@ -359,6 +359,13 @@ export const Fishes = {
     "OBSIDIAN_DRAGONFISH": 16,
     "ABYSSAL_CATSHARK": 17,
     "CHIMERA_TRENCH_WORM": 18
+};
+
+export const Keys = {
+    "INFECTION": 1,
+    "SOLIFEY_STONE": 2,
+    "HEART_OF_THE_VOLCANO": 3,
+    "ESOPHIAL": 4
 };
 
 export const ConsumableEffect = {

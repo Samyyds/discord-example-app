@@ -8,7 +8,8 @@
             "target": "Kala the Enlightened"
         },
         "rewards": {
-            "text": "You have now unlocked access to the Nyra Beach."
+            "text": "You get Infection, you have now unlocked access to the Nyra Beach.",
+            "key": 1
         }
     },
     {
@@ -20,7 +21,34 @@
             "target": "Arunashti the Sphynx"
         },
         "rewards": {
-            "item": "Access to Volcano"
+            "text": "You get Solifey Stone, you have now unlocked access to the Volcano",
+            "key": 2
+        }
+    },
+    {
+        "id": 3,
+        "name": "Royalty",
+        "description": "Investigate the Moku'ah Volcano and find the old king.",
+        "requirements": {
+            "action": "Kill",
+            "target": "The Old King"
+        },
+        "rewards": {
+            "text": "You get Heart of the Volcano, you have now unlocked the Wall of Ice.",
+            "key": 3
+        }
+    },
+    {
+        "id": 4,
+        "name": "Love",
+        "description": "Find answers at the edge of the Isfjall tundra.",
+        "requirements": {
+            "action": "Kill",
+            "target": "The Wall of Ice"
+        },
+        "rewards": {
+            "text": "You get Esophial, you have now unlocked 100% waterbreathing skill.",
+            "key": 4
         }
     }
 ]
