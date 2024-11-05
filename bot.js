@@ -2,6 +2,15 @@ import 'dotenv/config';
 import pkg, { Events } from 'discord.js';
 const { Client, GatewayIntentBits, EmbedBuilder, Partials, PermissionsBitField } = pkg;
 import { MysqlDB, getAllUserIds, hasCharacters, loadCharactersForUser, loadInventoryForUser } from "./db/mysql.js";
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 import { TutorialManager } from "./manager/tutorial_manager.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
@@ -76,11 +85,16 @@ client.once('ready', async () => {
 
     if (hasData) {
       const userIds = await getAllUserIds(connection);
-      for (const userId of userIds) {
-        await loadCharactersForUser(userId);
-        await loadInventoryForUser(userId);
-      }
-    }
+      const loadPromises = userIds.map(async (userId) => {
+          try {
+              await loadCharactersForUser(userId);
+              await loadInventoryForUser(userId);
+          } catch (error) {
+              console.error(`Failed to load data for user ${userId}:`, error);
+          }
+      });
+      await Promise.allSettled(loadPromises);
+  }
 
     console.log('Bot is ready!');
 
