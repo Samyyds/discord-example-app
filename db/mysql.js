@@ -3,7 +3,8 @@ import { serializeObject } from "../util/util.js";
 import { Character, CharacterManager, SkillContainer, StatContainer, StatusContainer } from "../manager/character_manager.js";
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { InventoryManager } from "../manager/inventory_manager.js";
-import { ItemManager, Item, Consumable, Equipment, Fish } from "../manager/item_manager.js";
+import { ItemManager, Item, Consumable, Equipment, Fish, Key } from "../manager/item_manager.js";
+import { QuestManager } from "../manager/quest_manager.js";
 import { ItemType } from "../data/enums.js";
 
 const dbConfig = {
@@ -131,6 +132,8 @@ async function loadCharactersForUser(userId) {
     const connection = await MysqlDB.getConnection();
     const charManager = CharacterManager.getInstance();
     const moveManager = PlayerMovementManager.getInstance();
+    const questManager = QuestManager.getInstance();
+
     try {
         const [rows] = await connection.execute(`SELECT * FROM ${process.env.CHARACTERS_DB} WHERE user_id = ?`, [userId.toString()]);
 
@@ -174,6 +177,7 @@ async function loadCharactersForUser(userId) {
         for (let i = 0; i < characters.length; i++) {
             charManager.addCharacter(userId, characters[i]);
             moveManager.setLocation(userId, characters[i].id, rows[i].region_id, rows[i].location_id, rows[i].room_id);
+            await loadCharacterQuests(userId, characters[i].id);
         }
 
         charManager.setActiveCharacter(userId, characters[0].id);
@@ -204,7 +208,7 @@ async function updateInventoryToDB(userId, characterId, item, quantity, operatio
     const connection = await MysqlDB.getConnection();
     try {
         await connection.beginTransaction();
- 
+
         const [existingRows] = await connection.query(
             `SELECT quantity FROM ${process.env.INVENTORY_DB} WHERE user_id = ? AND character_id = ? AND item_id = ?`,
             [userId, characterId, item.id]
@@ -275,9 +279,13 @@ async function loadInventoryForUser(userId) {
                     newItem = equipmentInfo ? new Equipment(equipmentInfo) : null;
                     break;
                 case ItemType.FISH:
-                        let fishInfo = itemManager.getFishDataById(item_id);
-                        newItem = fishInfo ? new Fish(fishInfo) : null;
-                        break;    
+                    let fishInfo = itemManager.getFishDataById(item_id);
+                    newItem = fishInfo ? new Fish(fishInfo) : null;
+                    break;
+                case ItemType.KEY:
+                    let keyInfo = itemManager.getKeyDataById(item_id);
+                    newItem = keyInfo ? new Key(keyInfo) : null;
+                    break;
                 default:
                     console.log(`Unrecognized item type for item_id: ${item_id}`);
                     newItem = null;
@@ -297,6 +305,58 @@ async function loadInventoryForUser(userId) {
     }
 }
 
+async function saveCharacterQuests(userId, characterId) {
+    const connection = await MysqlDB.getConnection();
+    const questManager = QuestManager.getInstance();
+    const quests = questManager.getCharQuests(userId, characterId);
+
+    const serializedQuests = JSON.stringify(quests.map(quest => ({
+        questId: quest.id,
+        status: quest.status
+    })));
+
+    try {
+        const sql = `
+            UPDATE ${process.env.CHARACTERS_DB}
+            SET quests = ?
+            WHERE user_id = ? AND id = ?
+        `;
+        await connection.execute(sql, [serializedQuests, userId, characterId]);
+        console.log(`Quests for user ${userId}, character ${characterId} saved successfully.`);
+    } catch (error) {
+        console.error('Failed to save character quests:', error);
+    } finally {
+        connection.release();
+    }
+}
+
+async function loadCharacterQuests(userId, characterId) {
+    const connection = await MysqlDB.getConnection();
+    const questManager = QuestManager.getInstance();
+
+    try {
+        const [rows] = await connection.execute(
+            `SELECT quests FROM ${process.env.CHARACTERS_DB} WHERE user_id = ? AND id = ?`,
+            [userId, characterId]
+        );
+
+        const questsData = JSON.parse(rows[0]?.quests || '[]');
+        for (const questData of questsData) {
+            const quest = questManager.createQuestInstance(questData.questId, userId, characterId);
+            if (quest) {
+                quest.status = questData.status;
+                questManager.addCharQuest(userId, characterId, quest);
+            }
+        }
+
+        console.log(`Quests for user ${userId}, character ${characterId} loaded successfully.`);
+    } catch (error) {
+        console.error(`Failed to load quests for user ${userId}, character ${characterId}:`, error);
+    } finally {
+        connection.release();
+    }
+}
+
 export {
     MysqlDB,
     hasCharacters,
@@ -306,5 +366,6 @@ export {
     saveCharacterLocation,
     getNextCharacterId,
     updateInventoryToDB,
-    loadInventoryForUser
+    loadInventoryForUser,
+    saveCharacterQuests
 };

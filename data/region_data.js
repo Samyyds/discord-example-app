@@ -154,14 +154,18 @@ class Room {
     }
 
     scheduleRespawn(enemy) {
-        if (enemy.isUnique) {
-            // Handle unique enemy respawn rules if needed
-            return;
-        }
-
-        const respawnTime = 180000; // 3mins
+        // if (enemy.isUnique) {
+        //      Handle unique enemy respawn rules if needed
+        //     return;
+        // }
+        //
+        const respawnTime = enemy.isUnique ? 600000 : 180000; //unique enemy 10mins, regular enemy 3mins
         setTimeout(() => {
             const template = EnemyManager.getInstance().getTemplateById(enemy.id);
+            if (enemy.isUnique && this.uniqueEnemiesSpawned.has(template.id)) {
+                console.log(`Unique enemy ${template.name} already spawned, skipping respawn.`);
+                return;
+            }
             this.respawnEnemy(template);
         }, respawnTime);
     }

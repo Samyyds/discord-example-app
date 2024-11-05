@@ -1,14 +1,18 @@
 import { QuestStatus } from "../data/enums.js";
 import questData from '../json/quest.json' assert { type: 'json' };
+import { saveCharacterQuests } from "../db/mysql.js";
 
 class Quest {
-    constructor(questType) {
+    constructor(questType, saveCharacterQuests, userId, characterId) {
         this.id = questType.id;
         this.name = questType.name;
         this.description = questType.description;
         this.status = QuestStatus.NOT_STARTED;
         this.requirements = questType.requirements;
         this.rewards = questType.rewards;
+        this.saveCharacterQuests = saveCharacterQuests;
+        this.userId = userId;
+        this.characterId = characterId;
     }
 
     updateStatus(nextStatus) {
@@ -28,18 +32,31 @@ class Quest {
             default:
                 console.log("Unhandled status update:", nextStatus);
         }
+        this.saveCharacterQuests(this.userId, this.characterId)
+            .then(() => console.log('Quest status saved successfully'))
+            .catch(error => console.error('Failed to save quest status:', error));
+
     }
 
     start() {
         this.status = QuestStatus.IN_PROGRESS;
+        this.saveCharacterQuests(this.userId, this.characterId)
+            .then(() => console.log('Quest status saved successfully'))
+            .catch(error => console.error('Failed to save quest status:', error));
     }
 
     complete() {
         this.status = QuestStatus.COMPLETED;
+        this.saveCharacterQuests(this.userId, this.characterId)
+            .then(() => console.log('Quest status saved successfully'))
+            .catch(error => console.error('Failed to save quest status:', error));
     }
 
     turnIn() {
         this.status = QuestStatus.COMPLETED_AND_TURNED_IN;
+        this.saveCharacterQuests(this.userId, this.characterId)
+            .then(() => console.log('Quest status saved successfully'))
+            .catch(error => console.error('Failed to save quest status:', error));
     }
 
     getRewardText() {
@@ -78,9 +95,13 @@ class QuestManager {
         return questTemplate ? questTemplate.id : null;
     }
 
-    createQuestInstance(questId) {
+    // createQuestInstance(questId) {
+    //     const template = this.getQuestTemplateById(questId);
+    //     return template ? new Quest(template) : null;
+    // }
+    createQuestInstance(questId, userId, characterId) {
         const template = this.getQuestTemplateById(questId);
-        return template ? new Quest(template) : null;
+        return template ? new Quest(template, saveCharacterQuests, userId, characterId) : null;
     }
 
     getCharQuests(userId, characterId) {
@@ -113,11 +134,22 @@ class QuestManager {
         }
     }
 
+    // startQuest(userId, characterId, questId) {
+    //     let charQuests = this.getCharQuests(userId, characterId);
+    //     let quest = charQuests.find(q => q.id === questId);
+    //     if (!quest) {
+    //         quest = this.createQuestInstance(questId);
+    //         this.addCharQuest(userId, characterId, quest);
+    //         quest.start();
+    //     } else {
+    //         console.log(`Quest '${quest.name}' already started for character ${characterId} of user ${userId}.`);
+    //     }
+    // }
     startQuest(userId, characterId, questId) {
         let charQuests = this.getCharQuests(userId, characterId);
         let quest = charQuests.find(q => q.id === questId);
         if (!quest) {
-            quest = this.createQuestInstance(questId);
+            quest = this.createQuestInstance(questId, userId, characterId);
             this.addCharQuest(userId, characterId, quest);
             quest.start();
         } else {
@@ -136,7 +168,7 @@ class QuestManager {
 
     startNextQuest(userId, characterId, nextQuestId) {
         if (!this.hasQuest(userId, characterId, nextQuestId)) {
-            const nextQuest = this.createQuestInstance(nextQuestId);
+            const nextQuest = this.createQuestInstance(nextQuestId, userId, characterId);
             if (nextQuest) {
                 this.addCharQuest(userId, characterId, nextQuest);
                 nextQuest.start();
