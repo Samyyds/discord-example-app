@@ -80,13 +80,13 @@ class AbilityManager {
     }
 
     isAbilityAvailable(character, ability) {
-        if (ability.level_restriction && character.level < ability.level_restriction) {
+        if (ability.levelRestriction && character.level < ability.levelRestriction) {
             return false;
         }
-        if (ability.class_restriction && character.classId !== ability.class_restriction) {
+        if (ability.classRestriction && character.classId !== ability.classRestriction) {
             return false;
         }
-        if (ability.item_restriction && !character.isEquipped(ability.item_restriction)) {
+        if (ability.itemRestriction && !character.isEquipped(ability.itemRestriction)) {
             return false;
         }
         return true;
