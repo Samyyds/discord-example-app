@@ -71,9 +71,9 @@ async function saveCharacterData(userId, character, location) {
         const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status } = character;
         const battleBarJson = JSON.stringify(battleBar);
         const abilitiesJson = JSON.stringify(abilities);
-        const serializedStats = serializeObject(character.stats, ['hpMax', 'mpMax', 'hp', 'mp', 'spd', 'physicalATK', 'physicalDEF', 'magicATK', 'magicDEF', 'fireATK', 'fireDEF', 'lightATK', 'lightDEF', 'darkATK', 'darkDEF']);
-        const serializedSkills = serializeObject(character.skills, ['mining', 'smithing', 'crafting', 'fishing', 'gathering', 'farming', 'cooking', 'brewing']);
-        const serializedStatus = serializeObject(character.status, ['spdMult', 'phyDefBuffMag', 'phyDefBuffTimer', 'bleedMag', 'bleedTimer', 'poisonMag', 'poisonTimer']);
+        const serializedStats = JSON.stringify(character.stats); 
+        const serializedSkills = JSON.stringify(character.skills.skills); 
+        const serializedStatus = JSON.stringify(character.status); 
 
         const result = await connection.execute(sql, [
             userId.toString(), id, name, level, classId, raceId, personalityId, xp,
@@ -132,7 +132,6 @@ async function loadCharactersForUser(userId) {
     const connection = await MysqlDB.getConnection();
     const charManager = CharacterManager.getInstance();
     const moveManager = PlayerMovementManager.getInstance();
-    const questManager = QuestManager.getInstance();
 
     try {
         const [rows] = await connection.execute(`SELECT * FROM ${process.env.CHARACTERS_DB} WHERE user_id = ?`, [userId.toString()]);
