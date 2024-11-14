@@ -245,6 +245,35 @@ export async function sendWelcomeMessage(channel) {
     }
 }
 
+export function parseNpcDialogue(text) {
+    const segments = [];
+    let position = 0;
+    let inDialogue = false;
+
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === "\"" && (i === 0 || text[i - 1] !== '\\')) {
+            if (inDialogue) {
+                segments.push({ type: 'dialogue', text: text.substring(position, i) });
+                position = i + 1;
+            } else {
+                if (i > position) {
+                    segments.push({ type: 'narrative', text: text.substring(position, i) });
+                }
+                position = i + 1;
+            }
+            inDialogue = !inDialogue;
+        }
+    }
+    if (position < text.length) {
+        segments.push({ type: inDialogue ? 'dialogue' : 'narrative', text: text.substring(position) });
+    }
+    return segments;
+}
+
+export function parseEnemyDialogue(text) {
+    return text.split('\n').filter(line => line.trim() !== '');
+}
+
 
 
 

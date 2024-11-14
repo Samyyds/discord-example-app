@@ -2,7 +2,7 @@ import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'disc
 import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { sendErrorMessage } from "../util/util.js";
+import { sendErrorMessage, parseNpcDialogue } from "../util/util.js";
 
 const talkCommand = async (interaction) => {
     const npcName = interaction.options.getString('npc_name').trim().toLowerCase();
@@ -34,7 +34,7 @@ const talkCommand = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
     const dialogue = npc.talk(interaction.user.id, activeCharacter.id);  
-    const segments = parseDialogue(dialogue.text);
+    const segments = parseNpcDialogue(dialogue.text);
 
     for (const segment of segments) {
         const descriptionText = segment.type === 'dialogue' 
@@ -60,31 +60,6 @@ const talkCommand = async (interaction) => {
         });
         await interaction.followUp({ content: "What will you do?", components: components, ephemeral: true });
     }
-}
-
-function parseDialogue(text) {
-    const segments = [];
-    let position = 0;
-    let inDialogue = false;
-
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === "\"" && (i === 0 || text[i - 1] !== '\\')) {
-            if (inDialogue) {
-                segments.push({ type: 'dialogue', text: text.substring(position, i) });
-                position = i + 1;
-            } else {
-                if (i > position) {
-                    segments.push({ type: 'narrative', text: text.substring(position, i) });
-                }
-                position = i + 1;
-            }
-            inDialogue = !inDialogue;
-        }
-    }
-    if (position < text.length) {
-        segments.push({ type: inDialogue ? 'dialogue' : 'narrative', text: text.substring(position) });
-    }
-    return segments;
 }
 
 export const talkCommands = {

@@ -341,7 +341,7 @@ async function loadCharacterQuests(userId, characterId) {
 
         const questsData = JSON.parse(rows[0]?.quests || '[]');
         for (const questData of questsData) {
-            const quest = questManager.createQuestInstance(questData.questId, userId, characterId);
+            const quest = questManager.createQuestInstance(userId, characterId, questData.questId);
             if (quest) {
                 quest.status = questData.status;
                 questManager.addCharQuest(userId, characterId, quest);

@@ -5,7 +5,7 @@ import { RegionManager } from "../manager/region_manager.js";
 import { AbilityManager } from "../manager/ability_manager.js";
 import { QuestManager } from "../manager/quest_manager.js";
 import { ItemManager, Key } from "../manager/item_manager.js";
-import { sendErrorMessage } from "../util/util.js";
+import { sendErrorMessage, parseEnemyDialogue } from "../util/util.js";
 import { ItemType, QuestStatus } from "../data/enums.js";
 import { InventoryManager } from "../manager/inventory_manager.js";
 
@@ -38,6 +38,16 @@ const attackCommand = async (interaction) => {
         const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName);
         if (!enemy) {
             return await sendErrorMessage(interaction, `Enemy with name ${enemyName} not found in this room.`);
+        }
+        console.log(`encounter count: ${characterManager.getEnemyEncounterCount(activeChar.id, enemy.id)}`);
+
+        const isFirstEncounter = characterManager.isFirstEncounterWithBoss(activeChar.id, enemy.id);
+        characterManager.trackEnemy(activeChar.id, enemy.id);
+
+        const questManager = QuestManager.getInstance();
+        if (isFirstEncounter && enemy.encounterDialogue!== null) {
+            await displayEnemyDialogue(interaction, enemy.encounterDialogue, 0x00FF00);
+            questManager.startQuest(interaction.user.id, activeChar.id, enemy.questId);
         }
 
         const combatSession = new CombatSession();
@@ -95,10 +105,14 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
     combatLog.push(`${enemy.name}'s remaining HP: ${enemy.stats.hp}`);
 
     if (enemy.stats.hp <= 0) {
+        if (enemy.defeatDialogue) {
+            pushEnemyDialogueToCombatLog(enemy.defeatDialogue, combatLog);
+        }
+
         handleEnemyDefeat(interaction, player, enemy, combatLog, regionManager, regionId, locationId, roomId);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
-
+  
     let enemyAbility = getRandomEnemyAbility(enemy);
 
     if (!enemyAbility) {
@@ -113,9 +127,15 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
 
     if (player.stats.hp <= 0) {
         combatLog.push(`${player.name} is defeated!`);
-        combatLog.push('Your soul will be sent to the Moku\'ah Clinic.');
+        combatLog.push("Your soul will be sent to the Moku'ah Clinic.");
+        
+        if (enemy.defeatedDialogue) {
+            pushEnemyDialogueToCombatLog(enemy.defeatedDialogue, combatLog);
+        }
+        
         const characterManager = CharacterManager.getInstance();
         characterManager.reviveCharacter(interaction.user.id);
+
         return { combatLog, playerAlive: false, enemyAlive: true };
     }
 
@@ -443,6 +463,29 @@ export async function sendAbilityButtons(interaction, player, enemy) {
         .setColor(0x00FF00);
 
     await interaction.followUp({ embeds: [embed], components: actionRows, ephemeral: true });
+}
+
+async function displayEnemyDialogue(interaction, dialogueText, color = 0xFF0000) {
+    if (dialogueText) {
+        const segments = parseEnemyDialogue(dialogueText);
+        for (const segment of segments) {
+            const embed = new EmbedBuilder()
+                .setColor(color)
+                .setDescription(segment);
+            await interaction.followUp({ embeds: [embed], ephemeral: true });
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    }
+}
+
+function pushEnemyDialogueToCombatLog(dialogueText, combatLog) {
+    if (dialogueText) {
+        const segments = parseEnemyDialogue(dialogueText);
+        for (const segment of segments) {
+            combatLog.push(segment);
+        }
+    }
+    return combatLog;
 }
 
 const handleQuestCompletion = (userId, characterId, questName, nextQuestId, enemyName, combatLog) => {

@@ -361,6 +361,8 @@ class CharacterManager {
 
         this.characters = new Map();
         this.activeCharacters = new Map();
+        this.charEnemyEncounters = new Map(); // { characterId -> { enemyId -> encounterCount } }
+
         CharacterManager.instance = this;
     }
 
@@ -406,6 +408,24 @@ class CharacterManager {
             const playerMoveManager = PlayerMovementManager.getInstance();
             playerMoveManager.setLocation(userId, character.id, reviveRegionId, reviveLocationId, reviveRoomId);
         }
+    }
+
+    trackEnemy(characterId, enemyId) {
+        if (!this.charEnemyEncounters.has(characterId)) {
+            this.charEnemyEncounters.set(characterId, new Map());
+        }
+        const encounterCounts = this.charEnemyEncounters.get(characterId);
+        encounterCounts.set(enemyId, (encounterCounts.get(enemyId) || 0) + 1);
+    }
+
+    getEnemyEncounterCount(characterId, enemyId) {
+        const encounterCounts = this.charEnemyEncounters.get(characterId);
+        return encounterCounts ? encounterCounts.get(enemyId) || 0 : 0;
+    }
+
+    isFirstEncounterWithBoss(characterId, enemyId) {
+        const currentCount = this.getEnemyEncounterCount(characterId, enemyId);
+        return currentCount === 0;
     }
 }
 
