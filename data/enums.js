@@ -9,10 +9,11 @@ export const MokuahLocations = {
     'VILLAGE CENTER': 0,
     'BLACKSMITH': 1,
     'FARM': 2,
-    'CLINIC': 3,
-    'DOCK': 4,
-    'JUNGLE': 5,
-    'VOLCANO': 6
+    'TAVERN': 3,
+    'CLINIC': 4,
+    'DOCK': 5,
+    'JUNGLE': 6,
+    'VOLCANO': 7
 };
 
 export const NyraLocations = {
@@ -20,14 +21,16 @@ export const NyraLocations = {
     'CRAFTHOUSE': 1,
     'TAVERN': 2,
     'BEACH': 3,
-    'LABYRINTH': 4
+    'LABYRINTH': 4,
+    'HOSPITAL': 5
 };
 
 export const IsfjallLocations = {
     'CITY_CENTER': 0,
     'BLACKSMITH': 1,
     'DOCK': 2,
-    'TUNDRA': 3
+    'TUNDRA': 3,
+    'HOSPITAL': 4
 };
 
 export const TheTrenchLocations = {

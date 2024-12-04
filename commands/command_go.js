@@ -13,8 +13,12 @@ const goCommand = async (interaction) => {
             return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
-        const regionName = interaction.options.getString('region').trim();
-        const locationName = interaction.options.getString('location').trim();
+        const regionName = interaction.options.getString('region')?.trim();
+        const locationName = interaction.options.getString('location')?.trim();
+
+        if (!regionName || !locationName) {
+            return await sendErrorMessage(interaction, 'You must select both a region and a location.');
+        }
 
         const tarRegionId = convertNameToRegionId(regionName);
         const tarLocationId = convertNameToLocationId(locationName, tarRegionId);
@@ -46,7 +50,7 @@ const goCommand = async (interaction) => {
                 const moveErrorEmbed = new EmbedBuilder()
                     .setColor(0xFF0000)
                     .setTitle('Movement Restricted')
-                    .setDescription(canMoveResult.message || "Movement not allowed."); 
+                    .setDescription(canMoveResult.message || "Movement not allowed.");
                 await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
                 return;
             }
@@ -56,7 +60,7 @@ const goCommand = async (interaction) => {
         const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
-        let embed = new EmbedBuilder()
+        const embed = new EmbedBuilder()
             .setTitle('Adventure Awaits!')
             .setDescription(`You have arrived at ${locationName} in ${regionName}.`)
             .addFields(

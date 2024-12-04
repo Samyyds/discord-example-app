@@ -11,6 +11,7 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+import { Regions, MokuahLocations, NyraLocations, IsfjallLocations, TheTrenchLocations } from './data/enums.js';
 import { TutorialManager } from "./manager/tutorial_manager.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
@@ -46,6 +47,16 @@ import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
+import { handleGoCommand } from './handler/go_handler.js';
+import { sendWelcomeMessage } from "./util/util.js";
+
+
+const regionToLocations = {
+  MOKUAH: MokuahLocations,
+  NYRA: NyraLocations,
+  ISFJALL: IsfjallLocations,
+  THE_TRENCH: TheTrenchLocations,
+};
 
 // Create and configure the Discord client
 const client = new Client({
@@ -86,15 +97,15 @@ client.once('ready', async () => {
     if (hasData) {
       const userIds = await getAllUserIds(connection);
       const loadPromises = userIds.map(async (userId) => {
-          try {
-              await loadCharactersForUser(userId);
-              await loadInventoryForUser(userId);
-          } catch (error) {
-              console.error(`Failed to load data for user ${userId}:`, error);
-          }
+        try {
+          await loadCharactersForUser(userId);
+          await loadInventoryForUser(userId);
+        } catch (error) {
+          console.error(`Failed to load data for user ${userId}:`, error);
+        }
       });
       await Promise.allSettled(loadPromises);
-  }
+    }
 
     console.log('Bot is ready!');
 
@@ -147,6 +158,29 @@ client.on(Events.InteractionCreate, async interaction => {
   console.log('Interaction created:', interaction);
 
   client.emit('commandExecuted', interaction);
+
+  if (interaction.isAutocomplete()) {
+    if (interaction.commandName === 'go') {
+      const focusedOption = interaction.options.getFocused(true);
+      if (focusedOption.name === 'location') {
+        const selectedRegion = interaction.options.getString('region');
+
+        if (!selectedRegion || !regionToLocations[selectedRegion]) {
+          await interaction.respond([]);
+          return;
+        }
+
+        const locations = regionToLocations[selectedRegion];
+        const locationChoices = Object.keys(locations).map(location => ({
+          name: location,
+          value: location,
+        }));
+
+        await interaction.respond(locationChoices);
+      }
+    }
+    return;
+  }
 
   if (interaction.isStringSelectMenu()) {
     const userId = interaction.user.id;
@@ -203,8 +237,8 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       switch (commandName) {
         case "go":
-          commandHandler = goCommands[commandName];
-          break;
+          await handleGoCommand(interaction);
+          return;
         case "move":
           commandHandler = moveCommands[commandName];
           break;

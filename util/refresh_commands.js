@@ -64,17 +64,25 @@ const takeCommand = new SlashCommandBuilder()
       .setRequired(true)
   );
 
-const goCommand = new SlashCommandBuilder()
+  const goCommand = new SlashCommandBuilder()
   .setName('go')
   .setDescription('Where do you want to go?')
   .addStringOption(option =>
     option.setName('region')
-      .setDescription('Enter the name of the region you want to go to.')
-      .setRequired(true))
+      .setDescription('Select a region to travel to.')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Mokuah', value: 'MOKUAH' },
+        { name: 'Nyra', value: 'NYRA' },
+        { name: 'Isfjall', value: 'ISFJALL' },
+        { name: 'The Trench', value: 'THE_TRENCH' }
+      ))
   .addStringOption(option =>
     option.setName('location')
-      .setDescription('Enter the name of the location you want to go to.')
-      .setRequired(true));
+      .setDescription('Select a location within the region.')
+      .setRequired(true)
+      .setAutocomplete(true) 
+  );
 
 const moveCommand = new SlashCommandBuilder()
   .setName('move')
