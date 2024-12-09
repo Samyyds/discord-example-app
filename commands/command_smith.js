@@ -65,6 +65,7 @@ const smithCommand = async (interaction) => {
                 break;
             case ItemType.EQUIPMENT:
                 craftedItem = new Equipment(itemManager.getEquipmentDataById(Number(result.item)));
+                console.log(`craftedItem.rarity: ${craftedItem.rarity}`);
                 break;
             case ItemType.CONSUMABLE:
                 break;

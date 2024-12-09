@@ -61,11 +61,10 @@ const goCommand = async (interaction) => {
         saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
         const embed = new EmbedBuilder()
-            .setTitle('Adventure Awaits!')
-            .setDescription(`You have arrived at ${locationName} in ${regionName}.`)
+            .setDescription(`Adventure awaits, you have arrived at`) 
             .addFields(
-                { name: 'Region', value: regionName, inline: true },
-                { name: 'Location', value: locationName, inline: true }
+                { name: 'Region', value: `**${regionName}**`, inline: true }, 
+                { name: 'Location', value: `**${locationName}**`, inline: true } 
             );
 
         await interaction.reply({ embeds: [embed], ephemeral: true });

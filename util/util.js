@@ -49,7 +49,7 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
     let description = '';
     switch (infoType) {
         case 'basic':
-            description += `Name : ${activeChar.name}\n`;
+            description += `Name : **${activeChar.name}**\n`;
             description += `Class : ${Object.keys(Class).find(key => Class[key] === activeChar.classId).toLowerCase()}\n`;
             description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase()}\n`;
             description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase()}\n`;
@@ -72,17 +72,32 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
                 description += "No items equipped.\n";
             }
             break;
-
         case 'stats':
+            let statsBlock = '```ansi\n';
             Object.keys(activeChar.stats).forEach(stat => {
                 if (typeof activeChar.stats[stat] !== 'object' && activeChar.stats[stat] !== undefined) {
-                    description += `${stat}: ${activeChar.stats[stat]}\n`;
+                    if (stat.toLowerCase() === 'hp') {
+                        const hpValue = activeChar.stats[stat];
+                        const hpMax = activeChar.stats['hpMax'];
+                        const hpPercentage = (hpValue / hpMax) * 100;
+
+                        if (hpPercentage > 50) {
+                            statsBlock += `${stat}: \u001b[32m${hpValue}\u001b[0m\n`;
+                        } else {
+                            statsBlock += `${stat}: \u001b[31m${hpValue}\u001b[0m\n`;
+                        }
+                    } else if (stat.toLowerCase() === 'mp') {
+                        statsBlock += `${stat}: \u001b[34m${activeChar.stats[stat]}\u001b[0m\n`;
+                    } else {
+                        statsBlock += `${stat}: ${activeChar.stats[stat]}\n`;
+                    }
                 } else {
-                    description += `${stat}: Data not available\n`;
+                    statsBlock += `${stat}: Data not available\n`;
                 }
             });
+            statsBlock += '```';
+            description += statsBlock;
             break;
-
         case 'skills':
             Object.keys(activeChar.skills.skills).forEach(skill => {
                 const skillData = activeChar.skills.skills[skill];
@@ -91,19 +106,21 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
                 const xpForNextSkillLevel = xpRequiredForLevel(skillLevel + 1);
                 const currentSkillXp = skillData.xp - xpForSkillLevel;
 
-                description += `${skill.charAt(0).toUpperCase() + skill.slice(1)}: \nLevel: ${skillLevel}\nXP: ${createProgressBar(currentSkillXp, xpForNextSkillLevel - xpForSkillLevel)}\n`;
+                const skillName = `**${skill.charAt(0).toUpperCase() + skill.slice(1)}**`;
+
+                description += `${skillName}:\n`;
+                description += `Level: ${skillLevel}\n`;
+                description += `XP: ${createProgressBar(currentSkillXp, xpForNextSkillLevel - xpForSkillLevel)}\n\n`;
             });
             break;
-
-        case 'abilities':
-            description += "\n**Abilities:**\n";
+        case 'abilities': {
             activeChar.abilities.forEach(ability => {
-                let abilityName = ability.name.charAt(0).toUpperCase() + ability.name.slice(1).toLowerCase();
-                let abilityDescription = ability.description;
-                description += `${abilityName}:\n*${abilityDescription}*\n\n`;
+                let abilityName = `__${ability.name.charAt(0).toUpperCase() + ability.name.slice(1).toLowerCase()}__`;
+                let abilityDescription = `*${ability.description}*`;
+                description += `${abilityName}:\n${abilityDescription}\n\n`;
             });
             break;
-
+        }
         default:
             description = 'No information available.';
     }

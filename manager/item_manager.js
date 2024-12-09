@@ -27,6 +27,7 @@ class Equipment extends Item {
         this.magicATK = equipmentType.magicATK;
         this.magicDEF = equipmentType.magicDEF;
         this.isSub = equipmentType.isSub;
+        this.rarity = equipmentType.rarity;
     }
 }
 
