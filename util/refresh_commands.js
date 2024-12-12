@@ -64,7 +64,7 @@ const takeCommand = new SlashCommandBuilder()
       .setRequired(true)
   );
 
-  const goCommand = new SlashCommandBuilder()
+const goCommand = new SlashCommandBuilder()
   .setName('go')
   .setDescription('Where do you want to go?')
   .addStringOption(option =>
@@ -81,7 +81,7 @@ const takeCommand = new SlashCommandBuilder()
     option.setName('location')
       .setDescription('Select a location within the region.')
       .setRequired(true)
-      .setAutocomplete(true) 
+      .setAutocomplete(true)
   );
 
 const moveCommand = new SlashCommandBuilder()
@@ -95,6 +95,16 @@ const moveCommand = new SlashCommandBuilder()
         { name: 'up', value: 1 },
         { name: 'down', value: 0 }
       ));
+
+
+const travelCommand = new SlashCommandBuilder()
+  .setName('travel')
+  .setDescription('Travel between regions.')
+  .addStringOption(option =>
+    option.setName('region')
+      .setDescription('Select a direction to move.')
+      .setRequired(true)
+  );
 
 const mapCommand = new SlashCommandBuilder()
   .setName('map')
@@ -251,7 +261,8 @@ const guildCommands =
     recipeCommand.toJSON(),
     questCommand.toJSON(),
     startCommand.toJSON(),
-    helpCommand.toJSON()
+    helpCommand.toJSON(),
+    travelCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

@@ -38,6 +38,7 @@ import { brewCommands } from "./commands/command_brew.js";
 import { questCommands } from "./commands/command_quest.js";
 import { startCommands } from "./commands/command_start.js";
 import { helpCommands } from "./commands/command_help.js";
+import { travelCommands } from "./commands/command_travel.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
@@ -304,6 +305,9 @@ client.on(Events.InteractionCreate, async interaction => {
           break;
         case "help":
           commandHandler = helpCommands[commandName];
+          break;
+        case "travel":
+          commandHandler = travelCommands[commandName];
           break;
         default:
           const subCommandName = interaction.options.getSubcommand();

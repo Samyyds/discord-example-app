@@ -8,6 +8,7 @@ class Region {
         this.name = name;
         this.description = description;
         this.locations = new Map();
+        this.paths = new Map();
     }
 
     addLocation(location) {

@@ -84,7 +84,7 @@ const smithCommand = async (interaction) => {
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
-        console.error('Error in gatherCommand:', error);
+        console.error('Error in smithCommand:', error);
         await sendErrorMessage(interaction, `An error occurred: ${error.message}`);
     }
 }

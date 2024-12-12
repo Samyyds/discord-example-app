@@ -81,6 +81,17 @@ class RegionManager {
         }
         return false;
     }
+
+    getPathsFromRegion(regionId, locationId) {
+        const region = this.getRegionById(regionId);
+    
+        if (!region || !region.paths) {
+            console.error(`Region with ID ${regionId} does not exist or has no paths defined.`);
+            return [];
+        }
+    
+        return region.paths;
+    }    
 }
 
 export { RegionManager };
