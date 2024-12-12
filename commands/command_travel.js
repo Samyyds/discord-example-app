@@ -1,4 +1,4 @@
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, StringSelectMenuBuilder, ActionRowBuilder } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
@@ -14,80 +14,73 @@ const travelCommand = async (interaction) => {
             return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
-        const regionName = interaction.options.getString('region')?.trim();
-
-        if (!regionName) {
-            return await sendErrorMessage(interaction, 'You must select both a region and a location.');
-        }
-
-        const tarRegionId = convertNameToRegionId(regionName);
-
-        if (tarRegionId === undefined) {
-            return await sendErrorMessage(interaction, `The specified region '${regionName}' does not exist.`);
-        }
-
         const playerMoveManager = PlayerMovementManager.getInstance();
         const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         const regionManager = RegionManager.getInstance();
 
-        const paths = regionManager.getPathsFromRegion(
-            curLocation.regionId,
-            curLocation.locationId
-        );
+        const currentRegionId = curLocation.regionId;
+        const allRegions = Array.from(regionManager.regions.values());
 
-        const pathKeys = Array.from(paths.keys());
-
-        const validStartLocation = pathKeys.find(
-            key => key === String(curLocation.locationId)
-        );
-        
-        if (!validStartLocation) {
-            return await sendErrorMessage(interaction, 'Your current location does not allow travel to another region.');
+        const targetRegions = allRegions.filter(region => region.id !== currentRegionId);
+        if (targetRegions.length === 0) {
+            return await sendErrorMessage(interaction, 'No available regions to travel to!');
         }
 
-        const targetPath = paths.get(validStartLocation)?.find(
-            path => path.regionId === tarRegionId
-        );
-
-        if (!targetPath) {
-            return await sendErrorMessage(interaction, `You cannot travel to the region '${regionName}' from your current location.`);
+        const targetRegionId = interaction.options.getString('region');
+        if (!targetRegionId) {
+            return await sendErrorMessage(interaction, 'No target region selected!');
         }
 
-        const { locationId: targetLocationId } = targetPath;
+        const targetRegion = targetRegions.find(region => region.id === Number(targetRegionId));
+        if (!targetRegion) {
+            return await sendErrorMessage(interaction, `Region "${targetRegionId}" is not available for travel.`);
+        }
+
+        const paths = regionManager.getPathsFromRegion(curLocation.regionId, curLocation.locationId);
+
+        if (!(paths instanceof Map)) {
+            return await sendErrorMessage(interaction, 'Path data is not available. Please try again later.');
+        }
+
+        const pathArray = Array.from(paths.values()).flat();
+        const validPath = pathArray.find(path => path.regionId === targetRegion.id);
+
+        if (!validPath) {
+            return await sendErrorMessage(
+                interaction,
+                `You cannot travel to **${targetRegion.name}** from your current location. There is no path connecting these regions.`
+            );
+        }
+
+        const targetLocationId = validPath.locationId;
 
         const canMoveResult = playerMoveManager.canMoveRegion(
             interaction.user.id,
             activeCharacter.id,
-            tarRegionId,
+            targetRegion.id,
             targetLocationId
         );
 
         if (!canMoveResult.canMove) {
-            const moveErrorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle('Movement Restricted')
-                .setDescription(canMoveResult.message || "Movement not allowed.");
-            await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-            return;
+            return await sendErrorMessage(interaction, canMoveResult.message || 'You cannot travel to the selected region.');
         }
 
-        playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, targetLocationId);
-        
+        playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, targetRegion.id, targetLocationId);
+
         const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
-        const targetLocation = regionManager.getLocationById(tarRegionId, targetLocationId);
+        const targetLocation = regionManager.getLocationById(targetRegion.id, targetLocationId);
 
         const embed = new EmbedBuilder()
             .setTitle('Travel Complete')
-            .setDescription(`You have traveled to **${regionName}**, arriving at **${targetLocation.name}**.`)
+            .setDescription(`You have traveled to **${targetRegion.name}**, arriving at **${targetLocation.name}**.`)
             .setColor(0x00FF00);
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
-
     } catch (error) {
-        console.error('Error in goCommand:', error);
-        await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
+        console.error('Error in travelCommand:', error);
+        return await sendErrorMessage(interaction, `An error occurred: ${error.message}`);
     }
 };
 

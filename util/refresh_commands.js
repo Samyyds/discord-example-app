@@ -101,8 +101,10 @@ const travelCommand = new SlashCommandBuilder()
   .setName('travel')
   .setDescription('Travel between regions.')
   .addStringOption(option =>
-    option.setName('region')
-      .setDescription('Select a direction to move.')
+    option
+      .setName('region')
+      .setDescription('Select the region to travel to.')
+      .setAutocomplete(true)
       .setRequired(true)
   );
 

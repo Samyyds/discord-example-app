@@ -49,6 +49,8 @@ import { handleStartGameInteraction } from "./handler/startGame_handler.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
 import { handleGoCommand } from './handler/go_handler.js';
+import { handleTravelInteraction } from './handler/travel_handler.js';
+import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
 import { sendWelcomeMessage } from "./util/util.js";
 
 
@@ -58,7 +60,6 @@ const regionToLocations = {
   ISFJALL: IsfjallLocations,
   THE_TRENCH: TheTrenchLocations,
 };
-
 // Create and configure the Discord client
 const client = new Client({
   intents:
@@ -180,6 +181,10 @@ client.on(Events.InteractionCreate, async interaction => {
         await interaction.respond(locationChoices);
       }
     }
+
+    if (interaction.commandName === 'travel') {
+      await handleTravelAutocomplete(interaction);
+    }
     return;
   }
 
@@ -207,6 +212,11 @@ client.on(Events.InteractionCreate, async interaction => {
         await interaction.reply({ embeds: [embed], ephemeral: true });
       }
     }
+
+    if (interaction.customId === 'travel_region_select') {
+      await handleTravelInteraction(interaction);
+    }
+    
     return;
   }
 
@@ -307,8 +317,8 @@ client.on(Events.InteractionCreate, async interaction => {
           commandHandler = helpCommands[commandName];
           break;
         case "travel":
-          commandHandler = travelCommands[commandName];
-          break;
+          await travelCommands[commandName](interaction);
+          return;
         default:
           const subCommandName = interaction.options.getSubcommand();
           commandHandler = compoundCommand[commandName]?.[subCommandName];
