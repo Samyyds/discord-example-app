@@ -66,23 +66,7 @@ const takeCommand = new SlashCommandBuilder()
 
 const goCommand = new SlashCommandBuilder()
   .setName('go')
-  .setDescription('Where do you want to go?')
-  .addStringOption(option =>
-    option.setName('region')
-      .setDescription('Select a region to travel to.')
-      .setRequired(true)
-      .addChoices(
-        { name: 'Mokuah', value: 'MOKUAH' },
-        { name: 'Nyra', value: 'NYRA' },
-        { name: 'Isfjall', value: 'ISFJALL' },
-        { name: 'The Trench', value: 'THE_TRENCH' }
-      ))
-  .addStringOption(option =>
-    option.setName('location')
-      .setDescription('Select a location within the region.')
-      .setRequired(true)
-      .setAutocomplete(true)
-  );
+  .setDescription('Move your character within the current region or explore the dungeon.');
 
 const moveCommand = new SlashCommandBuilder()
   .setName('move')

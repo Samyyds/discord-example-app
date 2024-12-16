@@ -16,6 +16,8 @@ import { TutorialManager } from "./manager/tutorial_manager.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
+import { PlayerMovementManager } from "./manager/player_movement_manager.js";
+import { RegionManager } from "./manager/region_manager.js";
 import { goCommands } from './commands/command_go.js';
 import { moveCommands } from './commands/command_move.js';
 import { mapCommands } from './commands/command_map.js';
@@ -46,9 +48,9 @@ import { handleRecipeInteraction } from "./handler/recipe_handler.js";
 import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
+import { handleGoInteraction } from "./handler/go_handler.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
-import { handleGoCommand } from './handler/go_handler.js';
 import { handleTravelInteraction } from './handler/travel_handler.js';
 import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
 import { sendWelcomeMessage } from "./util/util.js";
@@ -162,31 +164,16 @@ client.on(Events.InteractionCreate, async interaction => {
   client.emit('commandExecuted', interaction);
 
   if (interaction.isAutocomplete()) {
-    if (interaction.commandName === 'go') {
-      const focusedOption = interaction.options.getFocused(true);
-      if (focusedOption.name === 'location') {
-        const selectedRegion = interaction.options.getString('region');
-
-        if (!selectedRegion || !regionToLocations[selectedRegion]) {
-          await interaction.respond([]);
-          return;
-        }
-
-        const locations = regionToLocations[selectedRegion];
-        const locationChoices = Object.keys(locations).map(location => ({
-          name: location,
-          value: location,
-        }));
-
-        await interaction.respond(locationChoices);
-      }
-    }
+    const focusedOption = interaction.options.getFocused(true);
 
     if (interaction.commandName === 'travel') {
-      await handleTravelAutocomplete(interaction);
+      if (focusedOption.name === 'region') {
+        await handleTravelAutocomplete(interaction);
+      }
     }
     return;
   }
+
 
   if (interaction.isStringSelectMenu()) {
     const userId = interaction.user.id;
@@ -213,10 +200,14 @@ client.on(Events.InteractionCreate, async interaction => {
       }
     }
 
-    if (interaction.customId === 'travel_region_select') {
+    if (customId === 'travel_region_select') {
       await handleTravelInteraction(interaction);
     }
-    
+
+    if (customId === 'dungeon-or-location' || customId === 'dungeon-exploration' || customId === 'location-selection') {
+      await handleGoInteraction(interaction);
+  }  
+
     return;
   }
 
@@ -248,7 +239,7 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       switch (commandName) {
         case "go":
-          await handleGoCommand(interaction);
+          await goCommands[commandName](interaction);
           return;
         case "move":
           commandHandler = moveCommands[commandName];

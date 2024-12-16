@@ -1,7 +1,7 @@
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, StringSelectMenuBuilder, ActionRowBuilder } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
+import { RegionManager } from '../manager/region_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
-import { convertNameToRegionId, convertNameToLocationId } from "../util/util.js";
 import { saveCharacterLocation } from "../db/mysql.js";
 import { sendErrorMessage } from "../util/util.js";
 
@@ -9,72 +9,88 @@ const goCommand = async (interaction) => {
     try {
         const characterManager = CharacterManager.getInstance();
         const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
+
         if (!activeCharacter) {
-            return await sendErrorMessage(interaction, 'You do not have an available character!');
-        }
-
-        const regionName = interaction.options.getString('region')?.trim();
-        const locationName = interaction.options.getString('location')?.trim();
-
-        if (!regionName || !locationName) {
-            return await sendErrorMessage(interaction, 'You must select both a region and a location.');
-        }
-
-        const tarRegionId = convertNameToRegionId(regionName);
-        const tarLocationId = convertNameToLocationId(locationName, tarRegionId);
-
-        if (tarRegionId === undefined) {
-            return await sendErrorMessage(interaction, `The specified region '${regionName}' does not exist.`);
-        }
-        if (tarLocationId === undefined) {
-            return await sendErrorMessage(interaction, `The specified location '${locationName}' does not exist in the region '${regionName}'.`);
+            return await sendErrorMessage(interaction, 'You do not have an active character!');
         }
 
         const playerMoveManager = PlayerMovementManager.getInstance();
         const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+        const regionManager = RegionManager.getInstance();
+        const currentRegion = regionManager.getRegionById(curLocation.regionId);
+        const currentLocation = currentRegion.getLocation(curLocation.locationId);
 
-        if (curLocation.regionId === tarRegionId) {
-            const moveResult = playerMoveManager.canMoveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId, interaction);
-            if (!moveResult.canMove) {
-                const moveErrorEmbed = new EmbedBuilder()
-                    .setColor(0xFF0000)
-                    .setTitle('Movement Restricted')
-                    .setDescription(moveResult.message);
-                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-                return;
-            }
-            playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
-        } else {
-            const canMoveResult = playerMoveManager.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
-            if (!canMoveResult.canMove) {
-                const moveErrorEmbed = new EmbedBuilder()
-                    .setColor(0xFF0000)
-                    .setTitle('Movement Restricted')
-                    .setDescription(canMoveResult.message || "Movement not allowed.");
-                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-                return;
-            }
-            playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
+        if (!currentRegion) {
+            return await sendErrorMessage(interaction, 'Current region data is not available!');
         }
 
-        const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
-        saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
+        const currentRoomId = curLocation.roomId;
 
-        const embed = new EmbedBuilder()
-            .setDescription(`Adventure awaits, you have arrived at`) 
-            .addFields(
-                { name: 'Region', value: `**${regionName}**`, inline: true }, 
-                { name: 'Location', value: `**${locationName}**`, inline: true } 
+        if (currentLocation.roomCount <= 1) {
+
+            const locationsData = currentRegion.locations;
+            const locationsArray = Array.isArray(locationsData)
+                ? locationsData
+                : Array.from(locationsData.values());
+
+            const otherLocations = locationsArray.filter(loc => loc.id !== currentLocation.id);
+            const options = otherLocations.map(loc => ({
+                label: loc.name,
+                value: loc.id
+            }));
+
+            const embed = new EmbedBuilder()
+                .setDescription('Choose a location to go to.');
+
+            const actionRow = new ActionRowBuilder().addComponents(
+                new StringSelectMenuBuilder()
+                    .setCustomId('location-selection')
+                    .setPlaceholder('Select a location')
+                    .addOptions(options)
             );
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+            return await interaction.reply({ embeds: [embed], components: [actionRow], ephemeral: true });
+        }
 
+        if (currentLocation.roomCount > 1 && currentRoomId === 0) {
+            const embed = new EmbedBuilder()
+            .setDescription('You are at the first floor of a dungeon.\nYou can explore deeper into the dungeon or travel to another location.');
+        
+            const actionRow = new ActionRowBuilder().addComponents(
+                new StringSelectMenuBuilder()
+                    .setCustomId('dungeon-or-location')
+                    .setPlaceholder('Choose an option')
+                    .addOptions([
+                        { label: 'Explore Dungeon', value: 'dungeon' },
+                        { label: 'Go to Locations', value: 'locations' }
+                    ])
+            );
+
+            return await interaction.reply({ embeds: [embed], components: [actionRow], ephemeral: true });
+        }
+
+        if (currentLocation.roomCount > 1 && currentRoomId > 0) {
+            const embed = new EmbedBuilder()
+                .setDescription('Choose to go deeper into the dungeon or retreat.');
+
+            const actionRow = new ActionRowBuilder().addComponents(
+                new StringSelectMenuBuilder()
+                    .setCustomId('dungeon-exploration')
+                    .setPlaceholder('Select an action')
+                    .addOptions([
+                        { label: 'Go Deeper', value: 'in' },
+                        { label: 'Retreat', value: 'out' }
+                    ])
+            );
+
+            return await interaction.reply({ embeds: [embed], components: [actionRow], ephemeral: true });
+        }
     } catch (error) {
         console.error('Error in goCommand:', error);
-        await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
+        return await sendErrorMessage(interaction, `An error occurred: ${error.message}`);
     }
 };
 
 export const goCommands = {
-    go: goCommand
+    go: goCommand,
 };

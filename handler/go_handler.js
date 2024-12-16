@@ -1,95 +1,140 @@
 import { Regions, MokuahLocations, NyraLocations, IsfjallLocations, TheTrenchLocations } from '../data/enums.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
+import { RegionManager } from "../manager/region_manager.js";
 import { saveCharacterLocation } from '../db/mysql.js';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
 import { sendErrorMessage } from '../util/util.js';
 
-const regionToLocations = {
-    MOKUAH: MokuahLocations,
-    NYRA: NyraLocations,
-    ISFJALL: IsfjallLocations,
-    THE_TRENCH: TheTrenchLocations,
-};
+export const handleGoInteraction = async (interaction) => {
+    const playerMoveManager = PlayerMovementManager.getInstance();
+    const characterManager = CharacterManager.getInstance();
+    const regionManager = RegionManager.getInstance();
 
-export async function handleGoCommand(interaction) {
-    try {
-        const characterManager = CharacterManager.getInstance();
-        const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
+    const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
+    if (!activeCharacter) return await sendErrorMessage(interaction, "No active character found!");
 
-        if (!activeCharacter) {
-            return await sendErrorMessage(interaction, 'You do not have an available character!');
-        }
+    const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
 
-        const selectedRegion = interaction.options.getString('region');
-        const selectedLocation = interaction.options.getString('location');
+    switch (interaction.customId) {
+        case 'location-selection': {
+            const targetLocationId = interaction.values[0];
+            const [regionPart, locationPart] = targetLocationId.split('-');
+            const cleanLocationId = parseInt(locationPart, 10);
+        
+            playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, curLocation.regionId, cleanLocationId);
+        
+            const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+        
+            const targetLocation = regionManager.getLocationById(curLocation.regionId, cleanLocationId);
+        
+            saveCharacterLocation(interaction.user.id, activeCharacter.id, {
+                regionId: newLocation.regionId,
+                locationId: cleanLocationId,
+                roomId: newLocation.roomId,
+            });
+        
+            const embed = new EmbedBuilder()
+                .setDescription(`You have arrived at **${targetLocation.name}**.`)
+                .setColor(0x00FF00);
+        
+            return await interaction.update({ embeds: [embed], components: [] });
+        }  
 
-        if (!selectedRegion || !selectedLocation) {
-            return await sendErrorMessage(interaction, 'Both region and location must be specified!');
-        }
+        case 'dungeon-or-location': {
+            const choice = interaction.values[0];
 
-        const tarRegionId = Regions[selectedRegion];
-        const locations = regionToLocations[selectedRegion];
-        const tarLocationId = locations?.[selectedLocation];
+            if (choice === 'dungeon') {
+                const embed = new EmbedBuilder()
+                    .setDescription('Choose to go deeper or retreat.');
 
-        if (tarRegionId === undefined || tarLocationId === undefined) {
-            return await sendErrorMessage(
-                interaction,
-                `The specified region '${selectedRegion}' or location '${selectedLocation}' does not exist.`
-            );
-        }
+                const actionRow = new ActionRowBuilder().addComponents(
+                    new StringSelectMenuBuilder()
+                        .setCustomId('dungeon-exploration')
+                        .setPlaceholder('Select an action')
+                        .addOptions([
+                            { label: 'Go Deeper', value: 'in' },
+                            { label: 'Retreat', value: 'out' }
+                        ])
+                );
 
-        const playerMoveManager = PlayerMovementManager.getInstance();
-        const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+                return await interaction.update({ embeds: [embed], components: [actionRow], ephemeral: true });
+            } else {
+                const currentRegion = regionManager.getRegionById(curLocation.regionId);
+                const locationsArray = Array.isArray(currentRegion.locations)
+                    ? currentRegion.locations
+                    : Array.from(currentRegion.locations.values()); 
 
-        if (curLocation.regionId === tarRegionId) {
-            const moveResult = playerMoveManager.canMoveLocation(
-                interaction.user.id,
-                activeCharacter.id,
-                tarRegionId,
-                tarLocationId,
-                interaction
-            );
-            if (!moveResult.canMove) {
-                const moveErrorEmbed = new EmbedBuilder()
-                    .setColor(0xff0000)
-                    .setTitle('Movement Restricted')
-                    .setDescription(moveResult.message);
-                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-                return;
+                const otherLocations = locationsArray.filter(loc => loc.id !== curLocation.locationId);
+
+                const options = otherLocations.map(loc => ({
+                    label: loc.name,
+                    value: loc.id.toString(),
+                }));
+
+                const embed = new EmbedBuilder()
+                    .setDescription('Choose a location to travel to.');
+
+                const actionRow = new ActionRowBuilder().addComponents(
+                    new StringSelectMenuBuilder()
+                        .setCustomId('location-selection')
+                        .setPlaceholder('Select a location')
+                        .addOptions(options)
+                );
+
+                return await interaction.update({ embeds: [embed], components: [actionRow], ephemeral: true });
             }
-            playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
-        } else {
-            const canMoveResult = playerMoveManager.canMoveRegion(
-                interaction.user.id,
-                activeCharacter.id,
-                tarRegionId,
-                tarLocationId
-            );
-            if (!canMoveResult.canMove) {
-                const moveErrorEmbed = new EmbedBuilder()
-                    .setColor(0xff0000)
-                    .setTitle('Movement Restricted')
-                    .setDescription(canMoveResult.message || 'Movement not allowed.');
-                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-                return;
-            }
-            playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
         }
 
-        const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
-        saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
-
-        const embed = new EmbedBuilder()
-            .setDescription(`Adventure awaits, you have arrived at\n\n`)
-            .addFields(
-                { name: "Region", value: `**${selectedRegion}**`, inline: true },
-                { name: "Location", value: `**${selectedLocation}**`, inline: true }
-            );
-
-        await interaction.reply({ embeds: [embed], ephemeral: true });
-    } catch (error) {
-        console.error('Error in /go command:', error);
-        await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
+        case 'dungeon-exploration': {
+            const direction = interaction.values[0];
+        
+            const playerMoveManager = PlayerMovementManager.getInstance();
+            const regionManager = RegionManager.getInstance();
+        
+            const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+            const currentRegion = regionManager.getRegionById(curLocation.regionId);
+            const currentLocation = currentRegion.getLocation(curLocation.locationId);
+            const currentRoom = currentLocation.getRoom(curLocation.roomId);
+        
+            const isValidRoom = currentLocation.roomCount > 1;
+        
+            if (!isValidRoom) {
+                return await sendErrorMessage(interaction, 'There are no additional rooms to explore in your current location!');
+            }
+        
+            let moved = false;
+        
+            if (direction === 'in') {
+                const canMoveDown = playerMoveManager.canMoveDown(interaction.user.id, activeCharacter.id);
+                if (!canMoveDown) {
+                    return await sendErrorMessage(interaction, 'You\'ve reached the last room. There\'s no way to move deeper!');
+                }
+                playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false); // Move down
+                moved = true;
+            } else if (direction === 'out') {
+                const canMoveUp = playerMoveManager.canMoveUp(interaction.user.id, activeCharacter.id);
+                if (!canMoveUp) {
+                    return await sendErrorMessage(interaction, 'You are already in the first room. There\'s no way to retreat further!');
+                }
+                playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true); // Move up
+                moved = true;
+            }
+        
+            if (moved) {
+                const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+                saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
+        
+                const embed = new EmbedBuilder()
+                    .setDescription(`You have ${direction === 'in' ? 'moved deeper' : 'retreated'} in the dungeon.`)
+                    .setColor(0x00FF00);
+        
+                console.log(`[DEBUG] New Location after move:`, newLocation);
+        
+                return await interaction.update({ embeds: [embed], components: [], ephemeral: true });
+            }
+            break;
+        }
+        
     }
-}
+};
