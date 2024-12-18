@@ -209,6 +209,10 @@
       "paths": {
         "2": [
           {
+            "regionId": 0,
+            "locationId": 5
+          },
+          {
             "regionId": 1,
             "locationId": 3
           },

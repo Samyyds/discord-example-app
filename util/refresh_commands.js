@@ -33,9 +33,9 @@ const characterCommand = new SlashCommandBuilder()
           .addChoices(
             { name: 'Ahonu', value: 'AHONU' },
             { name: 'Manumanu', value: 'MANUMANU' },
-            { name: 'Kui', value: 'KUI' },
-            { name: 'Minotaur', value: 'MINOTAUR' },
-            { name: 'Ulfur', value: 'ULFUR' }
+            { name: 'Kui', value: 'KUI' }
+            // { name: 'Minotaur', value: 'MINOTAUR' },
+            // { name: 'Ulfur', value: 'ULFUR' }
           )))
   .addSubcommand(subcommand =>
     subcommand
@@ -66,7 +66,13 @@ const takeCommand = new SlashCommandBuilder()
 
 const goCommand = new SlashCommandBuilder()
   .setName('go')
-  .setDescription('Move your character within the current region or explore the dungeon.');
+  .setDescription('Move within the current region or explore the dungeon.')
+  .addStringOption(option =>
+    option.setName('destination')
+      .setDescription('Select where you want to go')
+      .setAutocomplete(true)
+      .setRequired(true)
+  );
 
 const moveCommand = new SlashCommandBuilder()
   .setName('move')

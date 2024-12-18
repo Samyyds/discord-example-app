@@ -48,10 +48,9 @@ import { handleRecipeInteraction } from "./handler/recipe_handler.js";
 import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
-import { handleGoInteraction } from "./handler/go_handler.js";
+import { handleGoAutocomplete } from "./handler/go_autoComplete.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
-import { handleTravelInteraction } from './handler/travel_handler.js';
 import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
 import { sendWelcomeMessage } from "./util/util.js";
 
@@ -166,6 +165,12 @@ client.on(Events.InteractionCreate, async interaction => {
   if (interaction.isAutocomplete()) {
     const focusedOption = interaction.options.getFocused(true);
 
+    if (interaction.commandName === 'go') {
+      if (focusedOption.name === 'destination') {
+          await handleGoAutocomplete(interaction);
+      }
+  }
+
     if (interaction.commandName === 'travel') {
       if (focusedOption.name === 'region') {
         await handleTravelAutocomplete(interaction);
@@ -200,13 +205,13 @@ client.on(Events.InteractionCreate, async interaction => {
       }
     }
 
-    if (customId === 'travel_region_select') {
-      await handleTravelInteraction(interaction);
-    }
+    // if (customId === 'travel_region_select') {
+    //   await handleTravelInteraction(interaction);
+    // }
 
-    if (customId === 'dungeon-or-location' || customId === 'dungeon-exploration' || customId === 'location-selection') {
-      await handleGoInteraction(interaction);
-  }  
+    // if(customId === 'destination-selection'){
+    //   await handleGoInteraction(interaction);
+    // }
 
     return;
   }
