@@ -73,31 +73,47 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
             }
             break;
         case 'stats':
-            let statsBlock = '```ansi\n';
-            Object.keys(activeChar.stats).forEach(stat => {
-                if (typeof activeChar.stats[stat] !== 'object' && activeChar.stats[stat] !== undefined) {
-                    if (stat.toLowerCase() === 'hp') {
-                        const hpValue = activeChar.stats[stat];
-                        const hpMax = activeChar.stats['hpMax'];
-                        const hpPercentage = (hpValue / hpMax) * 100;
+            // let statsBlock = '```ansi\n';
+            // Object.keys(activeChar.stats).forEach(stat => {
+            //     if (typeof activeChar.stats[stat] !== 'object' && activeChar.stats[stat] !== undefined) {
+            //         if (stat.toLowerCase() === 'hp') {
+            //             const hpValue = activeChar.stats[stat];
+            //             const hpMax = activeChar.stats['hpMax'];
+            //             const hpPercentage = (hpValue / hpMax) * 100;
 
-                        if (hpPercentage > 50) {
-                            statsBlock += `${stat}: \u001b[32m${hpValue}\u001b[0m\n`;
-                        } else {
-                            statsBlock += `${stat}: \u001b[31m${hpValue}\u001b[0m\n`;
-                        }
-                    } else if (stat.toLowerCase() === 'mp') {
-                        statsBlock += `${stat}: \u001b[34m${activeChar.stats[stat]}\u001b[0m\n`;
-                    } else {
-                        statsBlock += `${stat}: ${activeChar.stats[stat]}\n`;
-                    }
-                } else {
-                    statsBlock += `${stat}: Data not available\n`;
-                }
-            });
-            statsBlock += '```';
-            description += statsBlock;
+            //             if (hpPercentage > 50) {
+            //                 statsBlock += `${stat}: \u001b[32m${hpValue}\u001b[0m\n`;
+            //             } else {
+            //                 statsBlock += `${stat}: \u001b[31m${hpValue}\u001b[0m\n`;
+            //             }
+            //         } else if (stat.toLowerCase() === 'mp') {
+            //             statsBlock += `${stat}: \u001b[34m${activeChar.stats[stat]}\u001b[0m\n`;
+            //         } else {
+            //             statsBlock += `${stat}: ${activeChar.stats[stat]}\n`;
+            //         }
+            //     } else {
+            //         statsBlock += `${stat}: Data not available\n`;
+            //     }
+            // });
+            // statsBlock += '```';
+            // description += statsBlock;
+            // break;
+            const hp = activeChar.stats.hp || 0;
+            const hpMax = activeChar.stats.hpMax || 0;
+            const mp = activeChar.stats.mp || 0;
+            const mpMax = activeChar.stats.mpMax || 0;
+            const spd = activeChar.stats.spd || 0;
+            const physicalATK = activeChar.stats.physicalATK || 0;
+            const physicalDEF = activeChar.stats.physicalDEF || 0;
+            const magicATK = activeChar.stats.magicATK || 0;
+            const magicDEF = activeChar.stats.magicDEF || 0;
+
+            description += `HP: ${hp}/${hpMax} | MP: ${mp}/${mpMax} | SPD: ${spd}\n`;
+            description += `PHY: ${physicalATK} ATK | ${physicalDEF} DEF\n`;
+            description += `MAG: ${magicATK} ATK | ${magicDEF} DEF\n`;
+
             break;
+
         case 'skills':
             Object.keys(activeChar.skills.skills).forEach(skill => {
                 const skillData = activeChar.skills.skills[skill];
