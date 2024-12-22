@@ -4,6 +4,13 @@ import { RecipeManager } from '../manager/recipe_manager.js';
 import { recipesParser } from '../util/util.js';
 import { sendErrorMessage } from "../util/util.js";
 
+const skillButtons = [
+    { label: "Smithing", customId: "skill_smithing", style: ButtonStyle.Primary },
+    { label: "Brewing", customId: "skill_brewing", style: ButtonStyle.Primary },
+    { label: "Cooking", customId: "skill_cooking", style: ButtonStyle.Primary },
+    { label: "Gathering", customId: "skill_gathering", style: ButtonStyle.Primary }
+];
+
 const recipeCommand = async (interaction) => {
     try {
         const characterManager = CharacterManager.getInstance();
@@ -19,36 +26,24 @@ const recipeCommand = async (interaction) => {
             const testRecipe = recipeManager.getRecipeById(index);
             recipeManager.addCharRecipe(interaction.user.id, activeCharacter.id, testRecipe);
         }
-        //***
 
-        const charRecipes = recipeManager.getCharRecipes(interaction.user.id, activeCharacter.id);
-        const charRecipeObjects = charRecipes.map(recipeId => recipeManager.getRecipeById(recipeId));
-
-        const currentPage = 1;
-        const itemsPerPage = 10;
-        const totalPages = Math.ceil(charRecipeObjects.length / itemsPerPage);
-        const paginatedRecipes = charRecipeObjects.slice(0, itemsPerPage);
-
-        let embed = new EmbedBuilder();
-        embed = recipesParser(paginatedRecipes, embed);
-        embed.setFooter({ text: `Page ${currentPage} of ${totalPages}` });
-
-        const components = new ActionRowBuilder()
-            .addComponents(
+        const components = new ActionRowBuilder();
+        skillButtons.forEach(button => {
+            components.addComponents(
                 new ButtonBuilder()
-                    .setCustomId(`prev_${currentPage}`)
-                    .setLabel('Previous')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId(`next_${currentPage}`)
-                    .setLabel('Next')
-                    .setStyle(ButtonStyle.Primary)
+                    .setCustomId(button.customId)
+                    .setLabel(button.label)
+                    .setStyle(button.style)
             );
+        });
+
+        const embed = new EmbedBuilder()
+            .setTitle("Recipe Categories")
+            .setDescription("Select a category to view recipes.");
 
         await interaction.reply({ embeds: [embed], components: [components], ephemeral: true });
-
     } catch (error) {
-        console.error('Error in recipeCommand:', error);
+        console.error("Error in recipeCommand:", error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
 };

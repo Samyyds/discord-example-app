@@ -167,9 +167,9 @@ client.on(Events.InteractionCreate, async interaction => {
 
     if (interaction.commandName === 'go') {
       if (focusedOption.name === 'destination') {
-          await handleGoAutocomplete(interaction);
+        await handleGoAutocomplete(interaction);
       }
-  }
+    }
 
     if (interaction.commandName === 'travel') {
       if (focusedOption.name === 'region') {
@@ -337,7 +337,7 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleCharacterInteraction(interaction);
     } else if (interaction.customId.startsWith('attack_')) {
       await handleAttackInteraction(interaction);
-    } else if (interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_')) {
+    } else if (interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_') || interaction.customId.startsWith('skill_')) {
       await handleRecipeInteraction(interaction);
     } else if (interaction.customId.startsWith('talk_')) {
       await handleTalkInteraction(interaction);
