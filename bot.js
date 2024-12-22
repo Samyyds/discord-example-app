@@ -49,6 +49,7 @@ import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
 import { handleGoAutocomplete } from "./handler/go_autoComplete.js";
+import { handleLookAutocomplete } from "./handler/look_autoComplete.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
 import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
@@ -176,9 +177,14 @@ client.on(Events.InteractionCreate, async interaction => {
         await handleTravelAutocomplete(interaction);
       }
     }
+
+    if (interaction.commandName === 'look') {
+      if (focusedOption.name === 'object') {
+        await handleLookAutocomplete(interaction);
+      }
+    }
     return;
   }
-
 
   if (interaction.isStringSelectMenu()) {
     const userId = interaction.user.id;

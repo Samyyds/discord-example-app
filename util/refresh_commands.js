@@ -46,13 +46,22 @@ const characterCommand = new SlashCommandBuilder()
       .setName('switch')
       .setDescription('Switch your active character.'));
 
+// const lookCommand = new SlashCommandBuilder()
+//   .setName('look')
+//   .setDescription('Look around or inspect an object/person.')
+//   .addStringOption(option =>
+//     option.setName('object')
+//       .setDescription('The object/person you want to inspect.')
+//       .setRequired(false)//optional
+//   );
 const lookCommand = new SlashCommandBuilder()
   .setName('look')
   .setDescription('Look around or inspect an object/person.')
   .addStringOption(option =>
     option.setName('object')
       .setDescription('The object/person you want to inspect.')
-      .setRequired(false)//optional
+      .setRequired(false)
+      .setAutocomplete(true)
   );
 
 const takeCommand = new SlashCommandBuilder()

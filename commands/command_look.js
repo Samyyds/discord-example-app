@@ -44,12 +44,10 @@ const lookCommand = async (interaction) => {
                 description += `${item.description}\n`;
             } else if (npc) {
                 description += `${npc.description}\n`;
-            }
-            else {
+            } else {
                 description = `No '${objectName}' found.`;
             }
         } else {
-
             if (roomId === 0) {
                 const location = regionManager.getLocationById(regionId, locationId);
                 description += location.description ? `${location.description}\n\n` : '';
@@ -93,13 +91,11 @@ const lookCommand = async (interaction) => {
             embed.setDescription('There is nothing to see here.');
         }
         await interaction.reply({ embeds: [embed], ephemeral: true });
-    }
-
-    catch (error) {
+    } catch (error) {
         console.error('Error in lookCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
-}
+};
 
 export const lookCommands = {
     look: lookCommand
