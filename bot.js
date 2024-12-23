@@ -54,6 +54,7 @@ import { handleAttackAutocomplete } from "./handler/attack_autoComplete.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
 import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
+import { handleTalkAutocomplete } from "./handler/talk_autoComplete.js";
 import { sendWelcomeMessage } from "./util/util.js";
 
 
@@ -190,6 +191,13 @@ client.on(Events.InteractionCreate, async interaction => {
         await handleAttackAutocomplete(interaction);
       }
     }
+
+    if (interaction.commandName === 'talk') {
+      if (focusedOption.name === 'npc') {
+        await handleTalkAutocomplete(interaction);
+      }
+    }
+
     return;
   }
 

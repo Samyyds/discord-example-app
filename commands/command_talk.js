@@ -5,7 +5,7 @@ import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { sendErrorMessage, parseNpcDialogue } from "../util/util.js";
 
 const talkCommand = async (interaction) => {
-    const npcName = interaction.options.getString('npc_name').trim().toLowerCase();
+    const npcName = interaction.options.getString('npc').trim().toLowerCase();
 
     const characterManager = CharacterManager.getInstance();
     const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);

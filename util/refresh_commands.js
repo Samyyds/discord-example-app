@@ -181,11 +181,13 @@ const useCommand = new SlashCommandBuilder()
 
 const talkCommand = new SlashCommandBuilder()
   .setName('talk')
-  .setDescription('Talk to a NPC.')
+  .setDescription('Talk to an NPC.')
   .addStringOption(option =>
-    option.setName('npc_name')
+    option.setName('npc')
       .setDescription('The name of the NPC you want to talk to.')
-      .setRequired(true));
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
 
 const unequipCommand = new SlashCommandBuilder()
   .setName('unequip')
@@ -202,14 +204,6 @@ const equipCommand = new SlashCommandBuilder()
     option.setName('object')
       .setDescription('The name of the equipment you want to equip.')
       .setRequired(true));
-
-// const attackCommand = new SlashCommandBuilder()
-//   .setName('attack')
-//   .setDescription('Launch an attack! Prove your strength against the adversaries.')
-//   .addStringOption(option =>
-//     option.setName('enemy-name')
-//       .setDescription('The name of the enemy you want to have a fight with')
-//       .setRequired(true));
 
 const attackCommand = new SlashCommandBuilder()
   .setName('attack')
