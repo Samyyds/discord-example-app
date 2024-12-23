@@ -50,6 +50,7 @@ import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
 import { handleGoAutocomplete } from "./handler/go_autoComplete.js";
 import { handleLookAutocomplete } from "./handler/look_autoComplete.js";
+import { handleAttackAutocomplete } from "./handler/attack_autoComplete.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
 import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
@@ -181,6 +182,12 @@ client.on(Events.InteractionCreate, async interaction => {
     if (interaction.commandName === 'look') {
       if (focusedOption.name === 'object') {
         await handleLookAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'attack') {
+      if (focusedOption.name === 'enemy') {
+        await handleAttackAutocomplete(interaction);
       }
     }
     return;

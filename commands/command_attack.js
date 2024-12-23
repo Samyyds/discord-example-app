@@ -19,7 +19,7 @@ const attackCommand = async (interaction) => {
             return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
-        const enemyNameInput = interaction.options.getString('enemy-name');
+        const enemyNameInput = interaction.options.getString('enemy');
         if (!enemyNameInput) {
             return await sendErrorMessage(interaction, 'Enemy name is required.');
         }

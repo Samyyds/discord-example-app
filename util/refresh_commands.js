@@ -46,14 +46,6 @@ const characterCommand = new SlashCommandBuilder()
       .setName('switch')
       .setDescription('Switch your active character.'));
 
-// const lookCommand = new SlashCommandBuilder()
-//   .setName('look')
-//   .setDescription('Look around or inspect an object/person.')
-//   .addStringOption(option =>
-//     option.setName('object')
-//       .setDescription('The object/person you want to inspect.')
-//       .setRequired(false)//optional
-//   );
 const lookCommand = new SlashCommandBuilder()
   .setName('look')
   .setDescription('Look around or inspect an object/person.')
@@ -211,13 +203,23 @@ const equipCommand = new SlashCommandBuilder()
       .setDescription('The name of the equipment you want to equip.')
       .setRequired(true));
 
+// const attackCommand = new SlashCommandBuilder()
+//   .setName('attack')
+//   .setDescription('Launch an attack! Prove your strength against the adversaries.')
+//   .addStringOption(option =>
+//     option.setName('enemy-name')
+//       .setDescription('The name of the enemy you want to have a fight with')
+//       .setRequired(true));
+
 const attackCommand = new SlashCommandBuilder()
   .setName('attack')
-  .setDescription('Launch an attack! Prove your strength against the adversaries.')
+  .setDescription('Attack an enemy in the current room.')
   .addStringOption(option =>
-    option.setName('enemy-name')
-      .setDescription('The name of the enemy you want to have a fight with')
-      .setRequired(true));
+    option.setName('enemy')
+      .setDescription('The name of the enemy you want to attack.')
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
 
 const recipeCommand = new SlashCommandBuilder()
   .setName('recipe')
