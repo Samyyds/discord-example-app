@@ -6,6 +6,7 @@ import { ItemManager } from "../manager/item_manager.js";
 import { RecipeManager } from "../manager/recipe_manager.js";
 import { NPCManager } from "../manager/npc_manager.js";
 import { QuestManager } from "../manager/quest_manager.js";
+import { ShopManager } from "../manager/shop_manager.js";
 
 function initializeGame() {
     //load region
@@ -19,6 +20,10 @@ function initializeGame() {
     //load NPCs
     const npcManager = NPCManager.getInstance();
     npcManager.loadFromJson();
+
+    //load shops
+    const shopManager = ShopManager.getInstance();
+    shopManager.loadFromJson();
 
     //load quests
     const questManager = QuestManager.getInstance();
@@ -47,11 +52,12 @@ function initializeGame() {
             location.initializeRooms();
 
             const enemyTypes = enemyManager.getEnemiesForLocation(region.id, location.locationId);
-
-            for (let roomId = 0; roomId <= location.roomCount; roomId++) {
+            
+            for (let roomId = 0; roomId < location.roomCount; roomId++) {
                 const room = location.getRoom(roomId);
                 room.spawnEnemies(enemyTypes);
                 room.generateNPCs(region.id, location.locationId, roomId);
+                room.generateShops(region.id, location.locationId, roomId);
                 const enemies = regionManager.getRoomByLocation(region.id, location.locationId, roomId).getEnemies();
                 console.log(`room id: ${roomId}, Enemies in room: ${enemies.map(enemy => enemy.name).join(', ')}`);
             }
