@@ -60,6 +60,8 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
 
             description += `XP: ${createProgressBar(currentXp, xpForNextLevel - xpForCurrentLevel)}\n`;
 
+            description += `Gold : ${activeChar.gold}\n`;
+
             description += "\n**Equipped Items:**\n";
             let hasEquippedItems = false;
             for (const slot in activeChar.equippedItems) {

@@ -65,20 +65,20 @@ async function saveCharacterData(userId, character, location) {
     const { regionId, locationId, roomId } = location;
     try {
         const sql = `
-            INSERT INTO ${process.env.CHARACTERS_DB} (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, region_id, location_id, room_id)
+            INSERT INTO ${process.env.CHARACTERS_DB} (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, gold, region_id, location_id, room_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         `;
-        const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status } = character;
+        const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status, gold } = character;
         const battleBarJson = JSON.stringify(battleBar);
         const abilitiesJson = JSON.stringify(abilities);
-        const serializedStats = JSON.stringify(character.stats); 
-        const serializedSkills = JSON.stringify(character.skills.skills); 
-        const serializedStatus = JSON.stringify(character.status); 
+        const serializedStats = JSON.stringify(character.stats);
+        const serializedSkills = JSON.stringify(character.skills.skills);
+        const serializedStatus = JSON.stringify(character.status);
 
         const result = await connection.execute(sql, [
             userId.toString(), id, name, level, classId, raceId, personalityId, xp,
             battleBarJson, lootQuality, abilitiesJson,
-            serializedStats, serializedSkills, serializedStatus,
+            serializedStats, serializedSkills, serializedStatus, gold,
             regionId, locationId, roomId
         ]);
         console.log('Character saved:', result);
@@ -147,7 +147,8 @@ async function loadCharactersForUser(userId) {
                 row.xp,
                 JSON.parse(row.battle_bar),
                 row.loot_quality,
-                JSON.parse(row.abilities)
+                JSON.parse(row.abilities),
+                row.gold
             );
             const statsData = JSON.parse(row.stats);
             const skillsData = JSON.parse(row.skills);

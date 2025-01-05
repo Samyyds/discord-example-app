@@ -3,33 +3,50 @@ import { Slots } from "../data/enums.js";
 import { Class, Race, Personality, ConsumableEffect } from '../data/enums.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 
-const CLASS_BASE_STATS = {
-    'NO_CLASS': { hp: 100, mp: 100, spd: 100, physicalATK: 100, physicalDEF: 100, magicATK: 100, magicDEF: 100 },
-    'WARRIOR': { hp: 300, mp: 100, spd: 100, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
-    'ROGUE': { hp: 100, mp: 100, spd: 200, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
-    'MAGE': { hp: 100, mp: 200, spd: 100, physicalATK: 60, physicalDEF: 60, magicATK: 150, magicDEF: 120 },
+export const CLASS_BASE_STATS = {
+    'NO_CLASS': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'WARRIOR': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'ROGUE': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'MAGE': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
 };
 
-const CLASS_BASE_STAT_MODIFIERS = {
+export const CLASS_BASE_STAT_MODIFIERS = {
     'NO_CLASS': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
-    'WARRIOR': { hp: 1.3, mp: 1, spd: 0.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
+    'WARRIOR': { hp: 1.16, mp: 1, spd: 0.8, physicalATK: 1.2, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.8 },
+    'MAGE': { hp: 0.8, mp: 1.5, spd: 1.1, physicalATK: 0.7, physicalDEF: 0.6, magicATK: 2, magicDEF: 1.2 },
     'ROGUE': { hp: 1.3, mp: 1, spd: 1.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
-    'MAGE': { hp: 1.3, mp: 2, spd: 1, physicalATK: 0.6, physicalDEF: 0.6, magicATK: 1.5, magicDEF: 1.2 },
 };
 
-const RACE_BASE_STAT_MODIFIERS = {
+export const RACE_BASE_STAT_MODIFIERS = {
     'AHONU': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
-    'MANUMANU': { hp: 0.9, mp: 1.3, spd: 0.9, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 1.1 },
-    'KUI': { hp: 1.3, mp: 0.9, spd: 0.7, physicalATK: 0.9, physicalDEF: 1.2, magicATK: 1, magicDEF: 1 },
-    'MINOTAUR': { hp: 1.2, mp: 0.9, spd: 1, physicalATK: 1.1, physicalDEF: 1.1, magicATK: 0.6, magicDEF: 1 },
-    'ULFUR': { hp: 1.1, mp: 0.8, spd: 1.1, physicalATK: 1.2, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 0.8 },
+    'MANUMANU': { hp: 0.9, mp: 1.3, spd: 0.9, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 1 },
+    'KUI': { hp: 1.2, mp: 0.9, spd: 0.7, physicalATK: 0.9, physicalDEF: 1.2, magicATK: 1, magicDEF: 1.1 },
+    'MINOTAUR': { hp: 1.15, mp: 0.9, spd: 1, physicalATK: 1.1, physicalDEF: 1.1, magicATK: 0.6, magicDEF: 1 },
+    'ULFUR': { hp: 1, mp: 0.8, spd: 1.1, physicalATK: 1.2, physicalDEF: 1, magicATK: 1.1, magicDEF: 0.8 },
 };
 
-const PERSONALITY_BASE_STAT_MODIFIERS = {
-    'NO_PERSONALITY': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
-    'BRAWNY': { hp: 1.1, mp: 0.9, spd: 0.9, physicalATK: 1.2, physicalDEF: 1.1, magicATK: 0.9, magicDEF: 0.9 },
-    'WISE': { hp: 0.9, mp: 1.1, spd: 1, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
-
+export const PERSONALITY_BASE_STAT_MODIFIERS = {
+    'NO_PERSONALITY': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'STOIC': { spd: 0.9, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'GREEDY': { spd: 1, physicalATK: 0.9, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'NERDY': { spd: 1, physicalATK: 1, physicalDEF: 0.9, magicATK: 1, magicDEF: 1 },
+    'PASSIONATE': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 0.9, magicDEF: 1 },
+    'HORNY': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 0.9 },
+    'BRAWNY': { spd: 1.1, physicalATK: 1.1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'CHEEKY': { spd: 1, physicalATK: 1.1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'FEISTY': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'CUNNING': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'THOUGHTFUL': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1.1 },
+    'THICC': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'PEACEFUL': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'ADAPTABLE': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'BOUGIE': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'STOUT': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'HILARIOUS': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'VINdictive': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'ERRATIC': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'AMBITIOUS': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'MYSTERIOUS': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1.1 },
 };
 
 const attributeMapping = {
@@ -66,7 +83,7 @@ class StatContainer {
         this.lightATK = Math.max(0, Math.round(lightATK));
         this.lightDEF = Math.max(0, Math.round(lightDEF));
         this.darkATK = Math.max(0, Math.round(darkATK));
-        this.darkDEF = Math.max(0, Math.round(darkDEF));
+        this.darkATK = Math.max(0, Math.round(darkDEF));
         this.status = status;
     }
 
@@ -154,7 +171,7 @@ class Character {
      * @param {number} lootQuality - The loot quality value.
      * @param {number[]} abilities - The available abilities that character has.
      */
-    constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities) {
+    constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, gold) {
         this.id = id;
         this.name = name;
         this.level = level;
@@ -165,16 +182,12 @@ class Character {
         this.battleBar = battleBar;
         this.lootQuality = lootQuality;
         this.abilities = abilities;
+        this.gold = gold;
 
         if (classId !== null && raceId !== null && personalityId !== null) {
             const className = Object.keys(Class).find(key => Class[key] === classId);
-            const raceName = Object.keys(Race).find(key => Race[key] === raceId);
-            const personalityName = Object.keys(Personality).find(key => Personality[key] === personalityId);
-
-            const classStats = CLASS_BASE_STATS[className];
-            const classModifiers = CLASS_BASE_STAT_MODIFIERS[className];
-            const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
-            const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
+            // const raceName = Object.keys(Race).find(key => Race[key] === raceId);
+            // const personalityName = Object.keys(Personality).find(key => Personality[key] === personalityId);
 
             this.skills = new SkillContainer();
             this.status = new StatusContainer(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -190,21 +203,20 @@ class Character {
             this.debuffs = [];
 
             this.stats = new StatContainer(
-                Math.round(100 + Math.max(0, (this.level - 1)) * 3.2 * classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-                Math.round(100 + Math.max(0, (this.level - 1)) * 0.75 * classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-                Math.round(100 + Math.max(0, (this.level - 1)) * 3.2 * classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-                Math.round(100 + Math.max(0, (this.level - 1)) * 0.75 * classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-                Math.round(10 * classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),                
-                0, // TODO fireATK
-                0, // TODO fireDEF
-                0, // lTODO ightATK
-                0, // TODO lightDEF
-                0, // TODO darkATK
-                0, // TODO darkDEF
+                CLASS_BASE_STATS[className].hp,
+                CLASS_BASE_STATS[className].mp,
+                CLASS_BASE_STATS[className].hp,
+                CLASS_BASE_STATS[className].mp,
+                CLASS_BASE_STATS[className].spd,
+                CLASS_BASE_STATS[className].physicalATK,
+                CLASS_BASE_STATS[className].physicalDEF,
+                CLASS_BASE_STATS[className].magicATK,
+                0, // fireATK
+                0, // fireDEF
+                0, // lightATK
+                0, // lightDEF
+                0, // darkATK
+                0, // darkDEF
                 this.status
             );
         } else {
