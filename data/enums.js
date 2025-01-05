@@ -61,9 +61,31 @@ export const Race = {
 };
 
 export const Personality = {
-    "NO_PERSONALITY": 0,
-    "BRAWNY": 1,
-    "WISE": 2
+    "STOIC": 0,
+    "GREEDY": 1,
+    "NERDY": 2,
+    "PASSIONATE": 3,
+    "HORNY": 4,
+    "BRAWNY": 5,
+    "CHEEKY": 6,
+    "FEISTY": 7,
+    "HOTHEAD": 8,
+    "AGGRESSIVE": 9,
+    "THICC": 10,
+    "PEACEFUL": 11,
+    "ADAPTABLE": 12,
+    "BOUGIE": 13,
+    "STOUT": 14,
+    "CUNNING": 15,
+    "HILARIOUS": 16,
+    "VINDICTIVE": 17,
+    "ERRATIC": 18,
+    "AMBITIOUS": 19,
+    "THOUGHTFUL": 20,
+    "SERENE": 21,
+    "COCKY": 22,
+    "TRADITIONAL": 23,
+    "MYSTERIOUS": 24
 };
 
 export const EffectType = {
