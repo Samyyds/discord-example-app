@@ -2,6 +2,7 @@ import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'disc
 import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
+import { TutorialManager } from "../manager/tutorial_manager.js";
 import { sendErrorMessage, parseNpcDialogue } from "../util/util.js";
 
 const talkCommand = async (interaction) => {
@@ -13,7 +14,10 @@ const talkCommand = async (interaction) => {
         return await sendErrorMessage(interaction, 'You do not have an available character!');
     }
 
-    if (npcName === 'feleti') {
+    const tutorialManager = TutorialManager.getInstance();
+    const tutorial = tutorialManager.getTutorialForUser(interaction.user.id);
+
+    if (npcName === 'feleti' && tutorial) {
         await interaction.deferReply({ ephemeral: true });
         await interaction.deleteReply();
         return;
@@ -33,19 +37,19 @@ const talkCommand = async (interaction) => {
 
     await interaction.deferReply({ ephemeral: true });
 
-    const dialogue = npc.talk(interaction.user.id, activeCharacter.id);  
+    const dialogue = npc.talk(interaction.user.id, activeCharacter.id);
     const segments = parseNpcDialogue(dialogue.text);
 
     for (const segment of segments) {
-        const descriptionText = segment.type === 'dialogue' 
-            ? `**${npc.name} says:** ${segment.text}` 
+        const descriptionText = segment.type === 'dialogue'
+            ? `**${npc.name} says:** ${segment.text}`
             : segment.text;
-    
+
         const embed = new EmbedBuilder()
             .setColor(0x00FF00)
             .setDescription(descriptionText);
         await interaction.followUp({ embeds: [embed], ephemeral: true });
-        await new Promise(resolve => setTimeout(resolve, 2000)); 
+        await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
     if (dialogue.options && Object.keys(dialogue.options).length > 0) {
