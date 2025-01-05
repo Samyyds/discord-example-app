@@ -1,0 +1,80 @@
+[
+    {
+        "id": 1,
+        "name": "Moku'ah Shop",
+        "location": {
+            "regionId": 0,
+            "locationId": 3,
+            "roomId": 0
+        },
+        "items": [
+            {
+                "itemType": 2,
+                "name": "Health Potion",
+                "itemId": 13,
+                "price": 1,
+                "stock": -1
+            },
+            {
+                "itemType": 2,
+                "name": "Mana Potion",
+                "itemId": 14,
+                "price": 1,
+                "stock": -1
+            },
+            {
+                "itemType": 2,
+                "name": "Kelp Broth",
+                "itemId": 1,
+                "price": 1,
+                "stock": -1
+            },
+            {
+                "itemType": 2,
+                "name": "Boiled Crab w/ Diced Kelp",
+                "itemId": 2,
+                "price": 1,
+                "stock": -1
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Nyra Shop",
+        "location": {
+            "regionId": 1,
+            "locationId": 0,
+            "roomId": 0
+        },
+        "items": [
+            {
+                "itemType": 2,
+                "name": "Potent Health Potion",
+                "itemId": 15,
+                "price": 1,
+                "stock": -1
+            },
+            {
+                "itemType": 2,
+                "name": "Potent Mana Potion",
+                "itemId": 16,
+                "price": 1,
+                "stock": -1
+            },
+            {
+                "itemType": 2,
+                "name": "Geyser-Roasted Eel",
+                "itemId": 3,
+                "price": 1,
+                "stock": -1
+            },
+            {
+                "itemType": 2,
+                "name": "Sourfin Sushi",
+                "itemId": 4,
+                "price": 1,
+                "stock": -1
+            }
+        ]
+    }
+]

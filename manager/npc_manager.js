@@ -12,32 +12,42 @@ class NPC {
         this.location = npcTemplates.location;//{}
         this.quest = npcTemplates.quest;// []
         this.dialogueTree = npcTemplates.dialogueTree;//{}
+        this.shopId = npcTemplates.shopId || null;
+        this.type = npcTemplates.type || 'quest';
     }
 
     talk(userId, characterId) {
-        const questManager = QuestManager.getInstance();
-        const quests = questManager.getCharQuests(userId, characterId);
-        const questId = this.quest[0];
-        const quest = quests.find(quest => quest.id === questId);
+        if (this.type === 'quest') {
+            const questManager = QuestManager.getInstance();
+            const quests = questManager.getCharQuests(userId, characterId);
+            const questId = this.quest[0];
+            const quest = quests.find(quest => quest.id === questId);
 
-        let statusKey = 'quest_not_started';
-        if (quest) {
-            switch (quest.status) {
-                case QuestStatus.IN_PROGRESS:
-                    statusKey = 'quest_in_progress';
-                    break;
-                case QuestStatus.COMPLETED:
-                    statusKey = 'quest_completed';
-                    break;
-                case QuestStatus.COMPLETED_AND_TURNED_IN:
-                    statusKey = 'quest_turned_in';
-                    break;
+            let statusKey = 'quest_not_started';
+            if (quest) {
+                switch (quest.status) {
+                    case QuestStatus.IN_PROGRESS:
+                        statusKey = 'quest_in_progress';
+                        break;
+                    case QuestStatus.COMPLETED:
+                        statusKey = 'quest_completed';
+                        break;
+                    case QuestStatus.COMPLETED_AND_TURNED_IN:
+                        statusKey = 'quest_turned_in';
+                        break;
+                }
             }
+
+            const dialogueOptions = this.dialogueTree[questId][statusKey]['start'];
+
+            return dialogueOptions;
+        } else if (this.type === 'shop') {
+            const shopDialogue = this.dialogueTree['1']['start'];
+            return {
+                text: shopDialogue.text,
+                options: shopDialogue.options || {}
+            };
         }
-
-        const dialogueOptions = this.dialogueTree[questId][statusKey]['start'];
-
-        return dialogueOptions;
     }
 
     makeChoice(userId, characterId, questId, option) {

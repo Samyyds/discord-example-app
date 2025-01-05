@@ -36,6 +36,37 @@ const characterCommand = new SlashCommandBuilder()
             { name: 'Kui', value: 'KUI' }
             // { name: 'Minotaur', value: 'MINOTAUR' },
             // { name: 'Ulfur', value: 'ULFUR' }
+          ))
+      .addStringOption(option =>
+        option.setName('personality-name')
+          .setDescription('Personality of your character.')
+          .setRequired(true)
+          .addChoices(
+            { name: 'Stoic', value: 'STOIC' },
+            { name: 'Greedy', value: 'GREEDY' },
+            { name: 'Nerdy', value: 'NERDY' },
+            { name: 'Passionate', value: 'PASSIONATE' },
+            { name: 'Horny', value: 'HORNY' },
+            { name: 'Brawny', value: 'BRAWNY' },
+            { name: 'Cheeky', value: 'CHEEKY' },
+            { name: 'Feisty', value: 'FEISTY' },
+            { name: 'Hothead', value: 'HOTHEAD' },
+            { name: 'Aggressive', value: 'AGGRESSIVE' },
+            { name: 'Thicc', value: 'THICC' },
+            { name: 'Peaceful', value: 'PEACEFUL' },
+            { name: 'Adaptable', value: 'ADAPTABLE' },
+            { name: 'Bougie', value: 'BOUGIE' },
+            { name: 'Stout', value: 'STOUT' },
+            { name: 'Cunning', value: 'CUNNING' },
+            { name: 'Hilarious', value: 'HILARIOUS' },
+            { name: 'Vindictive', value: 'VINDICTIVE' },
+            { name: 'Erratic', value: 'ERRATIC' },
+            { name: 'Ambitious', value: 'AMBITIOUS' },
+            { name: 'Thoughtful', value: 'THOUGHTFUL' },
+            { name: 'Serene', value: 'SERENE' },
+            { name: 'Cocky', value: 'COCKY' },
+            { name: 'Traditional', value: 'TRADITIONAL' },
+            { name: 'Mysterious', value: 'MYSTERIOUS' }
           )))
   .addSubcommand(subcommand =>
     subcommand
@@ -189,6 +220,26 @@ const talkCommand = new SlashCommandBuilder()
       .setAutocomplete(true)
   );
 
+const buyCommand = new SlashCommandBuilder()
+  .setName('buy')
+  .setDescription('Purchase items from the shop.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The name of the object you want to buy.')
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
+
+const sellCommand = new SlashCommandBuilder()
+  .setName('sell')
+  .setDescription('Sell items to the shop.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The name of the object you want to sell.')
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
+
 const unequipCommand = new SlashCommandBuilder()
   .setName('unequip')
   .setDescription('Unequip an equipment.')
@@ -259,7 +310,9 @@ const guildCommands =
     questCommand.toJSON(),
     startCommand.toJSON(),
     helpCommand.toJSON(),
-    travelCommand.toJSON()
+    travelCommand.toJSON(),
+    buyCommand.toJSON(),
+    sellCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

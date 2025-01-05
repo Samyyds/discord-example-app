@@ -41,6 +41,8 @@ import { questCommands } from "./commands/command_quest.js";
 import { startCommands } from "./commands/command_start.js";
 import { helpCommands } from "./commands/command_help.js";
 import { travelCommands } from "./commands/command_travel.js";
+import { buyCommands } from "./commands/command_buy.js";
+import { sellCommands } from "./commands/command_sell.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
@@ -55,6 +57,8 @@ import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
 import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
 import { handleTalkAutocomplete } from "./handler/talk_autoComplete.js";
+import { handleBuyAutocomplete } from "./handler/buy_autoComplete.js";
+import { handleSellAutocomplete } from "./handler/sell_autoComplete.js";
 import { sendWelcomeMessage } from "./util/util.js";
 
 
@@ -198,6 +202,18 @@ client.on(Events.InteractionCreate, async interaction => {
       }
     }
 
+    if (interaction.commandName === 'buy') {
+      if (focusedOption.name === 'object') {
+        await handleBuyAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'sell') {
+      if (focusedOption.name === 'object') {
+        await handleSellAutocomplete(interaction);
+      }
+    }
+
     return;
   }
 
@@ -335,6 +351,12 @@ client.on(Events.InteractionCreate, async interaction => {
           break;
         case "travel":
           await travelCommands[commandName](interaction);
+          return;
+        case "buy":
+          await buyCommands[commandName](interaction);
+          return;
+        case "sell":
+          await sellCommands[commandName](interaction);
           return;
         default:
           const subCommandName = interaction.options.getSubcommand();

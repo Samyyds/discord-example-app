@@ -2,12 +2,13 @@
     {
         "id": 1,
         "name": "Moku'ah Village Elder",
-        "description": "The venerable elder of Moku'ah Village, known for his wisdom and deep knowledge of ancient lore.",
+        "description": "A wisened, frail looking man with aging hair and piercing green eyes. Although he has a stoop, he has a confidence and power to his gait that suggests the history of a warrior.",
         "location": {
             "regionId": 0,
             "locationId": 0,
             "roomId": 0
         },
+        "type": "quest",
         "quest": [
             1
         ],
@@ -58,6 +59,50 @@
                         "text": "Ah, what an honour it is to see you again. How can I help you?",
                         "options": {}
                     }
+                }
+            }
+        }
+    },
+    {
+        "id": 2,
+        "name": "Feleti",
+        "description": "A gruff older man who rarely smiles.",
+        "location": {
+            "regionId": 0,
+            "locationId": 3,
+            "roomId": 0
+        },
+        "type": "shop",
+        "shop": [
+            1
+        ],
+        "dialogueTree": {
+            "1": {
+                "start": {
+                    "text": "Fancy seeing you here again. You can /cook food and /brew potions here, assuming you're skilled enough to handle the ingredients.\n\nBy the way, can I entice you with some of our goods for sale? Or do you have anything I could buy off you for the market? I have gold.\n\nType /buy to purchase something. Type /sell to sell something.",
+                    "options": {}
+                }
+            }
+        }
+    },
+    {
+        "id": 3,
+        "name": "Amalia",
+        "description": "",
+        "location": {
+            "regionId": 1,
+            "locationId": 0,
+            "roomId": 0
+        },
+        "type": "shop",
+        "shop": [
+            2
+        ],
+        "dialogueTree": {
+            "1": {
+                "start": {
+                    "text": "Hi there! You can /cook and /brew whatever you need in my inn.\n\nBy the way, can I entice you with some of our goods for sale? Or do you have anything I could buy off you for the market? I have gold.\n\nType /buy to purchase something. Type /sell to sell something.",
+                    "options": {}
                 }
             }
         }

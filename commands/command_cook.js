@@ -87,7 +87,7 @@ const cookCommand = async (interaction) => {
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
-        console.error('Error in gatherCommand:', error);
+        console.error('Error in cookCommand:', error);
         await sendErrorMessage(interaction, `An error occurred: ${error.message}`);
     }
 }
