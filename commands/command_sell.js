@@ -34,18 +34,15 @@ const sellCommand = async (interaction) => {
 
         const item = inventoryManager.getItem(interaction.user.id, activeCharacter.id, itemType, itemId);
 
-        if (!item) {
-            return await sendErrorMessage(interaction, 'The item could not be found in your inventory.');
-        }
-
         inventoryManager.removeItem(interaction.user.id, activeCharacter.id, item, 1);
 
-        activeCharacter.gold += 3;
+        const salePrice = Math.round(item.value * 0.25);
+        activeCharacter.gold += salePrice
 
         const embed = new EmbedBuilder()
             .setColor(0x00FF00)
-            .setDescription(`You sold **${item.name}** for **3 gold**.`);
-        await interaction.reply({ embeds: [embed] });
+            .setDescription(`You sold **${item.name}** for **${salePrice}** gold.`);
+        await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
         console.error('Error in sellCommand:', error);

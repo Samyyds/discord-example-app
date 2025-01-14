@@ -16,6 +16,7 @@ class Node {
         this.requiredItem = nodeType.requiredItem;
         this.subscriberOnly = nodeType.subscriberOnly;
         this.description = nodeType.description;
+        this.roomDescription = nodeType.roomDescription;
         this.location = nodeType.location;
     }
 }
@@ -59,6 +60,7 @@ class NodeManager {
                 skillXP: row.SKILL_XP,
                 requiredItem: row.REQUIRED_ITEM,
                 description: row.DESCRIPTION,
+                roomDescription: row.ROOM_DESCRIPTION,
                 subscriberOnly: row.SUBSCRIBER_ONLY
             }));
 

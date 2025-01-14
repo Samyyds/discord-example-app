@@ -56,7 +56,7 @@ const buyCommand = async (interaction) => {
         const embed = new EmbedBuilder()
             .setColor(0x00FF00)
             .setDescription(`You have successfully purchased **${purchasedItem.name}**.`);
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
         console.error('Error in buyCommand:', error);

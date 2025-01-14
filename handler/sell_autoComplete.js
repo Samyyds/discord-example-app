@@ -18,7 +18,7 @@ export async function handleSellAutocomplete(interaction) {
 
         const options = [];
         for (const [type, items] of Object.entries(itemsByType)) {
-            if (parseInt(type) === ItemType.KEY) continue; 
+            if (parseInt(type) === ItemType.KEY || parseInt(type) === ItemType.FISH) continue; 
             items.forEach(({ item, quantity }) => {
                 if (quantity > 0) {
                     options.push({

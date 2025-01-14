@@ -22,13 +22,14 @@ class Region {
 }
 
 class Location {
-    constructor(id, name, regionId, locationId, roomCount = 1, description = '', subscriberOnly = false, questRequired = {}) {
+    constructor(id, name, regionId, locationId, roomCount = 1, description = '', enterDescription = '', subscriberOnly = false, questRequired = {}) {
         this.id = `${regionId}-${id}`;
         this.name = name;
         this.regionId = regionId;
         this.locationId = locationId;
         this.roomCount = roomCount;
         this.description = description;
+        this.enterDescription = enterDescription;
         this.rooms = new Map();
         this.subscriberOnly = subscriberOnly;
         this.questRequired = questRequired;

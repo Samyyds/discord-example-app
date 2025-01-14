@@ -49,7 +49,7 @@ const goCommand = async (interaction) => {
                 description = `You are **${roomId} mile(s)** away from the entrance of ${currentLocation.name}.`;
             }
         } else {
-            description = `You have arrived at **${currentLocation.name}**.`;
+            description = currentLocation.enterDescription;
         }
 
         const embed = new EmbedBuilder()

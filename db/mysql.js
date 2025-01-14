@@ -66,7 +66,7 @@ async function saveCharacterData(userId, character, location) {
     try {
         const sql = `
             INSERT INTO ${process.env.CHARACTERS_DB} (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, gold, region_id, location_id, room_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         `;
         const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status, gold } = character;
         const battleBarJson = JSON.stringify(battleBar);

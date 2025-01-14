@@ -9,7 +9,8 @@
           "locationId": 0,
           "name": "Village Center",
           "roomCount": 1,
-          "description": "The village center contains useful tutorial NPCs, and questgiver NPCs.",
+          "description": "Villagers carrying all manner of bags stride purposefully across the village center, while older villagers sit and watch them go. The hum of conducted business is omnipresent.",
+          "enterDescription": "You walk into the center of the bustling village of Moku'ah.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -17,7 +18,8 @@
           "locationId": 1,
           "name": "Blacksmith",
           "roomCount": 1,
-          "description": "Players can use the services of the blacksmith to craft items and equipment.",
+          "description": "The workshop is a large wooden shack, filled with aged but robust-looking smelting equipment. A large aged smithing bench sits next to an ancient-looking but solid furnace and smelter.",
+          "enterDescription": "You walk over to the village workshop, the air filled with the sounds of exhaling bellows and tapping metal.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -25,7 +27,8 @@
           "locationId": 2,
           "name": "Farm",
           "roomCount": 1,
-          "description": "Players can use the farm to grow crops for use in crafting.",
+          "description": "Rows of tilled soil populate massive fields dotted by sun-kissed farmhands. The air is earthy and tinged with sweat.",
+          "enterDescription": "You make your way out to the edge of the village, to the Moku'ah farm. Farmers toil the fields, their hats bobbing with each motion.",
           "subscriberOnly": true,
           "questRequired": {}
         },
@@ -33,7 +36,8 @@
           "locationId": 3,
           "name": "Tavern",
           "roomCount": 1,
-          "description": "Players can cook and brew here.",
+          "description": "The tavern is a large, church-like structure that has a central seating area with a set of smaller self-serve kitchenttes in the corner. An overhanging second floor houses the accomodation rooms for overnight guests.",
+          "enterDescription": "You walk across the square to the tavern and sit down at a kitchenette.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -41,7 +45,8 @@
           "locationId": 4,
           "name": "Clinic",
           "roomCount": 1,
-          "description": "Players respawn here if they die in this region.",
+          "description": "Narrow beds are crammed into a small room with the windows perpetually open. The clinic functions more as a nursery, and would not have the capacity to address a large influx of people seeking medical attention.",
+          "enterDescription": "You walk into the village clinic, past the many remedies being sold on the counters and shelves.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -49,7 +54,8 @@
           "locationId": 5,
           "name": "Dock",
           "roomCount": 1,
-          "description": "Player can travel to other specified regions at the dock.",
+          "description": "The dock is a single wooden platform extending out into the endless ocean. Several small boats, with the occasional larger vessel, are moored along the platform. Boatsmen and deckhands move without joy but with purpose, either moving cargo or performing maintenence on their vessels. Although the salty stench of captured sea life is almost overwhelming, the mariners are clearly accustomed to it.",
+          "enterDescription": "You walk down to the Moku'ah dock, the air thick with the stench of salt-scarred hulls and fish.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -57,7 +63,8 @@
           "locationId": 6,
           "name": "Jungle",
           "roomCount": 100,
-          "description": "Tier 1 dungeon for players to fight enemies and get loot in.",
+          "description": "Endless jungle extends as far as you can see in all directions.",
+          "enterDescription": "After several hours, you descend out of a thick foliage and with squelched steps, enter a clearing in the jungle.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -65,7 +72,8 @@
           "locationId": 7,
           "name": "Volcano",
           "roomCount": 100,
-          "description": "Tier 3 dungeon for players to fight enemies and get loot in. Mixed subscriber content",
+          "description": "A landscape of ash and charred rock slopes around you in every direction. Jagged peaks are visible in the far distance, but you can't be sure through the thick ash.",
+          "enterDescription": "You tread and climb your way across red, rugged terrain, perforated by ash clouds and dusty winds. After a few hours, you reach a large crater shielded from the elements.",
           "subscriberOnly": true,
           "questRequired": {
             "questId": 2,
@@ -95,7 +103,8 @@
           "locationId": 0,
           "name": "Town",
           "roomCount": 1,
-          "description": "The village center contains useful tutorial NPCs.",
+          "description": "Townsfolk are going about their daily business, from making foodstuffs to selling knickknacks. The locals don a garb notably different than the Moku'ahns, with a distinct robe-like quality.",
+          "enterDescription": "You walk into the center of the sun-sprayed village of Nyra.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -103,7 +112,8 @@
           "locationId": 1,
           "name": "Crafthouse",
           "roomCount": 1,
-          "description": "Players can use the services of the crafthouse to craft items and equipment.",
+          "description": "The crafthouse is a large stone structure, with several sets of smithing and ore processing facilities available. Despite being more expansive than the equipment you've seen in Moku'ah, the tools and processing methods are functionally identical.",
+          "enterDescription": "You walk over to the village crafthouse, the air filled with the sounds of exhaling bellows and tapping metal.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -111,7 +121,8 @@
           "locationId": 2,
           "name": "Tavern",
           "roomCount": 1,
-          "description": "Contains questgiver NPCs.",
+          "description": "Contrary to the tavern in Moku'ah, the Nyra tavern is a smaller, cosy affair with a stained white chimney near the back, and a large selection of alcholic drinks near the front. Travellers sleep in shared quarters in a separate but connected structure behind the tavern.",
+          "enterDescription": "You walk across the square to the tavern and sit down at a kitchenette.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -119,7 +130,8 @@
           "locationId": 3,
           "name": "Beach",
           "roomCount": 1,
-          "description": "The beautiful beach of Nyra.",
+          "description": "The Nyra beach is nothing short of a tropical seaside paradise - the fine white sand is pristine, while the water is a radiant blend of turquoise and emerald. The sun, it seems, is always shining.",
+          "enterDescription": "You walk down to the Nyra beach, a local horizon of pristine sands and lapping waves.",
           "subscriberOnly": false,
           "questRequired": {
             "questId": 1,
@@ -130,7 +142,8 @@
           "locationId": 4,
           "name": "Labyrinth",
           "roomCount": 100,
-          "description": "Tier 2 dungeon for players to fight enemies and get loot in.",
+          "description": "A stale and featureless room that consists of nothing but granite walls towers over you in every direction.",
+          "enterDescription": "After an undeterminable length of time, you find yourself in a large room in the colossal labyrinth.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -138,7 +151,8 @@
           "locationId": 5,
           "name": "Hospital",
           "roomCount": 1,
-          "description": "Players respawn here if they die in this region.",
+          "description": "The hospital is made of brick and clay, boasting two large wings: one for inpatients and one for outpatients. Compared to the clinic in Moku'ah, the facilities are clearly intended to facilitate a much larger number of people. Despite that, the hospital has a somewhat sombre atmosphere, and you can't help but feel the clinic in Moku'ah being somewhat more welcoming.",
+          "enterDescription": "You walk into the town hospital, a communal structure with many beds for caring for the unwell.",
           "subscriberOnly": false,
           "questRequired": {}
         }
@@ -169,7 +183,8 @@
           "locationId": 0,
           "name": "City Center",
           "roomCount": 1,
-          "description": "The center of the city.",
+          "description": "The village is small, with villagers who are clearly not used to seeing foreigners around. Villagers meet you with a wary gaze as you pass. Snow covers every building in some shape or form, which themselves are made of a simple heavy wood.",
+          "enterDescription": "You walk into the center of the snowbound village of Isfjall.",
           "subscriberOnly": true,
           "questRequired": {}
         },
@@ -177,7 +192,8 @@
           "locationId": 1,
           "name": "Blacksmith",
           "roomCount": 1,
-          "description": "A place to forge weapons and armor.",
+          "description": "The blacksmith's hut here is simple, with a single bench for work, and minimal but robust looking tools for metalsmithing. The heat of the bellows, once stifling and unbearable, is a welcome embrace in this frigid landscape.",
+          "enterDescription": "You walk into the steaming blacksmith's hut, the heat from the iron basking you in a grateful warmth.",
           "subscriberOnly": true,
           "questRequired": {}
         },
@@ -185,7 +201,8 @@
           "locationId": 2,
           "name": "Dock",
           "roomCount": 1,
-          "description": "The dock of Isfjall.",
+          "description": "The Isfjall dock is a single wooden beam that stretches out to the sea, similar to the one in Moku'ah. The biggest difference is that while the dock in Moku'ah is often filled with all manner of boats, most of the boats here are instead small fishing boats, presumably used by the locals for sustenance fishing.",
+          "enterDescription": "You walk along the edge of a frozen lake, eventually reaching the frigid Isfjall dock.",
           "subscriberOnly": true,
           "questRequired": {}
         },
@@ -193,7 +210,8 @@
           "locationId": 3,
           "name": "Tundra",
           "roomCount": 100,
-          "description": "A vast and frozen tundra.",
+          "description": "Snow and dirt, punctuated by hills, dominate this unforgiving plain. Blizzards quickly bury anything left out in the snow, and you can't imagine many things being able to thrive in such unforgiving terrain.",
+          "enterDescription": "Several hours of marching through thick snow and occasional blizzards leads to you to an icy, wooded field.",
           "subscriberOnly": true,
           "questRequired": {}
         },
@@ -201,7 +219,8 @@
           "locationId": 4,
           "name": "Hospital",
           "roomCount": 1,
-          "description": "Players respawn here if they die in this region.",
+          "description": "The interior of the hospital is a large single hexagonal wooden affair. A hearth dominates the center, radially flanked by large oak beds. A few nurses shuffle from bed to bed, tending to what you see are mostly elderly patients.",
+          "enterDescription": "You walk into the Isfjall hospital, out from the cold into warmth.",
           "subscriberOnly": true,
           "questRequired": {}
         }
@@ -233,6 +252,7 @@
           "name": "Entrance",
           "roomCount": 1,
           "description": "The entrance to The Trench.",
+          "enterDescription": "You arrive at a point in the ocean where a colossal fissure, as wide as fifty houses, opens in the ground. The fissure into the distance with no discernable end. The surface of the fissure is a murky brown hue, fading into blackness the further you look, with only the odd distant blue or white luminesecence.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -241,6 +261,7 @@
           "name": "The Shallows",
           "roomCount": 50,
           "description": "The shallow part of the trench.",
+          "enterDescription": "You are in murky, brinish water. Thick seaweed twists around you in columns to the surface. You can only see a few feet in front of you, as the sunlight struggles to penetrate the foliage in the deep fissure. Shapes constantly shift around you. You can't help but feel that as a land-dweller, you are out of your element here.",
           "subscriberOnly": false,
           "questRequired": {}
         },
@@ -249,6 +270,7 @@
           "name": "The Depths",
           "roomCount": 50,
           "description": "The deep part of the trench.",
+          "enterDescription": "Darkness stretches in every direction. The only comfort you can find is in the little lights of the mushrooms and fungi that line the walls of the fissure. Despite barely being able to see what's in front of you, you can make out the occasional crater in the ground which ends in a total and unforgiving abyss.",
           "subscriberOnly": true,
           "questRequired": {}
         },
@@ -257,6 +279,7 @@
           "name": "Obsidian City",
           "roomCount": 1,
           "description": "A city made of obsidian.",
+          "enterDescription": "",
           "subscriberOnly": true,
           "questRequired": {}
         }

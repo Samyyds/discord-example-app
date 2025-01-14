@@ -42,7 +42,7 @@ class RegionManager {
         const regionManager = RegionManager.getInstance();
 
         regionData.regions.forEach(regionData => {
-            const region = new Region(regionData.id, regionData.name, regionData.description);
+            const region = new Region(regionData.id, regionData.name, regionData.description, regionData.enterDescription);
             regionData.locations.forEach(locationData => {
                 const location = new Location(
                     locationData.locationId,
@@ -51,6 +51,7 @@ class RegionManager {
                     locationData.locationId,
                     locationData.roomCount,
                     locationData.description,
+                    locationData.enterDescription,
                     locationData.subscriberOnly,
                     locationData.questRequired
                 );
