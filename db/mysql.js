@@ -190,6 +190,29 @@ async function loadCharactersForUser(userId) {
     }
 }
 
+async function updateCharacterGold(userId, characterId, gold) {
+    const connection = await MysqlDB.getConnection();
+    try {
+        const sql = `
+            UPDATE ${process.env.CHARACTERS_DB}
+            SET gold = ?
+            WHERE user_id = ? AND id = ?
+        `;
+        const [result] = await connection.execute(sql, [gold, userId.toString(), characterId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`Gold updated successfully for character ID ${characterId}.`);
+        } else {
+            console.log(`No character found with ID ${characterId} to update gold.`);
+        }
+    } catch (error) {
+        console.error(`Failed to update gold for character ID ${characterId}:`, error);
+        throw error;
+    } finally {
+        connection.release();
+    }
+}
+
 async function getNextCharacterId() {
     const connection = await MysqlDB.getConnection();
     try {
@@ -367,5 +390,6 @@ export {
     getNextCharacterId,
     updateInventoryToDB,
     loadInventoryForUser,
-    saveCharacterQuests
+    saveCharacterQuests,
+    updateCharacterGold
 };

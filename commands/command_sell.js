@@ -4,6 +4,7 @@ import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { InventoryManager } from '../manager/inventory_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
+import { updateCharacterGold } from "../db/mysql.js";
 
 const sellCommand = async (interaction) => {
     try {
@@ -38,6 +39,7 @@ const sellCommand = async (interaction) => {
 
         const salePrice = Math.round(item.value * 0.25);
         activeCharacter.gold += salePrice
+        await updateCharacterGold(interaction.user.id, activeCharacter.id, activeCharacter.gold);
 
         const embed = new EmbedBuilder()
             .setColor(0x00FF00)

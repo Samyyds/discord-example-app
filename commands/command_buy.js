@@ -6,6 +6,7 @@ import { CharacterManager } from '../manager/character_manager.js';
 import { InventoryManager } from '../manager/inventory_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { ItemManager, Item, Equipment, Consumable } from "../manager/item_manager.js";
+import { updateCharacterGold } from "../db/mysql.js";
 
 const buyCommand = async (interaction) => {
     try {
@@ -52,6 +53,7 @@ const buyCommand = async (interaction) => {
         inventoryManager.addItem(interaction.user.id, activeCharacter.id, purchasedItem, 1);
 
         activeCharacter.gold -= itemPrice;
+        await updateCharacterGold(interaction.user.id, activeCharacter.id, activeCharacter.gold);
 
         const embed = new EmbedBuilder()
             .setColor(0x00FF00)
