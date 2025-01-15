@@ -86,15 +86,15 @@ client.once('ready', async () => {
     if (hasData) {
       const userIds = await getAllUserIds(connection);
       const loadPromises = userIds.map(async (userId) => {
-          try {
-              await loadCharactersForUser(userId);
-              await loadInventoryForUser(userId);
-          } catch (error) {
-              console.error(`Failed to load data for user ${userId}:`, error);
-          }
+        try {
+          await loadCharactersForUser(userId);
+          await loadInventoryForUser(userId);
+        } catch (error) {
+          console.error(`Failed to load data for user ${userId}:`, error);
+        }
       });
       await Promise.allSettled(loadPromises);
-  }
+    }
 
     console.log('Bot is ready!');
 
@@ -104,6 +104,22 @@ client.once('ready', async () => {
 
   client.on(Events.GuildMemberAdd, async (member) => {
     console.log(`New member added: ${member.displayName}`);
+  });
+
+  client.on('guildMemberRemove', async (member) => {
+    try {
+      const userId = member.id;
+      const tutorialManager = TutorialManager.getInstance();
+
+      if (tutorialManager.getTutorialForUser(userId)) {
+        console.log(`User ${userId} left the server. Clearing tutorial progress.`);
+        tutorialManager.finishTutorialForUser(userId);
+      } else {
+        console.log(`User ${userId} left the server, no tutorial progress found.`);
+      }
+    } catch (error) {
+      console.error(`Failed to clear tutorial progress for user ${member.id}:`, error);
+    }
   });
 
   // client.on(Events.MessageReactionAdd, async (reaction, user) => {

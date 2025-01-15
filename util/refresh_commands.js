@@ -33,9 +33,9 @@ const characterCommand = new SlashCommandBuilder()
           .addChoices(
             { name: 'Ahonu', value: 'AHONU' },
             { name: 'Manumanu', value: 'MANUMANU' },
-            { name: 'Kui', value: 'KUI' },
-            { name: 'Minotaur', value: 'MINOTAUR' },
-            { name: 'Ulfur', value: 'ULFUR' }
+            { name: 'Kui', value: 'KUI' }
+            // { name: 'Minotaur', value: 'MINOTAUR' },
+            // { name: 'Ulfur', value: 'ULFUR' }
           )))
   .addSubcommand(subcommand =>
     subcommand
