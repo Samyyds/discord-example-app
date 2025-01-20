@@ -24,7 +24,9 @@ const characterCommand = new SlashCommandBuilder()
           .setRequired(true)
           .addChoices(
             { name: 'Warrior', value: 'WARRIOR' },
-            { name: 'Mage', value: 'MAGE' }
+            { name: 'Mage', value: 'MAGE' },
+            { name: 'Bard', value: 'BARD' },
+            { name: 'Witch Doctor', value: 'WITCH_DOCTOR' }
           ))
       .addStringOption(option =>
         option.setName('race-name')

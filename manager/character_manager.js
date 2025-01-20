@@ -7,14 +7,15 @@ export const CLASS_BASE_STATS = {
     'NO_CLASS': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
     'WARRIOR': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
     'ROGUE': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
-    'MAGE': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'BARD': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
 };
 
 export const CLASS_BASE_STAT_MODIFIERS = {
     'NO_CLASS': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
     'WARRIOR': { hp: 1.16, mp: 1, spd: 0.8, physicalATK: 1.2, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.8 },
     'MAGE': { hp: 0.8, mp: 1.5, spd: 1.1, physicalATK: 0.7, physicalDEF: 0.6, magicATK: 2, magicDEF: 1.2 },
-    'ROGUE': { hp: 1.3, mp: 1, spd: 1.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
+    'BARD': { hp: 0.8, mp: 2, spd: 1.2, physicalATK: 1, physicalDEF: 0.8, magicATK: 1.2, magicDEF: 1 },
+    'WITCH_DOCTOR': { hp: 1, mp: 2, spd: 1.2, physicalATK: 0.7, physicalDEF: 1, magicATK: 0.8, magicDEF: 1 },
 };
 
 export const RACE_BASE_STAT_MODIFIERS = {

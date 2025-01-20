@@ -13,8 +13,8 @@ const dbConfig = {
     database: 'customer_766436_mm',
     password: 'vJTYzplW@T7kuJikp6x@',
     waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    connectionLimit: 30,
+    queueLimit: 90
 };
 
 class MysqlDB {

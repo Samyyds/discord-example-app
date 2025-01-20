@@ -45,7 +45,7 @@ const attackCommand = async (interaction) => {
         characterManager.trackEnemy(activeChar.id, enemy.id);
 
         const questManager = QuestManager.getInstance();
-        if (isFirstEncounter && enemy.encounterDialogue!== null) {
+        if (isFirstEncounter && enemy.encounterDialogue !== null) {
             await displayEnemyDialogue(interaction, enemy.encounterDialogue, 0x00FF00);
             questManager.startQuest(interaction.user.id, activeChar.id, enemy.questId);
         }
@@ -112,7 +112,7 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
         handleEnemyDefeat(interaction, player, enemy, combatLog, regionManager, regionId, locationId, roomId);
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
-  
+
     let enemyAbility = getRandomEnemyAbility(enemy);
 
     if (!enemyAbility) {
@@ -128,11 +128,11 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
     if (player.stats.hp <= 0) {
         combatLog.push(`${player.name} is defeated!`);
         combatLog.push("Your soul will be sent to the Moku'ah Clinic.");
-        
+
         if (enemy.defeatedDialogue) {
             pushEnemyDialogueToCombatLog(enemy.defeatedDialogue, combatLog);
         }
-        
+
         const characterManager = CharacterManager.getInstance();
         characterManager.reviveCharacter(interaction.user.id);
 
@@ -330,6 +330,135 @@ function applyAbilityEffect(player, enemy, ability, combatLog) {
             buff: {
                 type: 'physicalDEFBoost',
                 value: player.stats.spd * 2
+            }
+        },
+        'forlorn_melody': {
+            damageType: null,
+            damageValue: 0,
+            action: `${player.name} sings a haunting melody, reducing ${enemy.name}'s magical defense by 50%.`,
+            debuff: {
+                type: 'magicDEFBoost',
+                value: -enemy.stats.magicDEF * 0.5,
+                duration: 3
+            }
+        },
+        'anthem_recital': {
+            damageType: null,
+            damageValue: 0,
+            action: `${player.name} performs a recital, boosting their physical attack by 50% for the remainder of the fight.`,
+            buff: {
+                type: 'physicalATKBoost',
+                value: player.stats.physicalATK * 0.5,
+                duration: -1
+            }
+        },
+        'austere_sermon': {
+            damageType: null,
+            damageValue: 0,
+            action: `${player.name} delivers a sermon, reducing ${enemy.name}'s physical attack by 50% for the remainder of the fight.`,
+            debuff: {
+                type: 'physicalATKBoost',
+                value: -enemy.stats.physicalATK * 0.5,
+                duration: -1
+            }
+        },
+        'luminous_shimmer': {
+            damageType: null,
+            damageValue: 0,
+            action: `${player.name} creates a shimmering aura, reducing ${enemy.name}'s magical attack by 50%.`,
+            debuff: {
+                type: 'magicATKBoost',
+                value: -enemy.stats.magicATK * 0.5,
+                duration: -1
+            }
+        },
+        'neon_brilliance': {
+            damageType: null,
+            damageValue: 0,
+            action: `${player.name} radiates with brilliance, boosting their magical attack by 50%.`,
+            buff: {
+                type: 'magicATKBoost',
+                value: player.stats.magicATK * 0.5,
+                duration: -1
+            }
+        },
+        'salty_ballad': {
+            damageType: 'mixed',
+            damageValue: player.stats.physicalATK * 1.5 + player.stats.magicATK * 1.5,
+            action: `${player.name} sings a salty ballad, dealing combined physical and magical damage to ${enemy.name}.`,
+            selfDebuff: {
+                type: 'speed',
+                value: player.stats.spd * -0.5,
+                duration: 3
+            }
+        },
+        'glitter_flash': {
+            damageType: 'magical',
+            damageValue: player.stats.magicATK * 0.3,
+            action: `${player.name} flashes glittering lights at ${enemy.name}, reducing their magical attack by 50%.`,
+            debuff: {
+                type: 'magicATKBoost',
+                value: -enemy.stats.magicATK * 0.5,
+                duration: 3
+            }
+        },
+        'pulverize': {
+            damageType: 'physical',
+            damageValue: player.stats.physicalATK * 0.4,
+            action: `${player.name} pulverizes ${enemy.name}, reducing their attack power by 50%.`,
+            debuff: {
+                type: 'physicalATKBoost',
+                value: -enemy.stats.physicalATK * 0.5,
+                duration: -1
+            }
+        },
+        'batter_and_bruise': {
+            damageType: 'physical',
+            damageValue: player.stats.physicalATK * 0.4,
+            action: `${player.name} batters and bruises ${enemy.name}, reducing their speed by 50%.`,
+            debuff: {
+                type: 'speed',
+                value: -enemy.stats.spd * 0.5,
+                duration: -1
+            }
+        },
+        'cauldron_masala': {
+            damageType: null,
+            damageValue: 0,
+            action: `${player.name} cooks a masala in their cauldron, healing themselves for a percentage of their HP.`,
+            heal: {
+                type: 'hp',
+                value: player.stats.hpMax * (0.1 + player.skills.cooking / 2.5)
+            }
+        },
+        'kindle_hearth': {
+            damageType: null,
+            damageValue: 0,
+            action: `${player.name} kindles a hearth, boosting their magical defense.`,
+            buff: {
+                type: 'magicDEFBoost',
+                value: player.skills.gathering * 5,
+                duration: -1
+            }
+        },
+        'palpitate': {
+            damageType: 'physical',
+            damageValue: 100 + player.skills.smithing,
+            action: `${player.name} delivers a palpitating strike, dealing damage enhanced by smithing level.`
+        },
+        'pelt_poach': {
+            damageType: 'physical',
+            damageValue: 10 + (player.skills.smithing / 2) * enemy.stats.hp,
+            action: `${player.name} poaches a pelt from ${enemy.name}, dealing damage based on enemy HP.`
+        },
+        'pitfall': {
+            damageType: 'physical',
+            damageValue: player.stats.physicalATK,
+            action: `${player.name} sets up a pitfall, reducing ${enemy.name}'s speed for the remainder of the fight.`,
+            debuff: {
+                type: 'speed',
+                value: -enemy.stats.spd * 0.5,
+                duration: -1
             }
         }
     };

@@ -43,13 +43,13 @@ export const TheTrenchLocations = {
 export const Class = {
     "WARRIOR": 0,
     "MAGE": 1,
-    "Ranger": 2,
-    "Cleric": 3,
-    "Druid": 4,
-    "Monk": 5,
-    "Barbarian": 6,
-    "Paladin": 7,
-    "Bard": 8
+    "BARD": 2,
+    "WITCH_DOCTOR": 3,
+    "DRUID": 4,
+    "MONK": 5,
+    "BARBARIAN": 6,
+    "PALADIN": 7,
+    "RANGER": 8
 };
 
 export const Race = {
@@ -117,7 +117,20 @@ export const Ability = {
     "PUTREFY": 20,
     "THUNDERCLAP": 21,
     "ELECTRIC_WHIP": 22,
-    "NIMBLE": 23
+    "FORLORN_MELODY": 23,
+    "ANTHEM_RECITAL": 24,
+    "AUSTERE_SERMON": 25,
+    "LUMINOUS_SHIMMER": 26,
+    "NEON_BRILLIANCE": 27,
+    "SALTY_BALLAD": 28,
+    "GLITTER_FLASH": 29,
+    "PULVERIZE": 30,
+    "BATTER_AND_BRUISE": 31,
+    "CAULDRON_MASALA": 32,
+    "KINDLE_HEARTH": 33,
+    "PALPITATE": 34,
+    "PELT_POACH": 35,
+    "PITFALL": 36
 };
 
 export const ItemType = {
