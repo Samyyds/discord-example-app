@@ -50,9 +50,9 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
     switch (infoType) {
         case 'basic':
             description += `Name : **${activeChar.name}**\n`;
-            description += `Class : ${Object.keys(Class).find(key => Class[key] === activeChar.classId).toLowerCase()}\n`;
-            description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase()}\n`;
-            description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase()}\n`;
+            description += `Class : ${Object.keys(Class).find(key => Class[key] === activeChar.classId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
+            description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
+            description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
             description += `Level : ${activeChar.level}\n`;
             const xpForCurrentLevel = xpRequiredForLevel(activeChar.level);
             const xpForNextLevel = xpRequiredForLevel(activeChar.level + 1);
