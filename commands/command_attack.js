@@ -526,8 +526,13 @@ function handleEnemyDefeat(interaction, player, enemy, combatLog, regionManager,
     }
 
     const xpGain = enemy.xpReward;
+    const previousLevel = player.level;
     player.increaseCharacterXp(xpGain);
     combatLog.push(`${player.name} gained ${xpGain} XP!`);
+
+    if (player.level > previousLevel) {
+        combatLog.push(`${player.name} leveled up! Now at level ${player.level}.`);
+    }
 
     room.removeEnemy(enemy);
     console.log(`Before combat: hpMax: ${player.stats.hpMax}, mpMax: ${player.stats.mpMax}`);

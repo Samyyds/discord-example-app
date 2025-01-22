@@ -355,8 +355,18 @@ class Character {
 
     increaseCharacterXp(amount) {
         this.xp += amount;
-        this.level = calculateLevelFromXp(this.xp);
+    
+        let newLevel = calculateLevelFromXp(this.xp);
+    
+        if (newLevel > this.level) {
+            this.level = newLevel;
+        }
+    }  
+    
+    handleLevelUp(levelsGained) {
+        console.log(`${this.name} leveled up! Gained ${levelsGained} levels.`);
     }
+    
 }
 
 class Combatant {

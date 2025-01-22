@@ -35,12 +35,17 @@ export function calculateLevelFromXp(xp) {
     //return Math.floor(Math.pow(xp, 0.5));
 }
 
+// function xpRequiredForLevel(level) {
+//     return Math.pow(level, 2);
+// }
+
 function xpRequiredForLevel(level) {
-    return Math.pow(level, 2);
+    const xpOffset = 5;
+    return xpOffset + Math.pow(level + 1, 3);
 }
 
 function createProgressBar(currentXp, totalXpForNextLevel, barLength = 10) {
-    const filledLength = Math.round((currentXp / totalXpForNextLevel) * barLength);
+    const filledLength = Math.min(Math.round((currentXp / totalXpForNextLevel) * barLength), barLength);
     const emptyLength = barLength - filledLength;
     return "█".repeat(filledLength) + "░".repeat(emptyLength);
 }
@@ -54,11 +59,11 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
             description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
             description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
             description += `Level : ${activeChar.level}\n`;
-            const xpForCurrentLevel = xpRequiredForLevel(activeChar.level);
-            const xpForNextLevel = xpRequiredForLevel(activeChar.level + 1);
-            const currentXp = activeChar.xp - xpForCurrentLevel;
 
-            description += `XP: ${createProgressBar(currentXp, xpForNextLevel - xpForCurrentLevel)}\n`;
+            const currentXp = activeChar.xp;
+            const xpForNextLevelValue = xpRequiredForLevel(activeChar.level);
+        
+            description += `XP: ${createProgressBar(currentXp, xpForNextLevelValue)} (${currentXp}/${xpForNextLevelValue})\n`;
 
             description += `Gold : ${activeChar.gold}\n`;
 
@@ -119,16 +124,16 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
         case 'skills':
             Object.keys(activeChar.skills.skills).forEach(skill => {
                 const skillData = activeChar.skills.skills[skill];
-                const skillLevel = calculateLevelFromXp(skillData.xp);
-                const xpForSkillLevel = xpRequiredForLevel(skillLevel);
-                const xpForNextSkillLevel = xpRequiredForLevel(skillLevel + 1);
-                const currentSkillXp = skillData.xp - xpForSkillLevel;
+                const skillLevel = skillData.level; 
+
+                const currentXp = skillData.xp;
+                const xpForNextLevelValue = xpRequiredForLevel(skillLevel);
 
                 const skillName = `**${skill.charAt(0).toUpperCase() + skill.slice(1)}**`;
 
                 description += `${skillName}:\n`;
                 description += `Level: ${skillLevel}\n`;
-                description += `XP: ${createProgressBar(currentSkillXp, xpForNextSkillLevel - xpForSkillLevel)}\n\n`;
+                description += `XP: ${createProgressBar(currentXp, xpForNextLevelValue)} (${currentXp}/${xpForNextLevelValue})\n\n`;
             });
             break;
         case 'abilities': {
