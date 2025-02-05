@@ -262,9 +262,11 @@ client.on(Events.InteractionCreate, async interaction => {
 
     if (tutorial && tutorial.isInTutorial()) {
       const expectedCommandId = tutorial.getCurrentCommandId();
-      console.log(`interaction.commandId: ${interaction.commandId}`);
-      console.log(`expectedCommandId: ${expectedCommandId}`);
-      if (interaction.commandId !== expectedCommandId) {
+      console.log(`Tutorial currentStep: ${tutorial.currentStep}`);
+      console.log(`Current step:`, tutorial.steps[tutorial.currentStep]);
+      console.log(`Expected command id: ${expectedCommandId}`);
+      console.log(`Interaction command id: ${interaction.commandId}`);
+      if (expectedCommandId && interaction.commandId !== expectedCommandId) {
         await interaction.reply({
           content: "It seems you've entered an incorrect command. Please use the correct command to continue the tutorial.",
           ephemeral: true
@@ -388,6 +390,15 @@ client.on(Events.InteractionCreate, async interaction => {
       handleQuestInteraction(interaction);
     } else if (interaction.customId.startsWith('start_')) {
       handleStartGameInteraction(interaction);
+    } else if (interaction.customId === 'tutorial_next') {
+      const tutorial = TutorialManager.getInstance().getTutorialForUser(interaction.user.id);
+      if (tutorial) {
+        tutorial.interaction = interaction;
+        tutorial.currentStep++;
+        tutorial.processStep();
+      } else {
+        await interaction.reply({ content: "No active tutorial found.", ephemeral: true });
+      }
     }
     else {
       console.log('Unrecognized button interaction:', interaction.customId);
