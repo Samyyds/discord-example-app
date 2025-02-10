@@ -371,22 +371,32 @@ function applyAbilityEffect(player, enemy, ability, combatLog) {
     const effectKey = ability.name.toLowerCase().replace(/\s/g, '_');
     const effect = abilityEffectMap[effectKey];
     if (effect) {
-        if (effect.damageType !== null) {
 
-            if (typeof effect.damageValue === 'function') {
-                damage = effect.damageValue(player, enemy, ability);
+        if (effect.damageType !== null) {
+            if (effect.damageType === 'mixed') {
+
+                let rawDamage;
+                if (typeof effect.damageValue === 'function') {
+                    rawDamage = effect.damageValue(player, enemy, ability);
+                } else {
+                    rawDamage = effect.damageValue;
+                }
+                const physicalDamage = handlePhysicalAttack(player, enemy, rawDamage / 2);
+                const magicalDamage = handleMagicalAttack(player, enemy, rawDamage / 2);
+                damage = physicalDamage + magicalDamage;
             } else {
-                damage = effect.damageValue;
-                if (effect.damageType === 'physical') {
-                    damage = handlePhysicalAttack(player, enemy, damage);
-                } else if (effect.damageType === 'magical') {
-                    damage = handleMagicalAttack(player, enemy, damage);
-                } else if (effect.damageType === 'mixed') {
-                    const physicalDamage = handlePhysicalAttack(player, enemy, damage / 2);
-                    const magicalDamage = handleMagicalAttack(player, enemy, damage / 2);
-                    damage = physicalDamage + magicalDamage;
+                if (typeof effect.damageValue === 'function') {
+                    damage = effect.damageValue(player, enemy, ability);
+                } else {
+                    damage = effect.damageValue;
+                    if (effect.damageType === 'physical') {
+                        damage = handlePhysicalAttack(player, enemy, damage);
+                    } else if (effect.damageType === 'magical') {
+                        damage = handleMagicalAttack(player, enemy, damage);
+                    }
                 }
             }
+
             let damageTypeStr = "";
             if (effect.action.includes("{TYPE+DMG} damage")) {
                 damageTypeStr = `${damage}`;
@@ -416,12 +426,36 @@ function applyAbilityEffect(player, enemy, ability, combatLog) {
             let finalMessage = effect.action.replace('{enemy}', enemy.name);
             if (effect.heal && typeof effect.heal.value === 'function') {
                 const healAmount = effect.heal.value(player);
+                if (typeof player.heal === 'function') {
+                    player.heal(healAmount);
+                }
                 finalMessage = finalMessage.replace('{TYPE+DMG}', `${healAmount} healing`);
             } else {
-
                 finalMessage = finalMessage.replace('{TYPE+DMG}', '');
             }
             combatLog.push(finalMessage);
+        }
+        
+        if (effect.buff) {
+            let buffToApply = { ...effect.buff };
+            if (typeof buffToApply.value === 'function') {
+                buffToApply.value = buffToApply.value(player);
+            }
+            player.applyBuff(buffToApply);
+        }
+        if (effect.debuff) {
+            let debuffToApply = { ...effect.debuff };
+            if (typeof debuffToApply.value === 'function') {
+                debuffToApply.value = debuffToApply.value(enemy);
+            }
+            enemy.applyDebuff(debuffToApply);
+        }
+        if (effect.selfDebuff) {
+            let selfDebuffToApply = { ...effect.selfDebuff };
+            if (typeof selfDebuffToApply.value === 'function') {
+                selfDebuffToApply.value = selfDebuffToApply.value(player);
+            }
+            player.applyDebuff(selfDebuffToApply);
         }
     } else {
         combatLog.push('Ability effect not implemented.');

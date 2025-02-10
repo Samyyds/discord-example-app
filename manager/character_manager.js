@@ -234,6 +234,17 @@ class Character {
             this.buffs.push(buff);
             this.updateStatus(buff, 'add');
         }
+        console.log(`Applied buff ${buff.type}: +${buff.value}. New status value:`, this.status[buff.type]);
+    }
+
+    applyDebuff(debuff) {
+        const existingDebuff = this.debuffs.find(d => d.type === debuff.type);
+        if (existingDebuff) {
+            existingDebuff.duration = Math.max(existingDebuff.duration, debuff.duration);
+        } else {
+            this.debuffs.push(debuff);
+            this.updateStatus(debuff, 'add');
+        }
     }
 
     removeBuff(buff) {
@@ -253,26 +264,30 @@ class Character {
         this.debuffs = [];
     }
 
-    updateStatus(buff, operation) {
-        if (!buff) {
-            console.error('No buff provided for updateStatus.');
-            return;
-        }
-        const { type, value } = buff;
-
-        if (this.status.hasOwnProperty(type)) {
-            if (operation === 'add') {
-                this.status[type] += value;
-            } else if (operation === 'subtract') {
-                this.status[type] -= value;
-            }
-        } else {
-            console.error(`Invalid status key: ${type}`);
-        }
-
-        this.stats.applyBoost();
+    heal(amount) {
+        this.stats.hp = Math.min(this.stats.hp + amount, this.stats.hpMax);
     }
 
+    updateStatus(buff, operation) {
+        if (buff.type === 'speed') {
+            if (operation === 'add') {
+                this.stats.spd += buff.value;
+            } else if (operation === 'subtract') {
+                this.stats.spd -= buff.value;
+            }
+            return;
+        }
+        if (!this.status.hasOwnProperty(buff.type)) {
+            console.error(`Invalid status key: ${buff.type}`);
+            return;
+        }
+        if (operation === 'add') {
+            this.status[buff.type] += buff.value;
+        } else if (operation === 'subtract') {
+            this.status[buff.type] -= buff.value;
+        }
+    }
+    
     applyStatBonus(effectType, value) {
         switch (effectType) {
             case ConsumableEffect.PHY_ATK_BONUS:
