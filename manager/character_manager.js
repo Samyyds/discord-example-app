@@ -241,6 +241,11 @@ class Character {
         this.updateStatus(buff, 'subtract');
     }
 
+    removeDebuff(debuff) {
+        this.debuffs = this.debuffs.filter(d => d !== debuff);
+        this.updateStatus(debuff, 'subtract');
+    }
+
     clearAllDebuffs() {
         this.debuffs.forEach(debuff => {
             this.updateStatus(debuff, 'subtract');
@@ -454,8 +459,8 @@ class CharacterManager {
 }
 
 class CombatSession {
-    constructor(characters) {
-        this.characters = characters;
+    constructor() {
+        this.characters = [];
         this.currentRound = 1;
         this.active = true;
     }
@@ -466,7 +471,9 @@ class CombatSession {
     }
 
     endCombat() {
+        this.characters = [];
         this.active = false;
+        this.currentRound = 1;
         this.clearAllEffects();
     }
 
