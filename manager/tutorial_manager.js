@@ -1,5 +1,4 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
-import { Race, Class } from "../data/enums.js";
 import { CharacterManager } from "../manager/character_manager.js";
 
 class Tutorial {
@@ -12,6 +11,7 @@ class Tutorial {
             { text: "Welcome to Merfolk & Magic - a fully discord based multi-user dungeon with a hand written storyline, quests, trading, crafting, classes and class builds, and with a strong emphasis on roleplaying. Future releases will include endgame and post-story mechanics.", command: null },
             { text: "Merfolk & Magic is played using Discord commands. Discord commands always start with the slash symbol (/). Every available / command can be previewed by typing / into the chatbox.", command: null },
             { text: "Use the /character create command to create your character and begin playing.", command: "1291047824481456200" },
+            { text: "Please wait.", command: null },
             { text: "You are a {$race} {$class} who is called {$name}. You grew up in the small fishing village of Moku’ah. Your adventure begins there.", command: null },
             { text: "Chromatic shapes pass between the gaps in your vision. You want to hold on to words, but they dance away on little black ships. Waves of pain cascade irregularly into the eye in your forehead. You open the door to the next dimension. It smells vaguely of blue corn. There is a hand the size of a building, and it crushes you before you can say anything. You feel every bone break in your body, and you feel your skull crushed like a watermelon. Yet you can still see somehow, your eyeballs floating away independently, functionally scanning the sky. There's no blood, because you died a long time ago. You know it, you're sure of it, but you don't remember when, or who told you. A woman with worms for eyes appears in front of you and, with a piercing scream, they dive into yours.", command: null },
             { text: "You open your eyes. You look to your right and left, then below. You're lying on a dirty mattress, the edges stained black with use. You sit up, disoriented. You had a dream, but you can't remember anything about it. Your gear is still next to you. Your fishing gear. You're not an adventurer, you remember. You're just a failed fisherman.", command: null },
@@ -54,37 +54,57 @@ class Tutorial {
 
     async processStep() {
         if (this.currentStep < this.steps.length) {
-          const step = this.steps[this.currentStep];
-          const embed = new EmbedBuilder()
-            .setColor(0x0099FF)
-            .setDescription(step.text);
-      
-          let components = [];
-          const nextButton = new ButtonBuilder();
-          if (!step.command) {
-            nextButton 
-              .setCustomId('tutorial_next')
-              .setLabel('Next')
-              .setStyle(ButtonStyle.Primary);
-            components.push(new ActionRowBuilder().addComponents(nextButton));
-          }else{
-            nextButton.setDisabled(true);
-          }
-      
-          if (!this.interaction.deferred && !this.interaction.replied) {
-            await this.interaction.reply({ embeds: [embed], ephemeral: true, components });
-          } else {
-            await this.interaction.followUp({ embeds: [embed], ephemeral: true, components });
-          }
+            const step = this.steps[this.currentStep];
 
-          if (step.command) {
-            this.waitForCommand(step.command);
-          }
+            let description = step.text;
+            if (description.includes('{$name}') &&
+                description.includes('{$race}') &&
+                description.includes('{$class}')) {
+
+                const activeChar = CharacterManager.getInstance().getActiveCharacter(this.interaction.user.id);
+
+                if (activeChar) {
+                    description = description.replace('{$name}', activeChar.name)
+                        .replace('{$race}', getRaceName(activeChar.raceId))
+                        .replace('{$class}', getClassName(activeChar.classId));
+                } else {
+                    description = description
+                        .replace('{$name}', 'unknown')
+                        .replace('{$race}', 'unknown')
+                        .replace('{$class}', 'unknown');
+                }
+            }
+
+            const embed = new EmbedBuilder()
+                .setColor(0x0099FF)
+                .setDescription(description);
+
+            let components = [];
+            const nextButton = new ButtonBuilder();
+            if (!step.command) {
+                nextButton
+                    .setCustomId('tutorial_next')
+                    .setLabel('Next')
+                    .setStyle(ButtonStyle.Primary);
+                components.push(new ActionRowBuilder().addComponents(nextButton));
+            } else {
+                nextButton.setDisabled(true);
+            }
+
+            if (!this.interaction.deferred && !this.interaction.replied) {
+                await this.interaction.reply({ embeds: [embed], ephemeral: true, components });
+            } else {
+                await this.interaction.followUp({ embeds: [embed], ephemeral: true, components });
+            }
+
+            if (step.command) {
+                this.waitForCommand(step.command);
+            }
         } else {
-          console.log("Tutorial completed.");
-          this.cleanup();
+            console.log("Tutorial completed.");
+            this.cleanup();
         }
-      }
+    }
 
     waitForCommand(commandId) {
         this.cleanupListener();
