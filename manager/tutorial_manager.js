@@ -60,12 +60,15 @@ class Tutorial {
             .setDescription(step.text);
       
           let components = [];
+          const nextButton = new ButtonBuilder();
           if (!step.command) {
-            const nextButton = new ButtonBuilder()
+            nextButton 
               .setCustomId('tutorial_next')
               .setLabel('Next')
               .setStyle(ButtonStyle.Primary);
             components.push(new ActionRowBuilder().addComponents(nextButton));
+          }else{
+            nextButton.setDisabled(true);
           }
       
           if (!this.interaction.deferred && !this.interaction.replied) {

@@ -59,6 +59,7 @@ import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
 import { handleTalkAutocomplete } from "./handler/talk_autoComplete.js";
 import { handleBuyAutocomplete } from "./handler/buy_autoComplete.js";
 import { handleSellAutocomplete } from "./handler/sell_autoComplete.js";
+import { handleTutorialNextButtonInteraction } from "./handler/next_handler.js";
 import { sendWelcomeMessage } from "./util/util.js";
 
 
@@ -390,16 +391,19 @@ client.on(Events.InteractionCreate, async interaction => {
       handleQuestInteraction(interaction);
     } else if (interaction.customId.startsWith('start_')) {
       handleStartGameInteraction(interaction);
-    } else if (interaction.customId === 'tutorial_next') {
-      const tutorial = TutorialManager.getInstance().getTutorialForUser(interaction.user.id);
-      if (tutorial) {
-        tutorial.interaction = interaction;
-        tutorial.currentStep++;
-        tutorial.processStep();
-      } else {
-        await interaction.reply({ content: "No active tutorial found.", ephemeral: true });
-      }
+    } else if(interaction.customId.startsWith('tutorial_next')){
+      handleTutorialNextButtonInteraction(interaction);
     }
+    // else if (interaction.customId === 'tutorial_next') {
+    //   const tutorial = TutorialManager.getInstance().getTutorialForUser(interaction.user.id);
+    //   if (tutorial) {
+    //     tutorial.interaction = interaction;
+    //     tutorial.currentStep++;
+    //     tutorial.processStep();
+    //   } else {
+    //     await interaction.reply({ content: "No active tutorial found.", ephemeral: true });
+    //   }
+    // }
     else {
       console.log('Unrecognized button interaction:', interaction.customId);
       await interaction.reply({ content: "I'm not sure what this button is for!", ephemeral: true });
