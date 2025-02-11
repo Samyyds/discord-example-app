@@ -99,6 +99,8 @@ Station.
 
 /smelt - Smelt an ore. Requires you to be near an appropriate facility.
 
+/use - Consume or imbibe a beneficial item from your inventory.
+
 `;
 
 const descriptions = {
