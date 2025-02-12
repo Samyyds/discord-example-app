@@ -287,7 +287,7 @@ class Character {
             this.status[buff.type] -= buff.value;
         }
     }
-    
+
     applyStatBonus(effectType, value) {
         switch (effectType) {
             case ConsumableEffect.PHY_ATK_BONUS:
@@ -375,18 +375,42 @@ class Character {
 
     increaseCharacterXp(amount) {
         this.xp += amount;
-    
+
         let newLevel = calculateLevelFromXp(this.xp);
-    
+
         if (newLevel > this.level) {
             this.level = newLevel;
+            this.handleLevelUp();
         }
-    }  
-    
-    handleLevelUp(levelsGained) {
-        console.log(`${this.name} leveled up! Gained ${levelsGained} levels.`);
     }
-    
+
+    handleLevelUp() {
+        const newBaseHP = 100 + (this.level - 1) * 3.2;
+        const newBaseMP = 100 + (this.level - 1) * 0.75;
+        const newBaseAtk = 10 + (this.level - 1) * 0.32;
+        const newBaseDef = 10 + (this.level - 1) * 0.32;
+
+        const className = Object.keys(Class).find(key => Class[key] === this.classId);
+        const raceName = Object.keys(Race).find(key => Race[key] === this.raceId);
+        const personalityName = Object.keys(Personality).find(key => Personality[key] === this.personalityId);
+
+        const classMods = CLASS_BASE_STAT_MODIFIERS[className];
+        const raceMods = RACE_BASE_STAT_MODIFIERS[raceName];
+        const personalityMods = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
+
+        this.stats.hpMax = Math.round(newBaseHP * classMods.hp * raceMods.hp);
+        this.stats.mpMax = Math.round(newBaseMP * classMods.mp * raceMods.mp);
+
+        this.stats.hp = this.stats.hpMax;
+        this.stats.mp = this.stats.mpMax;
+
+        this.stats.physicalATK = Math.round(newBaseAtk * classMods.physicalATK * raceMods.physicalATK * personalityMods.physicalATK);
+        this.stats.physicalDEF = Math.round(newBaseDef * classMods.physicalDEF * raceMods.physicalDEF * personalityMods.physicalDEF);
+        this.stats.magicATK = Math.round(newBaseAtk * classMods.magicATK * raceMods.magicATK * personalityMods.magicATK);
+        this.stats.magicDEF = Math.round(newBaseDef * classMods.magicDEF * raceMods.magicDEF * personalityMods.magicDEF);
+
+        console.log(`Level Up: New level ${this.level}. New stats: HP ${this.stats.hpMax}, MP ${this.stats.mpMax}, PHY ATK ${this.stats.physicalATK}, PHY DEF ${this.stats.physicalDEF}, MAG ATK ${this.stats.magicATK}, MAG DEF ${this.stats.magicDEF}`);
+    }
 }
 
 class Combatant {
