@@ -167,8 +167,10 @@ async function loadCharactersForUser(userId) {
             );
 
             character.status = new StatusContainer(
-                statusData.spdMult, statusData.phyDefBuffMag, statusData.phyDefBuffTimer,
-                statusData.bleedMag, statusData.bleedTimer, statusData.poisonMag, statusData.poisonTimer
+                statusData.poison, statusData.bleed, statusData.physicalATKBoost,
+                statusData.physicalDEFBoost, statusData.magicATKBoost, statusData.magicDEFBoost,
+                statusData.fireATKBoost, statusData.fireDEFBoost, statusData.lightATKBoost,
+                statusData.lightDEFBoost, statusData.darkATKBoost, statusData.darkDEFBoost
             );
 
             return character;
