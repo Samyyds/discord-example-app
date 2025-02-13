@@ -70,7 +70,7 @@ const attributeMapping = {
 };
 
 class StatContainer {
-    constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF, status) {
+    constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF, status = new StatusContainer()) {
         this.hpMax = Math.max(0, Math.round(hpMax));
         this.mpMax = Math.max(0, Math.round(mpMax));
         this.hp = Math.max(0, Math.round(hp));
@@ -94,6 +94,9 @@ class StatContainer {
     }
 
     applyBoost() {
+        console.log('Applying boost:', this);
+        console.log('Current Status:', this.status);
+
         this.physicalATK += this.status.physicalATKBoost || 0;
         this.physicalDEF += this.status.physicalDEFBoost || 0;
         this.magicATK += this.status.magicATKBoost || 0;
@@ -213,6 +216,7 @@ class Character {
                 CLASS_BASE_STATS[className].physicalATK,
                 CLASS_BASE_STATS[className].physicalDEF,
                 CLASS_BASE_STATS[className].magicATK,
+                CLASS_BASE_STATS[className].magicDEF,
                 0, // fireATK
                 0, // fireDEF
                 0, // lightATK
@@ -235,6 +239,8 @@ class Character {
             this.updateStatus(buff, 'add');
         }
         console.log(`Applied buff ${buff.type}: +${buff.value}. New status value:`, this.status[buff.type]);
+        console.log("Current Status: ", this.status);
+        this.stats.applyBoost();
     }
 
     applyDebuff(debuff) {
@@ -245,6 +251,8 @@ class Character {
             this.debuffs.push(debuff);
             this.updateStatus(debuff, 'add');
         }
+        console.log("Current Status: ", this.status);
+        this.stats.applyBoost();
     }
 
     removeBuff(buff) {
