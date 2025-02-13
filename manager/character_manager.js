@@ -85,7 +85,7 @@ class StatContainer {
         this.lightATK = Math.max(0, Math.round(lightATK));
         this.lightDEF = Math.max(0, Math.round(lightDEF));
         this.darkATK = Math.max(0, Math.round(darkATK));
-        this.darkATK = Math.max(0, Math.round(darkDEF));
+        this.darkDEF = Math.max(0, Math.round(darkDEF));
         this.status = status;
     }
 
