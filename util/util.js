@@ -314,6 +314,16 @@ export function parseEnemyDialogue(text) {
     return text.split('\n').filter(line => line.trim() !== '');
 }
 
+export function getRaceName(raceId) {
+    const key = Object.keys(Race).find(k => Race[k] === raceId);
+    return key ? key.toLowerCase() : "unknown";
+  }
+
+export function getClassName(classId) {
+    const key = Object.keys(Class).find(k => Class[k] === classId);
+    return key ? key.toLowerCase() : "unknown";
+  }
+  
 
 
 

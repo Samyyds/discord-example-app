@@ -76,7 +76,7 @@ You control your character and interact with the world using slash commands. Her
 
 /inventory - Display a list of what is in your inventory.
 
-/recipes - Display a list of your known recipes.
+/recipe - Display a list of your known recipes.
 
 /character create - Creates a character. You will also pick their name, class, race, and personality. These cannot be changed after creation.
 

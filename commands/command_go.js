@@ -20,6 +20,12 @@ const goCommand = async (interaction) => {
         const destination = interaction.options.getString('destination');
 
         if (destination === 'dungeon-in') {
+            const currentRegion = regionManager.getRegionById(curLocation.regionId);
+            const currentLocation = currentRegion.getLocation(curLocation.locationId);
+            const currentRoom = currentLocation.getRoom(curLocation.roomId);
+            if (currentRoom.hasEnemies()) {
+                throw new Error('You cannot move to the next room while there are still enemies here!');
+            }
             playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false);
         } else if (destination === 'dungeon-out') {
             playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true);

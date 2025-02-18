@@ -6,7 +6,7 @@ import { AbilityManager } from '../manager/ability_manager.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
 import { Character, CharacterManager, StatContainer, StatusContainer, CLASS_BASE_STATS, CLASS_BASE_STAT_MODIFIERS, RACE_BASE_STAT_MODIFIERS, PERSONALITY_BASE_STAT_MODIFIERS } from '../manager/character_manager.js';
-import { sendErrorMessage } from "../util/util.js";
+import { sendErrorMessage, getClassName, getRaceName } from "../util/util.js";
 
 //let currentCharacterId = 0;
 
@@ -129,7 +129,7 @@ const switchCommand = async (interaction) => {
     if (activeCharacter) {
         selectMenu.addOptions({
             label: `${activeCharacter.name} (Active)`,
-            description: `Level: ${activeCharacter.level}, Class: ${activeCharacter.classId}, Race: ${activeCharacter.raceId} `,
+            description: `Level: ${activeCharacter.level}, Class: ${getClassName(activeCharacter.classId)}, Race: ${getRaceName(activeCharacter.raceId)} `,
             value: activeCharacter.id.toString()
         });
     }
@@ -137,7 +137,7 @@ const switchCommand = async (interaction) => {
     otherCharacters.forEach(character => {
         selectMenu.addOptions({
             label: `${character.name} (Inactive)`,
-            description: `Level: ${character.level}, Class: ${character.classId}, Race: ${character.raceId} `,
+            description: `Level: ${character.level}, Class: ${getClassName(character.classId)}, Race: ${getRaceName(character.raceId)} `,
             value: character.id.toString()
         });
     });
