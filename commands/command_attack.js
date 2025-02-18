@@ -130,14 +130,14 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
 
     if (player.stats.hp <= 0) {
         combatLog.push(`${player.name} is defeated!`);
-        combatLog.push("Your soul will be sent to the Moku'ah Clinic.");
+        combatLog.push("Your soul will be sent to the hospital of your region.");
 
         if (enemy.defeatedDialogue) {
             pushEnemyDialogueToCombatLog(enemy.defeatedDialogue, combatLog);
         }
 
         const characterManager = CharacterManager.getInstance();
-        characterManager.reviveCharacter(interaction.user.id);
+        characterManager.reviveCharacter(interaction.user.id, regionId);
 
         return { combatLog, playerAlive: false, enemyAlive: true };
     }

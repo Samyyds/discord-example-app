@@ -2,6 +2,7 @@ import { calculateLevelFromXp } from '../util/util.js';
 import { Slots } from "../data/enums.js";
 import { Class, Race, Personality, ConsumableEffect } from '../data/enums.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
+import { RegionManager } from "../manager/region_manager.js";
 
 export const CLASS_BASE_STATS = {
     'NO_CLASS': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
@@ -471,15 +472,41 @@ class CharacterManager {
         return characters.find(character => character.id === Number(activeCharacterId));
     }
 
-    reviveCharacter(userId) {
+    reviveCharacter(userId, regionId) {
         const character = this.getActiveCharacter(userId);
         if (character) {
             character.stats.hp = character.stats.hpMax / 2;
             character.stats.mp = character.stats.mpMax / 2;
 
-            const reviveRegionId = 0;
-            const reviveLocationId = 4;
-            const reviveRoomId = 0;
+            let reviveRegionId;
+            let reviveLocationId;
+            let reviveRoomId;
+
+            if (regionId === 0) {
+
+                reviveRegionId = 0;
+                reviveLocationId = 4;
+                reviveRoomId = 0;
+
+            } else if (regionId === 1) {
+
+                reviveRegionId = 1;
+                reviveLocationId = 5;
+                reviveRoomId = 0;
+
+            } else if (regionId === 2) {
+
+                reviveRegionId = 2;
+                reviveLocationId = 4;
+                reviveRoomId = 0;
+
+            } else if (regionId === 3) {
+
+                reviveRegionId = 3;
+                reviveLocationId = 0;
+                reviveRoomId = 0;
+
+            }
 
             const playerMoveManager = PlayerMovementManager.getInstance();
             playerMoveManager.setLocation(userId, character.id, reviveRegionId, reviveLocationId, reviveRoomId);
