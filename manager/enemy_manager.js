@@ -36,6 +36,19 @@ class Enemy extends Character {
         this.questId = enemyType.questId;
         this.buffs = [];
         this.debuffs = [];
+        this.isTarget = new Map();
+    }
+
+    setTarget(characterId) {
+        this.isTarget.set(characterId, 1);
+    }
+
+    removeTarget(characterId) {
+        this.isTarget.delete(characterId);
+    }
+
+    isBeingTargeted() {
+        return this.isTarget.size > 0;
     }
 
     applyDebuff(debuff) {

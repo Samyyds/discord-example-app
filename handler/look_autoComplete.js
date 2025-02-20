@@ -20,7 +20,7 @@ export const handleLookAutocomplete = async (interaction) => {
             return interaction.respond([]);
         }
 
-        const enemies = room.getEnemies().map(enemy => ({ name: enemy.name, value: enemy.name }));
+        const enemies = room.getEnemies().filter(enemy => !enemy.isBeingTargeted()).map(enemy => ({ name: enemy.name, value: enemy.name }));
         const nodes = room.getNodes().map(node => ({ name: node.name, value: node.name }));
         const items = room.getItems().map(item => ({ name: item.name, value: item.name }));
         const npcs = room.getNPCs().map(npc => ({ name: npc.name, value: npc.name }));

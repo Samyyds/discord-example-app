@@ -19,14 +19,24 @@ const goCommand = async (interaction) => {
         const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         const destination = interaction.options.getString('destination');
 
+        const currentRegion = regionManager.getRegionById(curLocation.regionId);
+        const currentLocation = currentRegion.getLocation(curLocation.locationId);
+        const currentRoom = currentLocation.getRoom(curLocation.roomId);
+
+        const enemies = currentRoom.getEnemies();
+
+        const playerHasLockedEnemy = enemies.some(enemy => enemy.isTarget.has(activeCharacter.id));
+
+        const allEnemiesLockedByOthers = enemies.every(enemy => enemy.isTarget.size > 0);
+
         if (destination === 'dungeon-in') {
-            const currentRegion = regionManager.getRegionById(curLocation.regionId);
-            const currentLocation = currentRegion.getLocation(curLocation.locationId);
-            const currentRoom = currentLocation.getRoom(curLocation.roomId);
-            if (currentRoom.hasEnemies()) {
-                throw new Error('You cannot move to the next room while there are still enemies here!');
+            if (playerHasLockedEnemy) {
+                return await sendErrorMessage(interaction, `Enemies still block the way ahead. Clear them out to continue!`);
+            } else if (!playerHasLockedEnemy && allEnemiesLockedByOthers) {
+                playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false);
+            } else {
+                return await sendErrorMessage(interaction, `Enemies still block the way ahead. Clear them out to continue!`);
             }
-            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false);
         } else if (destination === 'dungeon-out') {
             playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true);
         } else {
@@ -38,24 +48,24 @@ const goCommand = async (interaction) => {
         const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
-        const currentRegion = regionManager.getRegionById(newLocation.regionId);
-        const currentLocation = currentRegion.getLocation(newLocation.locationId);
+        const newRegion = regionManager.getRegionById(newLocation.regionId);
+        const newLoc = newRegion.getLocation(newLocation.locationId);
 
         let description;
 
-        if (currentLocation.roomCount > 1) {
+        if (newLoc.roomCount > 1) {
             const roomId = newLocation.roomId;
-            const roomCount = currentLocation.roomCount;
+            const roomCount = newLoc.roomCount;
 
             if (roomId === 0) {
-                description = `You are at the **entrance** of ${currentLocation.name}.`;
+                description = `You are at the **entrance** of ${newLoc.name}.`;
             } else if (roomId === roomCount - 1) {
-                description = `You have reached the **bottom** of ${currentLocation.name}.`;
+                description = `You have reached the **bottom** of ${newLoc.name}.`;
             } else {
-                description = `You are **${roomId} mile(s)** away from the entrance of ${currentLocation.name}.`;
+                description = `You are **${roomId} mile(s)** away from the entrance of ${newLoc.name}.`;
             }
         } else {
-            description = currentLocation.enterDescription;
+            description = newLoc.enterDescription;
         }
 
         const embed = new EmbedBuilder()

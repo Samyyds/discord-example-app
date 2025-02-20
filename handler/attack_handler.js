@@ -35,7 +35,7 @@ export async function handleAttackInteraction(interaction) {
         }
         const enemies = room.getEnemies();
 
-        const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName.toLowerCase());
+        const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName.toLowerCase() && enemy.isTarget !== 1);
 
         if (!enemy) {
             await interaction.followUp({ content: `Enemy with name ${enemyName} not found in this room.`, ephemeral: true });

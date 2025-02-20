@@ -1,4 +1,4 @@
-import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
+import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, EntitlementType } from 'discord.js';
 import { CharacterManager, CombatSession } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { RegionManager } from "../manager/region_manager.js";
@@ -35,11 +35,17 @@ const attackCommand = async (interaction) => {
         }
         const enemies = room.getEnemies();
 
-        const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName);
+        const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName && !enemy.isBeingTargeted());
         if (!enemy) {
             return await sendErrorMessage(interaction, `Enemy with name ${enemyName} not found in this room.`);
         }
+        if (enemies.some(enemy => enemy.isTarget.has(activeChar.id))) {
+            return await sendErrorMessage(interaction, 'You can only target one enemy at a time.');
+        }
+
         console.log(`encounter count: ${characterManager.getEnemyEncounterCount(activeChar.id, enemy.id)}`);
+
+        enemy.setTarget(activeChar.id);
 
         const isFirstEncounter = characterManager.isFirstEncounterWithBoss(activeChar.id, enemy.id);
         characterManager.trackEnemy(activeChar.id, enemy.id);
@@ -113,6 +119,9 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
         }
 
         handleEnemyDefeat(interaction, player, enemy, combatLog, regionManager, regionId, locationId, roomId);
+
+        enemy.removeTarget(player.id);
+
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
 
@@ -138,6 +147,8 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
 
         const characterManager = CharacterManager.getInstance();
         characterManager.reviveCharacter(interaction.user.id, regionId);
+
+        enemy.removeTarget(player.id);
 
         return { combatLog, playerAlive: false, enemyAlive: true };
     }
@@ -339,9 +350,9 @@ function applyAbilityEffect(player, enemy, ability, combatLog) {
             damageType: null,
             damageValue: 0,
             action: `You brew and down a vitae broth, healing yourself for {TYPE+DMG} of your total health.`,
-            heal: { 
-              type: 'hp', 
-              value: (player) => player.stats.hpMax * ((10 + player.skills.skills.cooking.level / 2.5) / 100) 
+            heal: {
+                type: 'hp',
+                value: (player) => player.stats.hpMax * ((10 + player.skills.skills.cooking.level / 2.5) / 100)
             }
         },
         'kindle_hearth': {
@@ -435,7 +446,7 @@ function applyAbilityEffect(player, enemy, ability, combatLog) {
             }
             combatLog.push(finalMessage);
         }
-        
+
         if (effect.buff) {
             let buffToApply = { ...effect.buff };
             if (typeof buffToApply.value === 'function') {

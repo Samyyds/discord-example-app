@@ -25,7 +25,7 @@ export async function handleAttackAutocomplete(interaction) {
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
         const filteredEnemies = enemies
-            .filter(enemy => enemy.name.toLowerCase().includes(focusedValue))
+            .filter(enemy => enemy.name.toLowerCase().includes(focusedValue) && !enemy.isBeingTargeted())
             .map(enemy => ({ name: enemy.name, value: enemy.name }));
 
         await interaction.respond(filteredEnemies);

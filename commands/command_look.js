@@ -23,7 +23,7 @@ const lookCommand = async (interaction) => {
         if (!room) {
             return await sendErrorMessage(interaction, `Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
         }
-        const enemies = room.getEnemies();
+        const enemies = room.getEnemies().filter(enemy => enemy.isTarget.size === 0);
         const nodes = room.getNodes();
         const items = room.getItems();
         const npcs = room.getNPCs();
