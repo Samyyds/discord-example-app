@@ -130,7 +130,8 @@ export const Ability = {
     "KINDLE_HEARTH": 33,
     "PALPITATE": 34,
     "PELT_POACH": 35,
-    "PITFALL": 36
+    "PITFALL": 36,
+    "FLEE": 37
 };
 
 export const ItemType = {

@@ -9,6 +9,232 @@ import { sendErrorMessage, parseEnemyDialogue } from "../util/util.js";
 import { ItemType, QuestStatus } from "../data/enums.js";
 import { InventoryManager } from "../manager/inventory_manager.js";
 
+const abilityEffectMap = {
+    'punch': {
+        damageType: 'physical',
+        damageValue: 80, // 80%
+        action: `You swing your fist at {enemy}, crushing them for {TYPE+DMG} damage.`
+    },
+    'drain': {
+        damageType: 'magical',
+        damageValue: 80,
+        action: `You pull the life force out of {enemy}, burning away part of their soul for {TYPE+DMG} damage.`
+    },
+    'bite': {
+        damageType: 'physical',
+        damageValue: 80,
+        action: `You ferociously bite {enemy}, causing {TYPE+DMG} damage.`
+    },
+    'slash': {
+        damageType: 'physical',
+        damageValue: 100,
+        action: `You slash {enemy}, slicing them for {TYPE+DMG} damage.`
+    },
+    'martial_strike': {
+        damageType: 'physical',
+        damageValue: (player, enemy) => player.stats.physicalATK * 1.2,
+        action: `You strike {enemy} dextrously with your weapon, dealing {TYPE+DMG} damage.`
+    },
+    'disarm': {
+        damageType: 'physical',
+        damageValue: 0,
+        action: `You knock {enemy}'s weapons aside, hurting them for {TYPE+DMG}. Their Physical Damage has been lowered for 2 turns.`,
+        debuff: { type: 'physicalATKBoost', value: -20, duration: 2 }
+    },
+    'fortify': {
+        damageType: null,
+        damageValue: 0,
+        action: `You steel your body and mind, significantly increasing your resistance to Physical Damage for 3 turns.`,
+        buff: { type: 'physicalDEFBoost', value: 300, duration: 3 }
+    },
+    'breakout': {
+        damageType: 'physical',
+        damageValue: (player) => player.status.physicalDEFBoost || 0,
+        action: `You move from a defensive stance and deliver a powerful strike to {enemy}, hurting them for {TYPE+DMG} damage.`
+    },
+    'savage_strikes': {
+        damageType: 'physical',
+        damageValue: 160,
+        action: `You attack {enemy} with multiple savage blows, eviscerating them for {TYPE+DMG} damage.`
+    },
+    'fury': {
+        damageType: null,
+        damageValue: 0,
+        action: `Rage from being hurt is boosting your Physical attack for 1 turn.`,
+        buff: { type: 'physicalATKBoost', value: 15, duration: 1 }
+    },
+    'frenzy': {
+        damageType: 'physical',
+        damageValue: (player) => {
+            const missingHpRatio = 1 - (player.stats.hp / player.stats.hpMax);
+            return player.stats.physicalATK * 2.4 + player.stats.physicalATK * missingHpRatio;
+        },
+        action: `You unleash a frenzy of strikes on {enemy}, leaving them bloodied for {TYPE+DMG} damage.`
+    },
+    'blood_frenzy': {
+        damageType: 'physical',
+        damageValue: (player) => {
+            const missingHpRatio = 1 - (player.stats.hp / player.stats.hpMax);
+            return player.stats.physicalATK * 2.4 + player.stats.physicalATK * missingHpRatio;
+        },
+        action: `You unleash a frenzy of strikes on {enemy}, leaving them bloodied for {TYPE+DMG} damage. Drinking the blood of your enemies recovers a portion of your health.`,
+        healthRecovery: (player) => player.stats.hpMax * 0.04
+    },
+    'spiritblade': {
+        damageType: 'magical',
+        damageValue: 190,
+        action: `You swing a blade of energy at {enemy}, cleaving them with arcane power for {TYPE+DMG} damage.`,
+        buff: { type: 'magicDEFBoost', value: 200, duration: 1 }
+    },
+    'arcane_barrier': {
+        damageType: null,
+        damageValue: 0,
+        action: `You focus a layer of arcane energy around you, significantly increasing your Magic Defense for 3 turns.`,
+        buff: { type: 'magicDEFBoost', value: 200, duration: 3 }
+    },
+    'fireball': {
+        damageType: 'magical',
+        damageValue: 150,
+        action: `You throw an incendiary orb that explodes on {enemy}, scorching them for {TYPE+DMG}.`
+    },
+    'incinerate': {
+        damageType: 'magical',
+        damageValue: (ability, player) => {
+            let spentMana = ability.mpCost;
+            return spentMana * 0.04 * player.stats.magicATK;
+        },
+        action: `You unleash a devastating beam of power into {enemy}, obliterating them for {TYPE+DMG}.`
+    },
+    'chilling_blast': {
+        damageType: 'magical',
+        damageValue: 80,
+        action: `You blast {enemy} with ice shards, dealing {TYPE+DMG} and slowing them for 4 turns.`,
+        debuff: { type: 'speed', value: -50, duration: 4 }
+    },
+    'ice_spear': {
+        damageType: 'magical',
+        damageValue: 220,
+        action: `You propel a massive ice spear at {enemy}, impaling them for {TYPE+DMG}.`
+    },
+    'noxious_cloud': {
+        damageType: null,
+        damageValue: 0,
+        action: `You conjure toxic vapours around {enemy}, poisoning them {TYPE+DMG}.`,
+        debuff: { type: 'poison', value: 20, duration: 5 }
+    },
+    'putrefy': {
+        damageType: 'magical',
+        damageValue: 200,
+        action: `You dissolve the innards of {enemy}, liquefying them for {TYPE+DMG} damage. They take additional damage for 1 more turn.`,
+        debuff: { type: 'poison', value: 30, duration: 1 }
+    },
+    'thunderclap': {
+        damageType: 'magical',
+        damageValue: 120,
+        action: `You smack the enemy with a massive thunderclap, concussing them for {TYPE+DMG}. They are also stunned.`,
+        debuff: { type: 'stun', duration: 1 }
+    },
+    'electric_whip': {
+        damageType: 'magical',
+        damageValue: 100,
+        action: `You whip {enemy} with an electric coil, electrocuting them for {TYPE+DMG} and siphoning some of their mana.`
+    },
+    'forlorn_melody': {
+        damageType: null,
+        damageValue: 0,
+        action: `You play a forlorn melody, reducing your opponent's Magical defenses by 50%.`,
+        debuff: { type: 'magicDEFBoost', value: (enemy) => -enemy.stats.magicDEF * 0.5, duration: -1 }
+    },
+    'anthem_recital': {
+        damageType: null,
+        damageValue: 0,
+        action: `You recite a bolstering anthem, increasing your Physical attack by 50%.`,
+        buff: { type: 'physicalATKBoost', value: (player) => player.stats.physicalATK * 0.5, duration: -1 }
+    },
+    'austere_sermon': {
+        damageType: null,
+        damageValue: 0,
+        action: `You declare an austere sermon, reducing your opponent's Physical attack by 50%.`,
+        debuff: { type: 'physicalATKBoost', value: (enemy) => -enemy.stats.physicalATK * 0.5, duration: -1 }
+    },
+    'luminous_shimmer': {
+        damageType: null,
+        damageValue: 0,
+        action: `You siphon magic from the air, reducing your opponent's Magical attack by 50%.`,
+        debuff: { type: 'magicATKBoost', value: (enemy) => -enemy.stats.magicATK * 0.5, duration: -1 }
+    },
+    'neon_brilliance': {
+        damageType: null,
+        damageValue: 0,
+        action: `You empower yourself with light magic, increasing your Magical attack by 50%.`,
+        buff: { type: 'magicATKBoost', value: (player) => player.stats.magicATK * 0.5, duration: -1 }
+    },
+    'salty_ballad': {
+        damageType: 'mixed',
+        damageValue: (player) => {
+            const physical = player.stats.physicalATK * 1.5;
+            const magical = player.stats.magicATK * 1.5;
+            return physical + magical;
+        },
+        action: `You unleash a Salty Ballad, dealing {TYPE+DMG} damage and slowing yourself by 50%.`,
+        selfDebuff: { type: 'speed', value: (player) => -player.stats.spd * 0.5, duration: -1 }
+    },
+    'glitter_flash': {
+        damageType: 'magical',
+        damageValue: 30,
+        action: `You unleash a blinding flash, dealing {TYPE+DMG} while also reducing the opponent's speed by 50%.`,
+        debuff: { type: 'speed', value: -50, duration: -1 }
+    },
+    'pulverize': {
+        damageType: 'physical',
+        damageValue: 90,
+        action: `You pulverise {enemy} like meat, dealing {TYPE+DMG} damage and reducing their attack by 10%.`,
+        debuff: { type: 'physicalATKBoost', value: -10, duration: -1 }
+    },
+    'batter_and_bruise': {
+        damageType: 'physical',
+        damageValue: 90,
+        action: `You batter {enemy} with brute force, dealing {TYPE+DMG} damage and reducing their speed by 10%.`,
+        debuff: { type: 'speed', value: -10, duration: -1 }
+    },
+    'cauldron_masala': {
+        damageType: null,
+        damageValue: 0,
+        action: `You brew and down a vitae broth, healing yourself for {TYPE+DMG} of your total health.`,
+        heal: {
+            type: 'hp',
+            value: (player) => player.stats.hpMax * ((10 + player.skills.skills.cooking.level / 2.5) / 100)
+        }
+    },
+    'kindle_hearth': {
+        damageType: null,
+        damageValue: 0,
+        action: `You kindle the eternal flame within, increasing your Magical defense by your (Gathering level * 5).`,
+        buff: { type: 'magicDEFBoost', value: (player) => player.skills.skills.gathering * 5, duration: -1 }
+    },
+    'palpitate': {
+        damageType: 'magical',
+        damageValue: (player) => player.stats.magicATK * ((100 + player.skills.skills.smithing.level) / 100),
+        action: `You hurl a lance of fire at {enemy}, burning them for {TYPE+DMG} damage.`
+    },
+    'pelt_poach': {
+        damageType: 'physical',
+        damageValue: (player, enemy) => enemy.stats.hp * ((10 + player.skills.skills.smithing.level / 2) / 100),
+        action: `You gruesomely flense {enemy}, dealing damage equal to {TYPE+DMG} of their current health.`
+    },
+    'pitfall': {
+        damageType: 'physical',
+        damageValue: 100,
+        action: `You release a pitfall trap beneath {enemy}, dealing {TYPE+DMG} damage and reducing their speed by 50%.`,
+        debuff: { type: 'speed', value: -50, duration: -1 }
+    },
+    'flee': {
+        damageType: null,
+        damageValue: 0,
+        action: `You turn around and flee from the battle.`,
+    }
+};
+
 const attackCommand = async (interaction) => {
     try {
         await interaction.deferReply({ ephemeral: true });
@@ -62,21 +288,40 @@ const attackCommand = async (interaction) => {
         await interaction.editReply({ content: `Combat started with ${enemy.name}!` });
         await sendAbilityButtons(interaction, activeChar, enemy);
 
+
         const combatLoop = async () => {
             while (combatSession.active && activeChar.alive && enemy.alive) {
                 await new Promise(resolve => setTimeout(resolve, 500));
-                const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, combatSession.currentAbilityId, regionManager, regionId, locationId, roomId);
+                const { combatLog, playerAlive, enemyAlive, flee } = turnBasedCombat(
+                    interaction,
+                    activeChar,
+                    enemy,
+                    combatSession.currentAbilityId,
+                    regionManager,
+                    regionId,
+                    locationId,
+                    roomId
+                );
                 await sendCombatLog(interaction, combatLog);
 
-                combatSession.nextRound();
+                if (flee) {
+                    combatSession.endCombat();
+                    await interaction.editReply({
+                        content: 'You turn around and flee from the battle.',
+                        components: []
+                    });
+                    return;
+                }
 
+                combatSession.nextRound();
                 if (!playerAlive || !enemyAlive) {
                     combatSession.active = false;
                 }
             }
+
             if (!combatSession.active) {
                 combatSession.endCombat();
-                await interaction.editReply({ content: 'Combat ended.' });
+                await interaction.editReply({ content: 'Combat ended.', components: [] });
             }
         };
 
@@ -97,6 +342,13 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
     if (!ability) {
         combatLog.push('Invalid ability index.');
         return { combatLog, playerAlive: true, enemyAlive: true };
+    }
+
+    if (ability.name.toLowerCase() === 'flee') {
+        combatLog.push(abilityEffectMap['flee'].action.replace('{enemy}', enemy.name));
+
+        enemy.removeTarget(player.id);
+        return { combatLog, playerAlive: true, enemyAlive: true, flee: true };
     }
 
     if (player.stats.mp < ability.mpCost) {
@@ -158,227 +410,6 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
 
 function applyAbilityEffect(player, enemy, ability, combatLog) {
     let damage = 0;
-    const abilityEffectMap = {
-        'punch': {
-            damageType: 'physical',
-            damageValue: 80, // 80%
-            action: `You swing your fist at {enemy}, crushing them for {TYPE+DMG} damage.`
-        },
-        'drain': {
-            damageType: 'magical',
-            damageValue: 80,
-            action: `You pull the life force out of {enemy}, burning away part of their soul for {TYPE+DMG} damage.`
-        },
-        'bite': {
-            damageType: 'physical',
-            damageValue: 80,
-            action: `You ferociously bite {enemy}, causing {TYPE+DMG} damage.`
-        },
-        'slash': {
-            damageType: 'physical',
-            damageValue: 100,
-            action: `You slash {enemy}, slicing them for {TYPE+DMG} damage.`
-        },
-        'martial_strike': {
-            damageType: 'physical',
-            damageValue: (player, enemy) => player.stats.physicalATK * 1.2,
-            action: `You strike {enemy} dextrously with your weapon, dealing {TYPE+DMG} damage.`
-        },
-        'disarm': {
-            damageType: 'physical',
-            damageValue: 0,
-            action: `You knock {enemy}'s weapons aside, hurting them for {TYPE+DMG}. Their Physical Damage has been lowered for 2 turns.`,
-            debuff: { type: 'physicalATKBoost', value: -20, duration: 2 }
-        },
-        'fortify': {
-            damageType: null,
-            damageValue: 0,
-            action: `You steel your body and mind, significantly increasing your resistance to Physical Damage for 3 turns.`,
-            buff: { type: 'physicalDEFBoost', value: 300, duration: 3 }
-        },
-        'breakout': {
-            damageType: 'physical',
-            damageValue: (player) => player.status.physicalDEFBoost || 0,
-            action: `You move from a defensive stance and deliver a powerful strike to {enemy}, hurting them for {TYPE+DMG} damage.`
-        },
-        'savage_strikes': {
-            damageType: 'physical',
-            damageValue: 160,
-            action: `You attack {enemy} with multiple savage blows, eviscerating them for {TYPE+DMG} damage.`
-        },
-        'fury': {
-            damageType: null,
-            damageValue: 0,
-            action: `Rage from being hurt is boosting your Physical attack for 1 turn.`,
-            buff: { type: 'physicalATKBoost', value: 15, duration: 1 }
-        },
-        'frenzy': {
-            damageType: 'physical',
-            damageValue: (player) => {
-                const missingHpRatio = 1 - (player.stats.hp / player.stats.hpMax);
-                return player.stats.physicalATK * 2.4 + player.stats.physicalATK * missingHpRatio;
-            },
-            action: `You unleash a frenzy of strikes on {enemy}, leaving them bloodied for {TYPE+DMG} damage.`
-        },
-        'blood_frenzy': {
-            damageType: 'physical',
-            damageValue: (player) => {
-                const missingHpRatio = 1 - (player.stats.hp / player.stats.hpMax);
-                return player.stats.physicalATK * 2.4 + player.stats.physicalATK * missingHpRatio;
-            },
-            action: `You unleash a frenzy of strikes on {enemy}, leaving them bloodied for {TYPE+DMG} damage. Drinking the blood of your enemies recovers a portion of your health.`,
-            healthRecovery: (player) => player.stats.hpMax * 0.04
-        },
-        'spiritblade': {
-            damageType: 'magical',
-            damageValue: 190,
-            action: `You swing a blade of energy at {enemy}, cleaving them with arcane power for {TYPE+DMG} damage.`,
-            buff: { type: 'magicDEFBoost', value: 200, duration: 1 }
-        },
-        'arcane_barrier': {
-            damageType: null,
-            damageValue: 0,
-            action: `You focus a layer of arcane energy around you, significantly increasing your Magic Defense for 3 turns.`,
-            buff: { type: 'magicDEFBoost', value: 200, duration: 3 }
-        },
-        'fireball': {
-            damageType: 'magical',
-            damageValue: 150,
-            action: `You throw an incendiary orb that explodes on {enemy}, scorching them for {TYPE+DMG}.`
-        },
-        'incinerate': {
-            damageType: 'magical',
-            damageValue: (ability, player) => {
-                let spentMana = ability.mpCost;
-                return spentMana * 0.04 * player.stats.magicATK;
-            },
-            action: `You unleash a devastating beam of power into {enemy}, obliterating them for {TYPE+DMG}.`
-        },
-        'chilling_blast': {
-            damageType: 'magical',
-            damageValue: 80,
-            action: `You blast {enemy} with ice shards, dealing {TYPE+DMG} and slowing them for 4 turns.`,
-            debuff: { type: 'speed', value: -50, duration: 4 }
-        },
-        'ice_spear': {
-            damageType: 'magical',
-            damageValue: 220,
-            action: `You propel a massive ice spear at {enemy}, impaling them for {TYPE+DMG}.`
-        },
-        'noxious_cloud': {
-            damageType: null,
-            damageValue: 0,
-            action: `You conjure toxic vapours around {enemy}, poisoning them {TYPE+DMG}.`,
-            debuff: { type: 'poison', value: 20, duration: 5 }
-        },
-        'putrefy': {
-            damageType: 'magical',
-            damageValue: 200,
-            action: `You dissolve the innards of {enemy}, liquefying them for {TYPE+DMG} damage. They take additional damage for 1 more turn.`,
-            debuff: { type: 'poison', value: 30, duration: 1 }
-        },
-        'thunderclap': {
-            damageType: 'magical',
-            damageValue: 120,
-            action: `You smack the enemy with a massive thunderclap, concussing them for {TYPE+DMG}. They are also stunned.`,
-            debuff: { type: 'stun', duration: 1 }
-        },
-        'electric_whip': {
-            damageType: 'magical',
-            damageValue: 100,
-            action: `You whip {enemy} with an electric coil, electrocuting them for {TYPE+DMG} and siphoning some of their mana.`
-        },
-        'forlorn_melody': {
-            damageType: null,
-            damageValue: 0,
-            action: `You play a forlorn melody, reducing your opponent's Magical defenses by 50%.`,
-            debuff: { type: 'magicDEFBoost', value: (enemy) => -enemy.stats.magicDEF * 0.5, duration: -1 }
-        },
-        'anthem_recital': {
-            damageType: null,
-            damageValue: 0,
-            action: `You recite a bolstering anthem, increasing your Physical attack by 50%.`,
-            buff: { type: 'physicalATKBoost', value: (player) => player.stats.physicalATK * 0.5, duration: -1 }
-        },
-        'austere_sermon': {
-            damageType: null,
-            damageValue: 0,
-            action: `You declare an austere sermon, reducing your opponent's Physical attack by 50%.`,
-            debuff: { type: 'physicalATKBoost', value: (enemy) => -enemy.stats.physicalATK * 0.5, duration: -1 }
-        },
-        'luminous_shimmer': {
-            damageType: null,
-            damageValue: 0,
-            action: `You siphon magic from the air, reducing your opponent's Magical attack by 50%.`,
-            debuff: { type: 'magicATKBoost', value: (enemy) => -enemy.stats.magicATK * 0.5, duration: -1 }
-        },
-        'neon_brilliance': {
-            damageType: null,
-            damageValue: 0,
-            action: `You empower yourself with light magic, increasing your Magical attack by 50%.`,
-            buff: { type: 'magicATKBoost', value: (player) => player.stats.magicATK * 0.5, duration: -1 }
-        },
-        'salty_ballad': {
-            damageType: 'mixed',
-            damageValue: (player) => {
-                const physical = player.stats.physicalATK * 1.5;
-                const magical = player.stats.magicATK * 1.5;
-                return physical + magical;
-            },
-            action: `You unleash a Salty Ballad, dealing {TYPE+DMG} damage and slowing yourself by 50%.`,
-            selfDebuff: { type: 'speed', value: (player) => -player.stats.spd * 0.5, duration: -1 }
-        },
-        'glitter_flash': {
-            damageType: 'magical',
-            damageValue: 30,
-            action: `You unleash a blinding flash, dealing {TYPE+DMG} while also reducing the opponent's speed by 50%.`,
-            debuff: { type: 'speed', value: -50, duration: -1 }
-        },
-        'pulverize': {
-            damageType: 'physical',
-            damageValue: 90,
-            action: `You pulverise {enemy} like meat, dealing {TYPE+DMG} damage and reducing their attack by 10%.`,
-            debuff: { type: 'physicalATKBoost', value: -10, duration: -1 }
-        },
-        'batter_and_bruise': {
-            damageType: 'physical',
-            damageValue: 90,
-            action: `You batter {enemy} with brute force, dealing {TYPE+DMG} damage and reducing their speed by 10%.`,
-            debuff: { type: 'speed', value: -10, duration: -1 }
-        },
-        'cauldron_masala': {
-            damageType: null,
-            damageValue: 0,
-            action: `You brew and down a vitae broth, healing yourself for {TYPE+DMG} of your total health.`,
-            heal: {
-                type: 'hp',
-                value: (player) => player.stats.hpMax * ((10 + player.skills.skills.cooking.level / 2.5) / 100)
-            }
-        },
-        'kindle_hearth': {
-            damageType: null,
-            damageValue: 0,
-            action: `You kindle the eternal flame within, increasing your Magical defense by your (Gathering level * 5).`,
-            buff: { type: 'magicDEFBoost', value: (player) => player.skills.skills.gathering * 5, duration: -1 }
-        },
-        'palpitate': {
-            damageType: 'magical',
-            damageValue: (player) => player.stats.magicATK * ((100 + player.skills.skills.smithing.level) / 100),
-            action: `You hurl a lance of fire at {enemy}, burning them for {TYPE+DMG} damage.`
-        },
-        'pelt_poach': {
-            damageType: 'physical',
-            damageValue: (player, enemy) => enemy.stats.hp * ((10 + player.skills.skills.smithing.level / 2) / 100),
-            action: `You gruesomely flense {enemy}, dealing damage equal to {TYPE+DMG} of their current health.`
-        },
-        'pitfall': {
-            damageType: 'physical',
-            damageValue: 100,
-            action: `You release a pitfall trap beneath {enemy}, dealing {TYPE+DMG} damage and reducing their speed by 50%.`,
-            debuff: { type: 'speed', value: -50, duration: -1 }
-        }
-    };
-
     const effectKey = ability.name.toLowerCase().replace(/\s/g, '_');
     const effect = abilityEffectMap[effectKey];
     if (effect) {

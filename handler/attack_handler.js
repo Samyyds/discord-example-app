@@ -21,8 +21,8 @@ export async function handleAttackInteraction(interaction) {
 
         const parts = interaction.customId.split('_');
         const action = parts[0];
-        const abilityKey = parts.slice(1, parts.length - 1).join(' '); 
-        const enemyName = parts[parts.length - 1]; 
+        const abilityKey = parts.slice(1, parts.length - 1).join(' ');
+        const enemyName = parts[parts.length - 1];
 
         const playerMovementManager = PlayerMovementManager.getInstance();
         const { regionId, locationId, roomId } = playerMovementManager.getLocation(interaction.user.id, activeChar.id);
@@ -46,18 +46,20 @@ export async function handleAttackInteraction(interaction) {
         const ability = abilityManager.getAbilityByName(abilityKey.replace('_', ' '));
         switch (action) {
             case 'attack':
-                const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, ability.id, regionManager, regionId, locationId, roomId);
+                const { combatLog, playerAlive, enemyAlive, flee } = turnBasedCombat(interaction, activeChar, enemy, ability.id, regionManager, regionId, locationId, roomId);
                 await sendCombatLog(interaction, combatLog);
+
+                if (flee) return;
 
                 if (playerAlive && enemyAlive) {
                     await sendAbilityButtons(interaction, activeChar, enemy);
                 } else {
                     const endEmbed = new EmbedBuilder()
-                       .setTitle('Combat Ended')
-                       .setDescription(playerAlive
-                           ? 'You defeated the enemy!'
+                        .setTitle('Combat Ended')
+                        .setDescription(playerAlive
+                            ? 'You defeated the enemy!'
                             : 'You died!')
-                       .setColor(playerAlive? 0x00FF00 : 0xFF0000);
+                        .setColor(playerAlive ? 0x00FF00 : 0xFF0000);
                     await interaction.followUp({ embeds: [endEmbed], ephemeral: true });
                 }
                 break;
@@ -67,7 +69,7 @@ export async function handleAttackInteraction(interaction) {
         }
     } catch (error) {
         console.error(error);
-        if (!interaction.replied &&!interaction.deferred) {
+        if (!interaction.replied && !interaction.deferred) {
             await interaction.editReply({ content: 'An error occurred while processing your interaction.', ephemeral: true });
         }
     }
