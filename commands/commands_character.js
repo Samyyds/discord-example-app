@@ -40,7 +40,7 @@ const createCommand = async (interaction) => {
         characterManager.setActiveCharacter(userId, character.id);
 
         let embed = new EmbedBuilder()
-            .setTitle(`${charName}, the ${personalityName.toLowerCase()} ${raceName.toLowerCase()}, ventures into the world to write their legacy.`)
+            .setTitle(`${charName}, the ${personalityName.toLowerCase()} ${raceName.toLowerCase()} ${className.replace(/_/g, ' ').toLowerCase()}, ventures into the world to write their legacy.`)
             .setColor(0x00AE86)
             .setDescription(`Your story begins on the island of Moku'ah...`);
         await interaction.reply({ embeds: [embed], ephemeral: true });
