@@ -38,21 +38,21 @@ class Tutorial {
     }
 
     isInTutorial() {
-        return this.currentStep < this.steps.length;
+        return TutorialManager.getInstance().isPlayerInTutorial(this.interaction.user.id);
     }
 
-    getCurrentCommandId() {
-        if (this.steps[this.currentStep - 1] && this.steps[this.currentStep - 1].command) {
-            return this.steps[this.currentStep - 1].command;
-        }
-        return null;
-    }
     // getCurrentCommandId() {
-    //     if (this.steps[this.currentStep] && this.steps[this.currentStep].command) {
-    //         return this.steps[this.currentStep].command;
+    //     if (this.steps[this.currentStep - 1] && this.steps[this.currentStep - 1].command) {
+    //         return this.steps[this.currentStep - 1].command;
     //     }
     //     return null;
     // }
+    getCurrentCommandId() {
+        if (this.steps[this.currentStep] && this.steps[this.currentStep].command) {
+            return this.steps[this.currentStep].command;
+        }
+        return null;
+    }
 
     async processStep() {
         if (this.currentStep < this.steps.length) {
@@ -194,6 +194,13 @@ class TutorialManager {
 
     finishTutorialForUser(userId) {
         this.tutorials.delete(userId);
+    }
+
+    isPlayerInTutorial(userId) {
+        if (this.tutorials.has(userId)) {
+            return this.tutorials.get(userId);
+        }
+        return null;
     }
 }
 export { Tutorial, TutorialManager };
