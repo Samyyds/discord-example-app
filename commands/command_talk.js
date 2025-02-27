@@ -17,9 +17,8 @@ const talkCommand = async (interaction) => {
     const tutorialManager = TutorialManager.getInstance();
     const tutorial = tutorialManager.getTutorialForUser(interaction.user.id);
 
-    if (npcName === 'Feleti' && tutorial) {
-        await interaction.deferReply({ ephemeral: true });
-        await interaction.deleteReply();
+    if (tutorial.isInTutorial()) {
+        await interaction.deferReply({ ephemeral: true }).then(() => interaction.deleteReply());
         return;
     }
 
