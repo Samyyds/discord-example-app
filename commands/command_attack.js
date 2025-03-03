@@ -8,6 +8,7 @@ import { ItemManager, Key } from "../manager/item_manager.js";
 import { sendErrorMessage, parseEnemyDialogue } from "../util/util.js";
 import { ItemType, QuestStatus } from "../data/enums.js";
 import { InventoryManager } from "../manager/inventory_manager.js";
+import { updateCharacterLevel } from "../db/mysql.js";
 
 const abilityEffectMap = {
     'punch': {
@@ -556,6 +557,7 @@ function handleEnemyDefeat(interaction, player, enemy, combatLog, regionManager,
     const xpGain = enemy.xpReward;
     const previousLevel = player.level;
     player.increaseCharacterXp(xpGain);
+    updateCharacterLevel(interaction.user.id, player);
     combatLog.push(`${player.name} gained ${xpGain} XP!`);
 
     if (player.level > previousLevel) {

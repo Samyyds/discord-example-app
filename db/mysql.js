@@ -277,6 +277,30 @@ async function updateInventoryToDB(userId, characterId, item, quantity, operatio
     }
 }
 
+async function updateCharacterLevel(userId, character) {
+    const connection = await MysqlDB.getConnection();
+    try {
+        const sql = `
+        UPDATE ${process.env.CHARACTERS_DB}
+        SET xp = ?, level = ?, stats = ?
+        WHERE user_id = ? AND id = ?;
+      `;
+        const serializedStats = JSON.stringify(character.stats);
+        const params = [
+            character.xp,
+            character.level,
+            serializedStats,
+            userId.toString(),
+            character.id
+        ];
+        const [result] = await connection.execute(sql, params);
+    } catch (error) {
+        console.error('fail', error);
+    } finally {
+        connection.release();
+    }
+}
+
 async function loadInventoryForUser(userId) {
     const connection = await MysqlDB.getConnection();
     try {
@@ -393,5 +417,6 @@ export {
     updateInventoryToDB,
     loadInventoryForUser,
     saveCharacterQuests,
-    updateCharacterGold
+    updateCharacterGold,
+    updateCharacterLevel
 };
