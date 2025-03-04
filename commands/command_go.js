@@ -1,77 +1,88 @@
-import { EmbedBuilder } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
+import { RegionManager } from '../manager/region_manager.js';
 import { CharacterManager } from '../manager/character_manager.js';
-import { convertNameToRegionId, convertNameToLocationId } from "../util/util.js";
-import { saveCharacterLocation } from "../db/mysql.js";
 import { sendErrorMessage } from "../util/util.js";
+import { saveCharacterLocation } from "../db/mysql.js";
+import { EmbedBuilder } from 'discord.js';
 
 const goCommand = async (interaction) => {
     try {
+        const playerMoveManager = PlayerMovementManager.getInstance();
+        const regionManager = RegionManager.getInstance();
         const characterManager = CharacterManager.getInstance();
+
         const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
         if (!activeCharacter) {
-            return await sendErrorMessage(interaction, 'You do not have an available character!');
+            return await sendErrorMessage(interaction, 'You do not have an active character!');
         }
 
-        const regionName = interaction.options.getString('region').trim();
-        const locationName = interaction.options.getString('location').trim();
-
-        const tarRegionId = convertNameToRegionId(regionName);
-        const tarLocationId = convertNameToLocationId(locationName, tarRegionId);
-
-        if (tarRegionId === undefined) {
-            return await sendErrorMessage(interaction, `The specified region '${regionName}' does not exist.`);
-        }
-        if (tarLocationId === undefined) {
-            return await sendErrorMessage(interaction, `The specified location '${locationName}' does not exist in the region '${regionName}'.`);
-        }
-
-        const playerMoveManager = PlayerMovementManager.getInstance();
         const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
+        const destination = interaction.options.getString('destination');
 
-        if (curLocation.regionId === tarRegionId) {
-            const moveResult = playerMoveManager.canMoveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId, interaction);
-            if (!moveResult.canMove) {
-                const moveErrorEmbed = new EmbedBuilder()
-                    .setColor(0xFF0000)
-                    .setTitle('Movement Restricted')
-                    .setDescription(moveResult.message);
-                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-                return;
+        if (!destination) {
+            return await sendErrorMessage(interaction, 'You must select a destination to go!');
+        }
+
+        const currentRegion = regionManager.getRegionById(curLocation.regionId);
+        const currentLocation = currentRegion.getLocation(curLocation.locationId);
+        const currentRoom = currentLocation.getRoom(curLocation.roomId);
+
+        const enemies = currentRoom.getEnemies();
+
+        const playerHasLockedEnemy = enemies.some(enemy => enemy.isTarget.has(activeCharacter.id));
+
+        const allEnemiesLockedByOthers = enemies.every(enemy => enemy.isTarget.size > 0);
+
+        if (destination === 'dungeon-in') {
+            if (playerHasLockedEnemy) {
+                return await sendErrorMessage(interaction, `Enemies still block the way ahead. Clear them out to continue!`);
+            } else if (!playerHasLockedEnemy && allEnemiesLockedByOthers) {
+                playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, false);
+            } else {
+                return await sendErrorMessage(interaction, `Enemies still block the way ahead. Clear them out to continue!`);
             }
-            playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
+        } else if (destination === 'dungeon-out') {
+            playerMoveManager.moveRoom(interaction.user.id, activeCharacter.id, true);
         } else {
-            const canMoveResult = playerMoveManager.canMoveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
-            if (!canMoveResult.canMove) {
-                const moveErrorEmbed = new EmbedBuilder()
-                    .setColor(0xFF0000)
-                    .setTitle('Movement Restricted')
-                    .setDescription(canMoveResult.message || "Movement not allowed."); 
-                await interaction.reply({ embeds: [moveErrorEmbed], ephemeral: true });
-                return;
-            }
-            playerMoveManager.moveRegion(interaction.user.id, activeCharacter.id, tarRegionId, tarLocationId);
+            const [regionPart, locationPart] = destination.split('-');
+            const targetLocationId = parseInt(locationPart, 10);
+            playerMoveManager.moveLocation(interaction.user.id, activeCharacter.id, curLocation.regionId, targetLocationId);
         }
 
         const newLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         saveCharacterLocation(interaction.user.id, activeCharacter.id, newLocation);
 
-        let embed = new EmbedBuilder()
-            .setTitle('Adventure Awaits!')
-            .setDescription(`You have arrived at ${locationName} in ${regionName}.`)
-            .addFields(
-                { name: 'Region', value: regionName, inline: true },
-                { name: 'Location', value: locationName, inline: true }
-            );
+        const newRegion = regionManager.getRegionById(newLocation.regionId);
+        const newLoc = newRegion.getLocation(newLocation.locationId);
+
+        let description;
+
+        if (newLoc.roomCount > 1) {
+            const roomId = newLocation.roomId;
+            const roomCount = newLoc.roomCount;
+
+            if (roomId === 0) {
+                description = `You are at the **entrance** of ${newLoc.name}.`;
+            } else if (roomId === roomCount - 1) {
+                description = `You have reached the **bottom** of ${newLoc.name}.`;
+            } else {
+                description = `You are **${roomId} mile(s)** away from the entrance of ${newLoc.name}.`;
+            }
+        } else {
+            description = newLoc.enterDescription;
+        }
+
+        const embed = new EmbedBuilder()
+            .setDescription(description)
+            .setColor(0x00FF00);
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
-
     } catch (error) {
         console.error('Error in goCommand:', error);
-        await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
+        return await sendErrorMessage(interaction, `An error occurred: ${error.message}`);
     }
 };
 
 export const goCommands = {
-    go: goCommand
+    go: goCommand,
 };

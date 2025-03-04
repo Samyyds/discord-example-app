@@ -9,10 +9,11 @@ export const MokuahLocations = {
     'VILLAGE CENTER': 0,
     'BLACKSMITH': 1,
     'FARM': 2,
-    'CLINIC': 3,
-    'DOCK': 4,
-    'JUNGLE': 5,
-    'VOLCANO': 6
+    'TAVERN': 3,
+    'CLINIC': 4,
+    'DOCK': 5,
+    'JUNGLE': 6,
+    'VOLCANO': 7
 };
 
 export const NyraLocations = {
@@ -20,14 +21,16 @@ export const NyraLocations = {
     'CRAFTHOUSE': 1,
     'TAVERN': 2,
     'BEACH': 3,
-    'LABYRINTH': 4
+    'LABYRINTH': 4,
+    'HOSPITAL': 5
 };
 
 export const IsfjallLocations = {
     'CITY_CENTER': 0,
     'BLACKSMITH': 1,
     'DOCK': 2,
-    'TUNDRA': 3
+    'TUNDRA': 3,
+    'HOSPITAL': 4
 };
 
 export const TheTrenchLocations = {
@@ -40,13 +43,13 @@ export const TheTrenchLocations = {
 export const Class = {
     "WARRIOR": 0,
     "MAGE": 1,
-    "Ranger": 2,
-    "Cleric": 3,
-    "Druid": 4,
-    "Monk": 5,
-    "Barbarian": 6,
-    "Paladin": 7,
-    "Bard": 8
+    "BARD": 2,
+    "WITCH_DOCTOR": 3,
+    "DRUID": 4,
+    "MONK": 5,
+    "BARBARIAN": 6,
+    "PALADIN": 7,
+    "RANGER": 8
 };
 
 export const Race = {
@@ -58,9 +61,31 @@ export const Race = {
 };
 
 export const Personality = {
-    "NO_PERSONALITY": 0,
-    "BRAWNY": 1,
-    "WISE": 2
+    "STOIC": 0,
+    "GREEDY": 1,
+    "NERDY": 2,
+    "PASSIONATE": 3,
+    "HORNY": 4,
+    "BRAWNY": 5,
+    "CHEEKY": 6,
+    "FEISTY": 7,
+    "HOTHEAD": 8,
+    "AGGRESSIVE": 9,
+    "THICC": 10,
+    "PEACEFUL": 11,
+    "ADAPTABLE": 12,
+    "BOUGIE": 13,
+    "STOUT": 14,
+    "CUNNING": 15,
+    "HILARIOUS": 16,
+    "VINDICTIVE": 17,
+    "ERRATIC": 18,
+    "AMBITIOUS": 19,
+    "THOUGHTFUL": 20,
+    "SERENE": 21,
+    "COCKY": 22,
+    "TRADITIONAL": 23,
+    "MYSTERIOUS": 24
 };
 
 export const EffectType = {
@@ -92,7 +117,21 @@ export const Ability = {
     "PUTREFY": 20,
     "THUNDERCLAP": 21,
     "ELECTRIC_WHIP": 22,
-    "NIMBLE": 23
+    "FORLORN_MELODY": 23,
+    "ANTHEM_RECITAL": 24,
+    "AUSTERE_SERMON": 25,
+    "LUMINOUS_SHIMMER": 26,
+    "NEON_BRILLIANCE": 27,
+    "SALTY_BALLAD": 28,
+    "GLITTER_FLASH": 29,
+    "PULVERIZE": 30,
+    "BATTER_AND_BRUISE": 31,
+    "CAULDRON_MASALA": 32,
+    "KINDLE_HEARTH": 33,
+    "PALPITATE": 34,
+    "PELT_POACH": 35,
+    "PITFALL": 36,
+    "FLEE": 37
 };
 
 export const ItemType = {

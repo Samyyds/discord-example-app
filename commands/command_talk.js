@@ -2,10 +2,11 @@ import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'disc
 import { RegionManager } from "../manager/region_manager.js";
 import { CharacterManager } from '../manager/character_manager.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { sendErrorMessage } from "../util/util.js";
+import { TutorialManager } from "../manager/tutorial_manager.js";
+import { sendErrorMessage, parseNpcDialogue } from "../util/util.js";
 
 const talkCommand = async (interaction) => {
-    const npcName = interaction.options.getString('npc_name').trim().toLowerCase();
+    const npcName = interaction.options.getString('npc').trim().toLowerCase();
 
     const characterManager = CharacterManager.getInstance();
     const activeCharacter = characterManager.getActiveCharacter(interaction.user.id);
@@ -13,8 +14,10 @@ const talkCommand = async (interaction) => {
         return await sendErrorMessage(interaction, 'You do not have an available character!');
     }
 
-    if (npcName === 'feleti') {
-        await interaction.deferReply({ ephemeral: true });
+    const tutorialManager = TutorialManager.getInstance();
+    const tutorial = tutorialManager.getTutorialForUser(interaction.user.id);
+
+    if (tutorial && tutorial.isInTutorial()) {
         await interaction.deleteReply();
         return;
     }
@@ -33,19 +36,19 @@ const talkCommand = async (interaction) => {
 
     await interaction.deferReply({ ephemeral: true });
 
-    const dialogue = npc.talk(interaction.user.id, activeCharacter.id);  
-    const segments = parseDialogue(dialogue.text);
+    const dialogue = npc.talk(interaction.user.id, activeCharacter.id);
+    const segments = parseNpcDialogue(dialogue.text);
 
     for (const segment of segments) {
-        const descriptionText = segment.type === 'dialogue' 
-            ? `**${npc.name} says:** ${segment.text}` 
+        const descriptionText = segment.type === 'dialogue'
+            ? `**${npc.name} says:** ${segment.text}`
             : segment.text;
-    
+
         const embed = new EmbedBuilder()
             .setColor(0x00FF00)
             .setDescription(descriptionText);
         await interaction.followUp({ embeds: [embed], ephemeral: true });
-        await new Promise(resolve => setTimeout(resolve, 2000)); 
+        await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
     if (dialogue.options && Object.keys(dialogue.options).length > 0) {
@@ -60,31 +63,6 @@ const talkCommand = async (interaction) => {
         });
         await interaction.followUp({ content: "What will you do?", components: components, ephemeral: true });
     }
-}
-
-function parseDialogue(text) {
-    const segments = [];
-    let position = 0;
-    let inDialogue = false;
-
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === "\"" && (i === 0 || text[i - 1] !== '\\')) {
-            if (inDialogue) {
-                segments.push({ type: 'dialogue', text: text.substring(position, i) });
-                position = i + 1;
-            } else {
-                if (i > position) {
-                    segments.push({ type: 'narrative', text: text.substring(position, i) });
-                }
-                position = i + 1;
-            }
-            inDialogue = !inDialogue;
-        }
-    }
-    if (position < text.length) {
-        segments.push({ type: inDialogue ? 'dialogue' : 'narrative', text: text.substring(position) });
-    }
-    return segments;
 }
 
 export const talkCommands = {

@@ -76,7 +76,7 @@ You control your character and interact with the world using slash commands. Her
 
 /inventory - Display a list of what is in your inventory.
 
-/recipes - Display a list of your known recipes.
+/recipe - Display a list of your known recipes.
 
 /character create - Creates a character. You will also pick their name, class, race, and personality. These cannot be changed after creation.
 
@@ -98,6 +98,8 @@ You control your character and interact with the world using slash commands. Her
 Station.
 
 /smelt - Smelt an ore. Requires you to be near an appropriate facility.
+
+/use - Consume or imbibe a beneficial item from your inventory.
 
 `;
 

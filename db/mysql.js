@@ -65,20 +65,20 @@ async function saveCharacterData(userId, character, location) {
     const { regionId, locationId, roomId } = location;
     try {
         const sql = `
-            INSERT INTO ${process.env.CHARACTERS_DB} (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, region_id, location_id, room_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO ${process.env.CHARACTERS_DB} (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, gold, region_id, location_id, room_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         `;
-        const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status } = character;
+        const { id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, stats, skills, status, gold } = character;
         const battleBarJson = JSON.stringify(battleBar);
         const abilitiesJson = JSON.stringify(abilities);
-        const serializedStats = JSON.stringify(character.stats); 
-        const serializedSkills = JSON.stringify(character.skills.skills); 
-        const serializedStatus = JSON.stringify(character.status); 
+        const serializedStats = JSON.stringify(character.stats);
+        const serializedSkills = JSON.stringify(character.skills.skills);
+        const serializedStatus = JSON.stringify(character.status);
 
         const result = await connection.execute(sql, [
             userId.toString(), id, name, level, classId, raceId, personalityId, xp,
             battleBarJson, lootQuality, abilitiesJson,
-            serializedStats, serializedSkills, serializedStatus,
+            serializedStats, serializedSkills, serializedStatus, gold,
             regionId, locationId, roomId
         ]);
         console.log('Character saved:', result);
@@ -147,7 +147,8 @@ async function loadCharactersForUser(userId) {
                 row.xp,
                 JSON.parse(row.battle_bar),
                 row.loot_quality,
-                JSON.parse(row.abilities)
+                JSON.parse(row.abilities),
+                row.gold
             );
             const statsData = JSON.parse(row.stats);
             const skillsData = JSON.parse(row.skills);
@@ -166,8 +167,10 @@ async function loadCharactersForUser(userId) {
             );
 
             character.status = new StatusContainer(
-                statusData.spdMult, statusData.phyDefBuffMag, statusData.phyDefBuffTimer,
-                statusData.bleedMag, statusData.bleedTimer, statusData.poisonMag, statusData.poisonTimer
+                statusData.poison, statusData.bleed, statusData.physicalATKBoost,
+                statusData.physicalDEFBoost, statusData.magicATKBoost, statusData.magicDEFBoost,
+                statusData.fireATKBoost, statusData.fireDEFBoost, statusData.lightATKBoost,
+                statusData.lightDEFBoost, statusData.darkATKBoost, statusData.darkDEFBoost
             );
 
             return character;
@@ -184,6 +187,29 @@ async function loadCharactersForUser(userId) {
         console.log(`Characters for user ${userId} loaded successfully.`);
     } catch (error) {
         console.error(`Failed to load characters for user ${userId}:`, error);
+    } finally {
+        connection.release();
+    }
+}
+
+async function updateCharacterGold(userId, characterId, gold) {
+    const connection = await MysqlDB.getConnection();
+    try {
+        const sql = `
+            UPDATE ${process.env.CHARACTERS_DB}
+            SET gold = ?
+            WHERE user_id = ? AND id = ?
+        `;
+        const [result] = await connection.execute(sql, [gold, userId.toString(), characterId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`Gold updated successfully for character ID ${characterId}.`);
+        } else {
+            console.log(`No character found with ID ${characterId} to update gold.`);
+        }
+    } catch (error) {
+        console.error(`Failed to update gold for character ID ${characterId}:`, error);
+        throw error;
     } finally {
         connection.release();
     }
@@ -246,6 +272,30 @@ async function updateInventoryToDB(userId, characterId, item, quantity, operatio
         console.error('Transaction failed, rolling back.', error);
         await connection.rollback();
         throw error;  // Re-throwing the error is important after a rollback
+    } finally {
+        connection.release();
+    }
+}
+
+async function updateCharacterLevel(userId, character) {
+    const connection = await MysqlDB.getConnection();
+    try {
+        const sql = `
+        UPDATE ${process.env.CHARACTERS_DB}
+        SET xp = ?, level = ?, stats = ?
+        WHERE user_id = ? AND id = ?;
+      `;
+        const serializedStats = JSON.stringify(character.stats);
+        const params = [
+            character.xp,
+            character.level,
+            serializedStats,
+            userId.toString(),
+            character.id
+        ];
+        const [result] = await connection.execute(sql, params);
+    } catch (error) {
+        console.error('fail', error);
     } finally {
         connection.release();
     }
@@ -341,7 +391,7 @@ async function loadCharacterQuests(userId, characterId) {
 
         const questsData = JSON.parse(rows[0]?.quests || '[]');
         for (const questData of questsData) {
-            const quest = questManager.createQuestInstance(questData.questId, userId, characterId);
+            const quest = questManager.createQuestInstance(userId, characterId, questData.questId);
             if (quest) {
                 quest.status = questData.status;
                 questManager.addCharQuest(userId, characterId, quest);
@@ -366,5 +416,7 @@ export {
     getNextCharacterId,
     updateInventoryToDB,
     loadInventoryForUser,
-    saveCharacterQuests
+    saveCharacterQuests,
+    updateCharacterGold,
+    updateCharacterLevel
 };

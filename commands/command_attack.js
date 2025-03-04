@@ -1,13 +1,240 @@
-import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
+import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, EntitlementType } from 'discord.js';
 import { CharacterManager, CombatSession } from '../manager/character_manager.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
 import { RegionManager } from "../manager/region_manager.js";
 import { AbilityManager } from "../manager/ability_manager.js";
 import { QuestManager } from "../manager/quest_manager.js";
 import { ItemManager, Key } from "../manager/item_manager.js";
-import { sendErrorMessage } from "../util/util.js";
+import { sendErrorMessage, parseEnemyDialogue } from "../util/util.js";
 import { ItemType, QuestStatus } from "../data/enums.js";
 import { InventoryManager } from "../manager/inventory_manager.js";
+import { updateCharacterLevel } from "../db/mysql.js";
+
+const abilityEffectMap = {
+    'punch': {
+        damageType: 'physical',
+        damageValue: 80, // 80%
+        action: `You swing your fist at {enemy}, crushing them for {TYPE+DMG} damage.`
+    },
+    'drain': {
+        damageType: 'magical',
+        damageValue: 80,
+        action: `You pull the life force out of {enemy}, burning away part of their soul for {TYPE+DMG} damage.`
+    },
+    'bite': {
+        damageType: 'physical',
+        damageValue: 80,
+        action: `You ferociously bite {enemy}, causing {TYPE+DMG} damage.`
+    },
+    'slash': {
+        damageType: 'physical',
+        damageValue: 100,
+        action: `You slash {enemy}, slicing them for {TYPE+DMG} damage.`
+    },
+    'martial_strike': {
+        damageType: 'physical',
+        damageValue: (player, enemy) => player.stats.physicalATK * 1.2,
+        action: `You strike {enemy} dextrously with your weapon, dealing {TYPE+DMG} damage.`
+    },
+    'disarm': {
+        damageType: 'physical',
+        damageValue: 0,
+        action: `You knock {enemy}'s weapons aside, hurting them for {TYPE+DMG}. Their Physical Damage has been lowered for 2 turns.`,
+        debuff: { type: 'physicalATKBoost', value: -20, duration: 2 }
+    },
+    'fortify': {
+        damageType: null,
+        damageValue: 0,
+        action: `You steel your body and mind, significantly increasing your resistance to Physical Damage for 3 turns.`,
+        buff: { type: 'physicalDEFBoost', value: 300, duration: 3 }
+    },
+    'breakout': {
+        damageType: 'physical',
+        damageValue: (player) => player.status.physicalDEFBoost || 0,
+        action: `You move from a defensive stance and deliver a powerful strike to {enemy}, hurting them for {TYPE+DMG} damage.`
+    },
+    'savage_strikes': {
+        damageType: 'physical',
+        damageValue: 160,
+        action: `You attack {enemy} with multiple savage blows, eviscerating them for {TYPE+DMG} damage.`
+    },
+    'fury': {
+        damageType: null,
+        damageValue: 0,
+        action: `Rage from being hurt is boosting your Physical attack for 1 turn.`,
+        buff: { type: 'physicalATKBoost', value: 15, duration: 1 }
+    },
+    'frenzy': {
+        damageType: 'physical',
+        damageValue: (player) => {
+            const missingHpRatio = 1 - (player.stats.hp / player.stats.hpMax);
+            return player.stats.physicalATK * 2.4 + player.stats.physicalATK * missingHpRatio;
+        },
+        action: `You unleash a frenzy of strikes on {enemy}, leaving them bloodied for {TYPE+DMG} damage.`
+    },
+    'blood_frenzy': {
+        damageType: 'physical',
+        damageValue: (player) => {
+            const missingHpRatio = 1 - (player.stats.hp / player.stats.hpMax);
+            return player.stats.physicalATK * 2.4 + player.stats.physicalATK * missingHpRatio;
+        },
+        action: `You unleash a frenzy of strikes on {enemy}, leaving them bloodied for {TYPE+DMG} damage. Drinking the blood of your enemies recovers a portion of your health.`,
+        healthRecovery: (player) => player.stats.hpMax * 0.04
+    },
+    'spiritblade': {
+        damageType: 'magical',
+        damageValue: 190,
+        action: `You swing a blade of energy at {enemy}, cleaving them with arcane power for {TYPE+DMG} damage.`,
+        buff: { type: 'magicDEFBoost', value: 200, duration: 1 }
+    },
+    'arcane_barrier': {
+        damageType: null,
+        damageValue: 0,
+        action: `You focus a layer of arcane energy around you, significantly increasing your Magic Defense for 3 turns.`,
+        buff: { type: 'magicDEFBoost', value: 200, duration: 3 }
+    },
+    'fireball': {
+        damageType: 'magical',
+        damageValue: 150,
+        action: `You throw an incendiary orb that explodes on {enemy}, scorching them for {TYPE+DMG}.`
+    },
+    'incinerate': {
+        damageType: 'magical',
+        damageValue: (ability, player) => {
+            let spentMana = ability.mpCost;
+            return spentMana * 0.04 * player.stats.magicATK;
+        },
+        action: `You unleash a devastating beam of power into {enemy}, obliterating them for {TYPE+DMG}.`
+    },
+    'chilling_blast': {
+        damageType: 'magical',
+        damageValue: 80,
+        action: `You blast {enemy} with ice shards, dealing {TYPE+DMG} and slowing them for 4 turns.`,
+        debuff: { type: 'speed', value: -50, duration: 4 }
+    },
+    'ice_spear': {
+        damageType: 'magical',
+        damageValue: 220,
+        action: `You propel a massive ice spear at {enemy}, impaling them for {TYPE+DMG}.`
+    },
+    'noxious_cloud': {
+        damageType: null,
+        damageValue: 0,
+        action: `You conjure toxic vapours around {enemy}, poisoning them {TYPE+DMG}.`,
+        debuff: { type: 'poison', value: 20, duration: 5 }
+    },
+    'putrefy': {
+        damageType: 'magical',
+        damageValue: 200,
+        action: `You dissolve the innards of {enemy}, liquefying them for {TYPE+DMG} damage. They take additional damage for 1 more turn.`,
+        debuff: { type: 'poison', value: 30, duration: 1 }
+    },
+    'thunderclap': {
+        damageType: 'magical',
+        damageValue: 120,
+        action: `You smack the enemy with a massive thunderclap, concussing them for {TYPE+DMG}. They are also stunned.`,
+        debuff: { type: 'stun', duration: 1 }
+    },
+    'electric_whip': {
+        damageType: 'magical',
+        damageValue: 100,
+        action: `You whip {enemy} with an electric coil, electrocuting them for {TYPE+DMG} and siphoning some of their mana.`
+    },
+    'forlorn_melody': {
+        damageType: null,
+        damageValue: 0,
+        action: `You play a forlorn melody, reducing your opponent's Magical defenses by 50%.`,
+        debuff: { type: 'magicDEFBoost', value: (enemy) => -enemy.stats.magicDEF * 0.5, duration: -1 }
+    },
+    'anthem_recital': {
+        damageType: null,
+        damageValue: 0,
+        action: `You recite a bolstering anthem, increasing your Physical attack by 50%.`,
+        buff: { type: 'physicalATKBoost', value: (player) => player.stats.physicalATK * 0.5, duration: -1 }
+    },
+    'austere_sermon': {
+        damageType: null,
+        damageValue: 0,
+        action: `You declare an austere sermon, reducing your opponent's Physical attack by 50%.`,
+        debuff: { type: 'physicalATKBoost', value: (enemy) => -enemy.stats.physicalATK * 0.5, duration: -1 }
+    },
+    'luminous_shimmer': {
+        damageType: null,
+        damageValue: 0,
+        action: `You siphon magic from the air, reducing your opponent's Magical attack by 50%.`,
+        debuff: { type: 'magicATKBoost', value: (enemy) => -enemy.stats.magicATK * 0.5, duration: -1 }
+    },
+    'neon_brilliance': {
+        damageType: null,
+        damageValue: 0,
+        action: `You empower yourself with light magic, increasing your Magical attack by 50%.`,
+        buff: { type: 'magicATKBoost', value: (player) => player.stats.magicATK * 0.5, duration: -1 }
+    },
+    'salty_ballad': {
+        damageType: 'mixed',
+        damageValue: (player) => {
+            const physical = player.stats.physicalATK * 1.5;
+            const magical = player.stats.magicATK * 1.5;
+            return physical + magical;
+        },
+        action: `You unleash a Salty Ballad, dealing {TYPE+DMG} damage and slowing yourself by 50%.`,
+        selfDebuff: { type: 'speed', value: (player) => -player.stats.spd * 0.5, duration: -1 }
+    },
+    'glitter_flash': {
+        damageType: 'magical',
+        damageValue: 30,
+        action: `You unleash a blinding flash, dealing {TYPE+DMG} while also reducing the opponent's speed by 50%.`,
+        debuff: { type: 'speed', value: -50, duration: -1 }
+    },
+    'pulverize': {
+        damageType: 'physical',
+        damageValue: 90,
+        action: `You pulverise {enemy} like meat, dealing {TYPE+DMG} damage and reducing their attack by 10%.`,
+        debuff: { type: 'physicalATKBoost', value: -10, duration: -1 }
+    },
+    'batter_and_bruise': {
+        damageType: 'physical',
+        damageValue: 90,
+        action: `You batter {enemy} with brute force, dealing {TYPE+DMG} damage and reducing their speed by 10%.`,
+        debuff: { type: 'speed', value: -10, duration: -1 }
+    },
+    'cauldron_masala': {
+        damageType: null,
+        damageValue: 0,
+        action: `You brew and down a vitae broth, healing yourself for {TYPE+DMG} of your total health.`,
+        heal: {
+            type: 'hp',
+            value: (player) => player.stats.hpMax * ((10 + player.skills.skills.cooking.level / 2.5) / 100)
+        }
+    },
+    'kindle_hearth': {
+        damageType: null,
+        damageValue: 0,
+        action: `You kindle the eternal flame within, increasing your Magical defense by your (Gathering level * 5).`,
+        buff: { type: 'magicDEFBoost', value: (player) => player.skills.skills.gathering * 5, duration: -1 }
+    },
+    'palpitate': {
+        damageType: 'magical',
+        damageValue: (player) => player.stats.magicATK * ((100 + player.skills.skills.smithing.level) / 100),
+        action: `You hurl a lance of fire at {enemy}, burning them for {TYPE+DMG} damage.`
+    },
+    'pelt_poach': {
+        damageType: 'physical',
+        damageValue: (player, enemy) => enemy.stats.hp * ((10 + player.skills.skills.smithing.level / 2) / 100),
+        action: `You gruesomely flense {enemy}, dealing damage equal to {TYPE+DMG} of their current health.`
+    },
+    'pitfall': {
+        damageType: 'physical',
+        damageValue: 100,
+        action: `You release a pitfall trap beneath {enemy}, dealing {TYPE+DMG} damage and reducing their speed by 50%.`,
+        debuff: { type: 'speed', value: -50, duration: -1 }
+    },
+    'flee': {
+        damageType: null,
+        damageValue: 0,
+        action: `You turn around and flee from the battle.`,
+    }
+};
 
 const attackCommand = async (interaction) => {
     try {
@@ -19,7 +246,7 @@ const attackCommand = async (interaction) => {
             return await sendErrorMessage(interaction, 'You do not have an available character!');
         }
 
-        const enemyNameInput = interaction.options.getString('enemy-name');
+        const enemyNameInput = interaction.options.getString('enemy');
         if (!enemyNameInput) {
             return await sendErrorMessage(interaction, 'Enemy name is required.');
         }
@@ -35,9 +262,25 @@ const attackCommand = async (interaction) => {
         }
         const enemies = room.getEnemies();
 
-        const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName);
+        const enemy = enemies.find(enemy => enemy.name.toLowerCase() === enemyName && !enemy.isBeingTargeted());
         if (!enemy) {
             return await sendErrorMessage(interaction, `Enemy with name ${enemyName} not found in this room.`);
+        }
+        if (enemies.some(enemy => enemy.isTarget.has(activeChar.id))) {
+            return await sendErrorMessage(interaction, 'You can only target one enemy at a time.');
+        }
+
+        console.log(`encounter count: ${characterManager.getEnemyEncounterCount(activeChar.id, enemy.id)}`);
+
+        enemy.setTarget(activeChar.id);
+
+        const isFirstEncounter = characterManager.isFirstEncounterWithBoss(activeChar.id, enemy.id);
+        characterManager.trackEnemy(activeChar.id, enemy.id);
+
+        const questManager = QuestManager.getInstance();
+        if (isFirstEncounter && enemy.encounterDialogue !== null) {
+            await displayEnemyDialogue(interaction, enemy.encounterDialogue, 0x00FF00);
+            questManager.startQuest(interaction.user.id, activeChar.id, enemy.questId);
         }
 
         const combatSession = new CombatSession();
@@ -46,18 +289,40 @@ const attackCommand = async (interaction) => {
         await interaction.editReply({ content: `Combat started with ${enemy.name}!` });
         await sendAbilityButtons(interaction, activeChar, enemy);
 
+
         const combatLoop = async () => {
             while (combatSession.active && activeChar.alive && enemy.alive) {
                 await new Promise(resolve => setTimeout(resolve, 500));
-                const { combatLog, playerAlive, enemyAlive } = turnBasedCombat(interaction, activeChar, enemy, combatSession.currentAbilityId, regionManager, regionId, locationId, roomId);
+                const { combatLog, playerAlive, enemyAlive, flee } = turnBasedCombat(
+                    interaction,
+                    activeChar,
+                    enemy,
+                    combatSession.currentAbilityId,
+                    regionManager,
+                    regionId,
+                    locationId,
+                    roomId
+                );
                 await sendCombatLog(interaction, combatLog);
+
+                if (flee) {
+                    combatSession.endCombat();
+                    await interaction.editReply({
+                        content: 'You turn around and flee from the battle.',
+                        components: []
+                    });
+                    return;
+                }
+
+                combatSession.nextRound();
                 if (!playerAlive || !enemyAlive) {
                     combatSession.active = false;
                 }
             }
+
             if (!combatSession.active) {
                 combatSession.endCombat();
-                await interaction.editReply({ content: 'Combat ended.' });
+                await interaction.editReply({ content: 'Combat ended.', components: [] });
             }
         };
 
@@ -80,6 +345,13 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
         return { combatLog, playerAlive: true, enemyAlive: true };
     }
 
+    if (ability.name.toLowerCase() === 'flee') {
+        combatLog.push(abilityEffectMap['flee'].action.replace('{enemy}', enemy.name));
+
+        enemy.removeTarget(player.id);
+        return { combatLog, playerAlive: true, enemyAlive: true, flee: true };
+    }
+
     if (player.stats.mp < ability.mpCost) {
         combatLog.push(`${player.name} does not have enough MP to use ${ability.name}.`);
         return { combatLog, playerAlive: true, enemyAlive: true };
@@ -95,7 +367,14 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
     combatLog.push(`${enemy.name}'s remaining HP: ${enemy.stats.hp}`);
 
     if (enemy.stats.hp <= 0) {
+        if (enemy.defeatDialogue) {
+            pushEnemyDialogueToCombatLog(enemy.defeatDialogue, combatLog);
+        }
+
         handleEnemyDefeat(interaction, player, enemy, combatLog, regionManager, regionId, locationId, roomId);
+
+        enemy.removeTarget(player.id);
+
         return { combatLog, playerAlive: true, enemyAlive: false };
     }
 
@@ -113,9 +392,17 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
 
     if (player.stats.hp <= 0) {
         combatLog.push(`${player.name} is defeated!`);
-        combatLog.push('Your soul will be sent to the Moku\'ah Clinic.');
+        combatLog.push("Your soul will be sent to the hospital of your region.");
+
+        if (enemy.defeatedDialogue) {
+            pushEnemyDialogueToCombatLog(enemy.defeatedDialogue, combatLog);
+        }
+
         const characterManager = CharacterManager.getInstance();
-        characterManager.reviveCharacter(interaction.user.id);
+        characterManager.reviveCharacter(interaction.user.id, regionId);
+
+        enemy.removeTarget(player.id);
+
         return { combatLog, playerAlive: false, enemyAlive: true };
     }
 
@@ -124,204 +411,95 @@ export function turnBasedCombat(interaction, player, enemy, abilityId, regionMan
 
 function applyAbilityEffect(player, enemy, ability, combatLog) {
     let damage = 0;
-    const abilityEffectMap = {
-        'punch': {
-            damageType: 'physical',
-            damageValue: 80,
-            action: `${player.name} swings their fist at ${enemy.name}, crushing them for `
-        },
-        'drain': {
-            damageType: 'magical',
-            damageValue: 80,
-            action: `${player.name} pulls the life force out of ${enemy.name}, burning away part of their soul for `
-        },
-        'bite': {
-            damageType: 'physical',
-            damageValue: 100,
-            action: `${player.name} ferociously bites ${enemy.name}, causing `
-        },
-        'slash': {
-            damageType: 'physical',
-            damageValue: 100,
-            action: `${player.name} slashes ${enemy.name}, slicing them for `
-        },
-        'martial_strike': {
-            damageType: 'physical',
-            damageValue: (player) => {
-                let multiplier = 1.2;
-                if (enemy.status.physicalATKBoost < 0) {
-                    multiplier = 1.8;
-                }
-                return player.stats.physicalATK * multiplier;
-            },
-            action: `${player.name} strikes ${enemy.name} dexterously with their weapon, dealing `
-        },
-        'disarm': {
-            damageType: 'physical',
-            damageValue: 0,
-            action: `${player.name} knocks ${enemy.name}'s weapons aside, hurting them for `,
-            debuff: {
-                type: 'physicalATKBoost',
-                value: -20,
-                duration: 2
-            }
-        },
-        'fortify': {
-            damageType: null,
-            damageValue: 0,
-            action: `${player.name} steels their body and mind, significantly increasing their resistance to Physical Damage for 3 turns.`,
-            buff: {
-                type: 'physicalDEFBoost',
-                value: 300,
-                duration: 3
-            }
-        },
-        'breakout': {
-            damageType: 'physical',
-            damageValue: 0,
-            action: `${player.name} moves from a defensive stance and delivers a powerful strike to ${enemy.name}, hurting them for `
-        },
-        'savage_strikes': {
-            damageType: 'physical',
-            damageValue: 160,
-            action: `${player.name} attacks ${enemy.name} with multiple savage blows, eviscerating them for `,
-            selfDamage: 3
-        },
-        'fury': {
-            damageType: null,
-            damageValue: 0,
-            action: `${player.name}'s rage from being hurt is boosting their Physical attack for 1 turn.`,
-            buff: {
-                type: 'physicalATKBoost',
-                value: 15,
-                duration: 1
-            }
-        },
-        'frenzy': {
-            damageType: 'physical',
-            damageValue: (player) => {
-                let missingHpPercent = 1 - (player.stats.hp / player.stats.hpMax);
-                return 200 + (2 * missingHpPercent * player.stats.physicalATK);
-            },
-            action: `${player.name} unleashes a frenzy of strikes on ${enemy.name}, leaving them bloodied for `,
-            xpGain: (player) => Math.round(0.04 * missingHpPercent(player) * player.stats.hpMax)
-        },
-        'blood_frenzy': {
-            damageType: 'physical',
-            damageValue: (player) => {
-                let missingHPPercentage = (1 - (player.stats.hp / player.stats.hpMax)) * 100;
-                return 200 + (2 * missingHPPercentage);
-            },
-            action: `${player.name} unleashes a frenzy of strikes on ${enemy.name}, leaving them bloodied for `,
-            healthRecovery: player => player.stats.hpMax * 0.04
-        },
-        'spiritblade': {
-            damageType: 'magical',
-            damageValue: 1.9 * player.stats.magicATK,
-            action: `${player.name} swings a blade of energy at ${enemy.name}, cleaving them with arcane power for `,
-            buff: {
-                type: 'magicDEFBoost',
-                value: 200,
-                duration: 1
-            }
-        },
-        'arcane_barrier': {
-            damageType: null,
-            damageValue: 0,
-            action: `${player.name} focuses a layer of arcane energy around themselves, significantly increasing their Magic Defense for 3 turns.`,
-            buff: {
-                type: 'magicDEFBoost',
-                value: 200,
-                duration: 3
-            }
-        },
-        'fireball': {
-            damageType: 'magical',
-            damageValue: 1.5 * player.stats.magicATK,
-            action: `${player.name} throws an incendiary orb that explodes on ${enemy.name}, scorching them for `,
-            debuff: {
-                type: 'burn',
-                value: 10,
-                duration: 2
-            }
-        },
-        'incinerate': {
-            damageType: 'magical',
-            damageValue: (ability, player) => {
-                let spentMana = ability.mpCost;
-                return (spentMana * 0.04) * player.stats.magicATK;
-            },
-            action: `${player.name} unleashes a devastating beam of power into ${enemy.name}, obliterating them for `
-        },
-        'chilling_blast': {
-            damageType: 'magical',
-            damageValue: 0.8 * player.stats.magicATK,
-            action: `${player.name} blasts ${enemy.name} with ice shards, dealing `,
-            debuff: {
-                type: 'speed',
-                value: -50,
-                duration: 4
-            }
-        },
-        'ice_spear': {
-            damageType: 'magical',
-            damageValue: 2.2 * player.stats.magicATK,
-            action: `${player.name} propels a massive ice spear at ${enemy.name}, impaling them for `,
-            stunChance: 0.3
-        },
-        'noxious_cloud': {
-            damageType: null,
-            damageValue: 0,
-            action: `${player.name} conjures toxic vapours around ${enemy.name}, poisoning them.`,
-            debuff: {
-                type: 'poison',
-                value: 20,
-                duration: 5
-            }
-        },
-        'putrefy': {
-            damageType: 'magical',
-            damageValue: 2.0 * player.stats.magicATK,
-            action: `${player.name} dissolves the innards of ${enemy.name}, liquefying them for `,
-            debuff: {
-                type: 'poison',
-                value: 30,
-                duration: 1
-            }
-        },
-        'thunderclap': {
-            damageType: 'magical',
-            damageValue: 1.2 * player.stats.magicATK,
-            action: `${player.name} smacks the enemy with a massive thunderclap, concussing ${enemy.name} for `,
-            debuff: {
-                type: 'stun',
-                duration: 1
-            }
-        },
-        'electric_whip': {
-            damageType: 'magical',
-            damageValue: player.stats.magicATK,
-            action: `${player.name} whips the enemy with an electric coil, electrocuting ${enemy.name} for `
-        },
-        'nimble': {
-            damageType: null,
-            damageValue: 0,
-            action: '',
-            buff: {
-                type: 'physicalDEFBoost',
-                value: player.stats.spd * 2
-            }
-        }
-    };
-
-    const effect = abilityEffectMap[ability.name.toLowerCase().replace(/\s/g, '_')];
+    const effectKey = ability.name.toLowerCase().replace(/\s/g, '_');
+    const effect = abilityEffectMap[effectKey];
     if (effect) {
-        if (effect.damageType === 'physical') {
-            damage = handlePhysicalAttack(player, enemy, effect.damageValue);
-        } else if (effect.damageType === 'magical') {
-            damage = handleMagicalAttack(player, enemy, effect.damageValue);
+
+        if (effect.damageType !== null) {
+            if (effect.damageType === 'mixed') {
+
+                let rawDamage;
+                if (typeof effect.damageValue === 'function') {
+                    rawDamage = effect.damageValue(player, enemy, ability);
+                } else {
+                    rawDamage = effect.damageValue;
+                }
+                const physicalDamage = handlePhysicalAttack(player, enemy, rawDamage / 2);
+                const magicalDamage = handleMagicalAttack(player, enemy, rawDamage / 2);
+                damage = physicalDamage + magicalDamage;
+            } else {
+                if (typeof effect.damageValue === 'function') {
+                    damage = effect.damageValue(player, enemy, ability);
+                } else {
+                    damage = effect.damageValue;
+                    if (effect.damageType === 'physical') {
+                        damage = handlePhysicalAttack(player, enemy, damage);
+                    } else if (effect.damageType === 'magical') {
+                        damage = handleMagicalAttack(player, enemy, damage);
+                    }
+                }
+            }
+
+            let damageTypeStr = "";
+            if (effect.action.includes("{TYPE+DMG} damage")) {
+                damageTypeStr = `${damage}`;
+                if (effect.damageType === 'physical') {
+                    damageTypeStr += " physical";
+                } else if (effect.damageType === 'magical') {
+                    damageTypeStr += " magical";
+                } else if (effect.damageType === 'mixed') {
+                    damageTypeStr += " (physical and magical)";
+                }
+            } else {
+                damageTypeStr = `${damage}`;
+                if (effect.damageType === 'physical') {
+                    damageTypeStr += " physical damage";
+                } else if (effect.damageType === 'magical') {
+                    damageTypeStr += " magical damage";
+                } else if (effect.damageType === 'mixed') {
+                    damageTypeStr += " (physical and magical) damage";
+                }
+            }
+            const finalMessage = effect.action
+                .replace('{enemy}', enemy.name)
+                .replace('{TYPE+DMG}', damageTypeStr);
+            combatLog.push(finalMessage);
+        } else {
+
+            let finalMessage = effect.action.replace('{enemy}', enemy.name);
+            if (effect.heal && typeof effect.heal.value === 'function') {
+                const healAmount = effect.heal.value(player);
+                if (typeof player.heal === 'function') {
+                    player.heal(healAmount);
+                }
+                finalMessage = finalMessage.replace('{TYPE+DMG}', `${healAmount} healing`);
+            } else {
+                finalMessage = finalMessage.replace('{TYPE+DMG}', '');
+            }
+            combatLog.push(finalMessage);
         }
-        combatLog.push(effect.action + damage + ' damage.');
+
+        if (effect.buff) {
+            let buffToApply = { ...effect.buff };
+            if (typeof buffToApply.value === 'function') {
+                buffToApply.value = buffToApply.value(player);
+            }
+            player.applyBuff(buffToApply);
+        }
+        if (effect.debuff) {
+            let debuffToApply = { ...effect.debuff };
+            if (typeof debuffToApply.value === 'function') {
+                debuffToApply.value = debuffToApply.value(enemy);
+            }
+            enemy.applyDebuff(debuffToApply);
+        }
+        if (effect.selfDebuff) {
+            let selfDebuffToApply = { ...effect.selfDebuff };
+            if (typeof selfDebuffToApply.value === 'function') {
+                selfDebuffToApply.value = selfDebuffToApply.value(player);
+            }
+            player.applyDebuff(selfDebuffToApply);
+        }
     } else {
         combatLog.push('Ability effect not implemented.');
     }
@@ -377,8 +555,14 @@ function handleEnemyDefeat(interaction, player, enemy, combatLog, regionManager,
     }
 
     const xpGain = enemy.xpReward;
+    const previousLevel = player.level;
     player.increaseCharacterXp(xpGain);
+    updateCharacterLevel(interaction.user.id, player);
     combatLog.push(`${player.name} gained ${xpGain} XP!`);
+
+    if (player.level > previousLevel) {
+        combatLog.push(`${player.name} leveled up! Now at level ${player.level}.`);
+    }
 
     room.removeEnemy(enemy);
     console.log(`Before combat: hpMax: ${player.stats.hpMax}, mpMax: ${player.stats.mpMax}`);
@@ -413,11 +597,16 @@ function handleMagicalAttack(applicator, receiver, intensity) {
 }
 
 export async function sendCombatLog(interaction, combatLog) {
-    for (let i = 0; i < combatLog.length; i++) {
-        const embed = new EmbedBuilder().setDescription(combatLog[i]).setColor(0xff0000);
-        await interaction.followUp({ embeds: [embed], ephemeral: true });
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 1s
-    }
+    // for (let i = 0; i < combatLog.length; i++) {
+    //     const embed = new EmbedBuilder().setDescription(combatLog[i]).setColor(0xff0000);
+    //     await interaction.followUp({ embeds: [embed], ephemeral: true });
+    //     await new Promise(resolve => setTimeout(resolve, 1000)); // 1s
+    // }
+    const logText = combatLog.join('\n');
+    const embed = new EmbedBuilder()
+        .setColor(0xff0000)
+        .setDescription(logText);
+    await interaction.followUp({ embeds: [embed], ephemeral: true });
 }
 
 export async function sendAbilityButtons(interaction, player, enemy) {
@@ -443,6 +632,29 @@ export async function sendAbilityButtons(interaction, player, enemy) {
         .setColor(0x00FF00);
 
     await interaction.followUp({ embeds: [embed], components: actionRows, ephemeral: true });
+}
+
+async function displayEnemyDialogue(interaction, dialogueText, color = 0xFF0000) {
+    if (dialogueText) {
+        const segments = parseEnemyDialogue(dialogueText);
+        for (const segment of segments) {
+            const embed = new EmbedBuilder()
+                .setColor(color)
+                .setDescription(segment);
+            await interaction.followUp({ embeds: [embed], ephemeral: true });
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    }
+}
+
+function pushEnemyDialogueToCombatLog(dialogueText, combatLog) {
+    if (dialogueText) {
+        const segments = parseEnemyDialogue(dialogueText);
+        for (const segment of segments) {
+            combatLog.push(segment);
+        }
+    }
+    return combatLog;
 }
 
 const handleQuestCompletion = (userId, characterId, questName, nextQuestId, enemyName, combatLog) => {

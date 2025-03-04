@@ -1,6 +1,7 @@
 import { Enemy, EnemyManager } from "../manager/enemy_manager.js";
 import { Node } from "../manager/node_manager.js";
 import { NPCManager } from "../manager/npc_manager.js";
+import { ShopManager } from "../manager/shop_manager.js";
 
 class Region {
     constructor(id, name, description) {
@@ -8,6 +9,7 @@ class Region {
         this.name = name;
         this.description = description;
         this.locations = new Map();
+        this.paths = new Map();
     }
 
     addLocation(location) {
@@ -20,23 +22,24 @@ class Region {
 }
 
 class Location {
-    constructor(id, name, regionId, locationId, roomCount = 1, description = '', subscriberOnly = false, questRequired = {}) {
+    constructor(id, name, regionId, locationId, roomCount = 1, description = '', enterDescription = '', subscriberOnly = false, questRequired = {}) {
         this.id = `${regionId}-${id}`;
         this.name = name;
         this.regionId = regionId;
         this.locationId = locationId;
         this.roomCount = roomCount;
         this.description = description;
+        this.enterDescription = enterDescription;
         this.rooms = new Map();
         this.subscriberOnly = subscriberOnly;
         this.questRequired = questRequired;
     }
 
     initializeRooms() {
-        for (let roomId = 0; roomId <= this.roomCount; roomId++) {
+        for (let roomId = 0; roomId < this.roomCount; roomId++) {
             this.generateRoom(roomId);
         }
-    }
+    }    
 
     generateRoom(roomId) {
         if (!this.rooms.has(roomId)) {
@@ -73,6 +76,7 @@ class Room {
         this.nodes = [];
         this.items = [];
         this.npcs = [];
+        this.shops = [];
     }
 
     calculateAttenuatedWeight(weight, attenuation, floor) {
@@ -237,8 +241,30 @@ class Room {
         });
     }
 
+    generateShops(regionId, locationId, roomId) {
+        const shopManager = ShopManager.getInstance();
+     
+        shopManager.shopTemplates.forEach(shopTemplate => {
+            if (shopTemplate.location.regionId === regionId &&
+                shopTemplate.location.locationId === locationId &&
+                shopTemplate.location.roomId === roomId) {   
+                const shopInstance = shopManager.createShopInstance(shopTemplate.id);
+                if (shopInstance) {
+                    this.shops.push(shopInstance);
+                    console.log(`shop generated: ${shopInstance.name}`);
+                } else {
+                    console.log(`Failed to create shop instance for ID: ${shopTemplate.id}`);
+                }
+            }
+        });
+    }
+
     getNPCs() {
         return this.npcs;
+    }
+
+    getShops() {
+        return this.shops;
     }
 }
 

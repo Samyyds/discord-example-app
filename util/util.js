@@ -35,12 +35,17 @@ export function calculateLevelFromXp(xp) {
     //return Math.floor(Math.pow(xp, 0.5));
 }
 
+// function xpRequiredForLevel(level) {
+//     return Math.pow(level, 2);
+// }
+
 function xpRequiredForLevel(level) {
-    return Math.pow(level, 2);
+    const xpOffset = 5;
+    return xpOffset + Math.pow(level + 1, 3);
 }
 
 function createProgressBar(currentXp, totalXpForNextLevel, barLength = 10) {
-    const filledLength = Math.round((currentXp / totalXpForNextLevel) * barLength);
+    const filledLength = Math.min(Math.round((currentXp / totalXpForNextLevel) * barLength), barLength);
     const emptyLength = barLength - filledLength;
     return "█".repeat(filledLength) + "░".repeat(emptyLength);
 }
@@ -49,16 +54,18 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
     let description = '';
     switch (infoType) {
         case 'basic':
-            description += `Name : ${activeChar.name}\n`;
-            description += `Class : ${Object.keys(Class).find(key => Class[key] === activeChar.classId).toLowerCase()}\n`;
-            description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase()}\n`;
-            description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase()}\n`;
+            description += `Name : **${activeChar.name}**\n`;
+            description += `Class : ${Object.keys(Class).find(key => Class[key] === activeChar.classId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
+            description += `Race : ${Object.keys(Race).find(key => Race[key] === activeChar.raceId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
+            description += `Personality : ${Object.keys(Personality).find(key => Personality[key] === activeChar.personalityId).toLowerCase().replace(/^./, char => char.toUpperCase())}\n`;
             description += `Level : ${activeChar.level}\n`;
-            const xpForCurrentLevel = xpRequiredForLevel(activeChar.level);
-            const xpForNextLevel = xpRequiredForLevel(activeChar.level + 1);
-            const currentXp = activeChar.xp - xpForCurrentLevel;
 
-            description += `XP: ${createProgressBar(currentXp, xpForNextLevel - xpForCurrentLevel)}\n`;
+            const currentXp = activeChar.xp;
+            const xpForNextLevelValue = xpRequiredForLevel(activeChar.level);
+        
+            description += `XP: ${createProgressBar(currentXp, xpForNextLevelValue)} (${currentXp}/${xpForNextLevelValue})\n`;
+
+            description += `Gold : ${activeChar.gold}\n`;
 
             description += "\n**Equipped Items:**\n";
             let hasEquippedItems = false;
@@ -72,38 +79,71 @@ export function addCharacterInfoToEmbed(activeChar, embed, infoType) {
                 description += "No items equipped.\n";
             }
             break;
-
         case 'stats':
-            Object.keys(activeChar.stats).forEach(stat => {
-                if (typeof activeChar.stats[stat] !== 'object' && activeChar.stats[stat] !== undefined) {
-                    description += `${stat}: ${activeChar.stats[stat]}\n`;
-                } else {
-                    description += `${stat}: Data not available\n`;
-                }
-            });
+            // let statsBlock = '```ansi\n';
+            // Object.keys(activeChar.stats).forEach(stat => {
+            //     if (typeof activeChar.stats[stat] !== 'object' && activeChar.stats[stat] !== undefined) {
+            //         if (stat.toLowerCase() === 'hp') {
+            //             const hpValue = activeChar.stats[stat];
+            //             const hpMax = activeChar.stats['hpMax'];
+            //             const hpPercentage = (hpValue / hpMax) * 100;
+
+            //             if (hpPercentage > 50) {
+            //                 statsBlock += `${stat}: \u001b[32m${hpValue}\u001b[0m\n`;
+            //             } else {
+            //                 statsBlock += `${stat}: \u001b[31m${hpValue}\u001b[0m\n`;
+            //             }
+            //         } else if (stat.toLowerCase() === 'mp') {
+            //             statsBlock += `${stat}: \u001b[34m${activeChar.stats[stat]}\u001b[0m\n`;
+            //         } else {
+            //             statsBlock += `${stat}: ${activeChar.stats[stat]}\n`;
+            //         }
+            //     } else {
+            //         statsBlock += `${stat}: Data not available\n`;
+            //     }
+            // });
+            // statsBlock += '```';
+            // description += statsBlock;
+            // break;
+            const hp = activeChar.stats.hp || 0;
+            const hpMax = activeChar.stats.hpMax || 0;
+            const mp = activeChar.stats.mp || 0;
+            const mpMax = activeChar.stats.mpMax || 0;
+            const spd = activeChar.stats.spd || 0;
+            const physicalATK = activeChar.stats.physicalATK || 0;
+            const physicalDEF = activeChar.stats.physicalDEF || 0;
+            const magicATK = activeChar.stats.magicATK || 0;
+            const magicDEF = activeChar.stats.magicDEF || 0;
+
+            description += `HP: ${hp}/${hpMax} | MP: ${mp}/${mpMax} | SPD: ${spd}\n`;
+            description += `PHY: ${physicalATK} ATK | ${physicalDEF} DEF\n`;
+            description += `MAG: ${magicATK} ATK | ${magicDEF} DEF\n`;
+
             break;
 
         case 'skills':
             Object.keys(activeChar.skills.skills).forEach(skill => {
                 const skillData = activeChar.skills.skills[skill];
-                const skillLevel = calculateLevelFromXp(skillData.xp);
-                const xpForSkillLevel = xpRequiredForLevel(skillLevel);
-                const xpForNextSkillLevel = xpRequiredForLevel(skillLevel + 1);
-                const currentSkillXp = skillData.xp - xpForSkillLevel;
+                const skillLevel = skillData.level; 
 
-                description += `${skill.charAt(0).toUpperCase() + skill.slice(1)}: \nLevel: ${skillLevel}\nXP: ${createProgressBar(currentSkillXp, xpForNextSkillLevel - xpForSkillLevel)}\n`;
+                const currentXp = skillData.xp;
+                const xpForNextLevelValue = xpRequiredForLevel(skillLevel);
+
+                const skillName = `**${skill.charAt(0).toUpperCase() + skill.slice(1)}**`;
+
+                description += `${skillName}:\n`;
+                description += `Level: ${skillLevel}\n`;
+                description += `XP: ${createProgressBar(currentXp, xpForNextLevelValue)} (${currentXp}/${xpForNextLevelValue})\n\n`;
             });
             break;
-
-        case 'abilities':
-            description += "\n**Abilities:**\n";
+        case 'abilities': {
             activeChar.abilities.forEach(ability => {
-                let abilityName = ability.name.charAt(0).toUpperCase() + ability.name.slice(1).toLowerCase();
-                let abilityDescription = ability.description;
-                description += `${abilityName}:\n*${abilityDescription}*\n\n`;
+                let abilityName = `__${ability.name.charAt(0).toUpperCase() + ability.name.slice(1).toLowerCase()}__`;
+                let abilityDescription = `*${ability.description}*`;
+                description += `${abilityName}:\n${abilityDescription}\n\n`;
             });
             break;
-
+        }
         default:
             description = 'No information available.';
     }
@@ -245,6 +285,45 @@ export async function sendWelcomeMessage(channel) {
     }
 }
 
+export function parseNpcDialogue(text) {
+    const segments = [];
+    let position = 0;
+    let inDialogue = false;
+
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === "\"" && (i === 0 || text[i - 1] !== '\\')) {
+            if (inDialogue) {
+                segments.push({ type: 'dialogue', text: text.substring(position, i) });
+                position = i + 1;
+            } else {
+                if (i > position) {
+                    segments.push({ type: 'narrative', text: text.substring(position, i) });
+                }
+                position = i + 1;
+            }
+            inDialogue = !inDialogue;
+        }
+    }
+    if (position < text.length) {
+        segments.push({ type: inDialogue ? 'dialogue' : 'narrative', text: text.substring(position) });
+    }
+    return segments;
+}
+
+export function parseEnemyDialogue(text) {
+    return text.split('\n').filter(line => line.trim() !== '');
+}
+
+export function getRaceName(raceId) {
+    const key = Object.keys(Race).find(k => Race[k] === raceId);
+    return key ? key.toLowerCase() : "unknown";
+  }
+
+export function getClassName(classId) {
+    const key = Object.keys(Class).find(k => Class[k] === classId);
+    return key ? key.toLowerCase() : "unknown";
+  }
+  
 
 
 

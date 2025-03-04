@@ -30,8 +30,25 @@ class Enemy extends Character {
         this.fixedRooms = this.fixedRooms;
         this.isUnique = enemyType.isUnique;
         this.isPriority = enemyType.isPriority;
+        this.encounterDialogue = enemyType.encounterDialogue;
+        this.defeatDialogue = enemyType.defeatDialogue;
+        this.defeatedDialogue = enemyType.defeatedDialogue;
+        this.questId = enemyType.questId;
         this.buffs = [];
         this.debuffs = [];
+        this.isTarget = new Map();
+    }
+
+    setTarget(characterId) {
+        this.isTarget.set(characterId, 1);
+    }
+
+    removeTarget(characterId) {
+        this.isTarget.delete(characterId);
+    }
+
+    isBeingTargeted() {
+        return this.isTarget.size > 0;
     }
 
     applyDebuff(debuff) {
@@ -43,6 +60,13 @@ class Enemy extends Character {
         if (this.status.hasOwnProperty(key)) {
             this.status[key] += value;
         }
+    }
+
+    talk(dialogue) {
+        if (dialogue) {
+            return dialogue;
+        }
+        return '';
     }
 }
 
@@ -94,7 +118,11 @@ class EnemyManager {
                 fixedRooms: row.FIXED_ROOMS ? row.FIXED_ROOMS.split(',').map(Number) : [],
                 isUnique: row.IS_UNIQUE,
                 isPriority: row.IS_PRIORITY,
-                xpReward: row.XP_REWARD
+                xpReward: row.XP_REWARD,
+                encounterDialogue: row.ENCOUNTER_DIALOGUE,
+                defeatDialogue: row.DEFEAT_DIALOGUE,
+                defeatedDialogue: row.DEFEATED_DIALOGUE,
+                questId: row.QUEST_ID
             }));
 
             const locationStmt = db.prepare('SELECT * FROM LocationEnemies');

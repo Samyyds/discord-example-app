@@ -2,34 +2,54 @@ import { calculateLevelFromXp } from '../util/util.js';
 import { Slots } from "../data/enums.js";
 import { Class, Race, Personality, ConsumableEffect } from '../data/enums.js';
 import { PlayerMovementManager } from "../manager/player_movement_manager.js";
+import { RegionManager } from "../manager/region_manager.js";
 
-const CLASS_BASE_STATS = {
-    'NO_CLASS': { hp: 100, mp: 100, spd: 100, physicalATK: 100, physicalDEF: 100, magicATK: 100, magicDEF: 100 },
-    'WARRIOR': { hp: 300, mp: 100, spd: 100, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
-    'ROGUE': { hp: 100, mp: 100, spd: 200, physicalATK: 150, physicalDEF: 120, magicATK: 60, magicDEF: 60 },
-    'MAGE': { hp: 100, mp: 200, spd: 100, physicalATK: 60, physicalDEF: 60, magicATK: 150, magicDEF: 120 },
+export const CLASS_BASE_STATS = {
+    'NO_CLASS': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'WARRIOR': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'MAGE': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'BARD': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
+    'WITCH_DOCTOR': { hp: 100, mp: 100, spd: 10, physicalATK: 10, physicalDEF: 10, magicATK: 10, magicDEF: 10 },
 };
 
-const CLASS_BASE_STAT_MODIFIERS = {
+export const CLASS_BASE_STAT_MODIFIERS = {
     'NO_CLASS': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
-    'WARRIOR': { hp: 1.3, mp: 1, spd: 0.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
-    'ROGUE': { hp: 1.3, mp: 1, spd: 1.8, physicalATK: 1.5, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.5 },
-    'MAGE': { hp: 1.3, mp: 2, spd: 1, physicalATK: 0.6, physicalDEF: 0.6, magicATK: 1.5, magicDEF: 1.2 },
+    'WARRIOR': { hp: 1.16, mp: 1, spd: 0.8, physicalATK: 1.2, physicalDEF: 1.2, magicATK: 1.1, magicDEF: 0.8 },
+    'MAGE': { hp: 0.8, mp: 1.5, spd: 1.1, physicalATK: 0.7, physicalDEF: 0.6, magicATK: 2, magicDEF: 1.2 },
+    'BARD': { hp: 0.8, mp: 2, spd: 1.2, physicalATK: 1, physicalDEF: 0.8, magicATK: 1.2, magicDEF: 1 },
+    'WITCH_DOCTOR': { hp: 1, mp: 2, spd: 1.2, physicalATK: 0.7, physicalDEF: 1, magicATK: 0.8, magicDEF: 1 },
 };
 
-const RACE_BASE_STAT_MODIFIERS = {
+export const RACE_BASE_STAT_MODIFIERS = {
     'AHONU': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
-    'MANUMANU': { hp: 0.9, mp: 1.3, spd: 0.9, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 1.1 },
-    'KUI': { hp: 1.3, mp: 0.9, spd: 0.7, physicalATK: 0.9, physicalDEF: 1.2, magicATK: 1, magicDEF: 1 },
-    'MINOTAUR': { hp: 1.2, mp: 0.9, spd: 1, physicalATK: 1.1, physicalDEF: 1.1, magicATK: 0.6, magicDEF: 1 },
-    'ULFUR': { hp: 1.1, mp: 0.8, spd: 1.1, physicalATK: 1.2, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 0.8 },
+    'MANUMANU': { hp: 0.9, mp: 1.3, spd: 0.9, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.1, magicDEF: 1 },
+    'KUI': { hp: 1.2, mp: 0.9, spd: 0.7, physicalATK: 0.9, physicalDEF: 1.2, magicATK: 1, magicDEF: 1.1 },
+    'MINOTAUR': { hp: 1.15, mp: 0.9, spd: 1, physicalATK: 1.1, physicalDEF: 1.1, magicATK: 0.6, magicDEF: 1 },
+    'ULFUR': { hp: 1, mp: 0.8, spd: 1.1, physicalATK: 1.2, physicalDEF: 1, magicATK: 1.1, magicDEF: 0.8 },
 };
 
-const PERSONALITY_BASE_STAT_MODIFIERS = {
-    'NO_PERSONALITY': { hp: 1, mp: 1, spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
-    'BRAWNY': { hp: 1.1, mp: 0.9, spd: 0.9, physicalATK: 1.2, physicalDEF: 1.1, magicATK: 0.9, magicDEF: 0.9 },
-    'WISE': { hp: 0.9, mp: 1.1, spd: 1, physicalATK: 0.9, physicalDEF: 0.9, magicATK: 1.2, magicDEF: 1.2 },
-
+export const PERSONALITY_BASE_STAT_MODIFIERS = {
+    'NO_PERSONALITY': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'STOIC': { spd: 0.9, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'GREEDY': { spd: 1, physicalATK: 0.9, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'NERDY': { spd: 1, physicalATK: 1, physicalDEF: 0.9, magicATK: 1, magicDEF: 1 },
+    'PASSIONATE': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 0.9, magicDEF: 1 },
+    'HORNY': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 0.9 },
+    'BRAWNY': { spd: 1.1, physicalATK: 1.1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'CHEEKY': { spd: 1, physicalATK: 1.1, physicalDEF: 1, magicATK: 1, magicDEF: 1 },
+    'FEISTY': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'CUNNING': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'THOUGHTFUL': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1.1 },
+    'THICC': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'PEACEFUL': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'ADAPTABLE': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'BOUGIE': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'STOUT': { spd: 1, physicalATK: 1, physicalDEF: 1.1, magicATK: 1, magicDEF: 1 },
+    'HILARIOUS': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'VINdictive': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'ERRATIC': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'AMBITIOUS': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1.1, magicDEF: 1 },
+    'MYSTERIOUS': { spd: 1, physicalATK: 1, physicalDEF: 1, magicATK: 1, magicDEF: 1.1 },
 };
 
 const attributeMapping = {
@@ -51,7 +71,7 @@ const attributeMapping = {
 };
 
 class StatContainer {
-    constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF, status) {
+    constructor(hpMax, mpMax, hp, mp, spd, physicalATK, physicalDEF, magicATK, magicDEF, fireATK, fireDEF, lightATK, lightDEF, darkATK, darkDEF, status = new StatusContainer()) {
         this.hpMax = Math.max(0, Math.round(hpMax));
         this.mpMax = Math.max(0, Math.round(mpMax));
         this.hp = Math.max(0, Math.round(hp));
@@ -75,6 +95,9 @@ class StatContainer {
     }
 
     applyBoost() {
+        console.log('Applying boost:', this);
+        console.log('Current Status:', this.status);
+
         this.physicalATK += this.status.physicalATKBoost || 0;
         this.physicalDEF += this.status.physicalDEFBoost || 0;
         this.magicATK += this.status.magicATKBoost || 0;
@@ -154,7 +177,7 @@ class Character {
      * @param {number} lootQuality - The loot quality value.
      * @param {number[]} abilities - The available abilities that character has.
      */
-    constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities) {
+    constructor(id, name, level, classId, raceId, personalityId, xp, battleBar, lootQuality, abilities, gold) {
         this.id = id;
         this.name = name;
         this.level = level;
@@ -165,16 +188,12 @@ class Character {
         this.battleBar = battleBar;
         this.lootQuality = lootQuality;
         this.abilities = abilities;
+        this.gold = gold;
 
         if (classId !== null && raceId !== null && personalityId !== null) {
             const className = Object.keys(Class).find(key => Class[key] === classId);
-            const raceName = Object.keys(Race).find(key => Race[key] === raceId);
-            const personalityName = Object.keys(Personality).find(key => Personality[key] === personalityId);
-
-            const classStats = CLASS_BASE_STATS[className];
-            const classModifiers = CLASS_BASE_STAT_MODIFIERS[className];
-            const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
-            const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
+            // const raceName = Object.keys(Race).find(key => Race[key] === raceId);
+            // const personalityName = Object.keys(Personality).find(key => Personality[key] === personalityId);
 
             this.skills = new SkillContainer();
             this.status = new StatusContainer(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -190,21 +209,21 @@ class Character {
             this.debuffs = [];
 
             this.stats = new StatContainer(
-                Math.round(100 + Math.max(0, (this.level - 1)) * 3.2 * classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-                Math.round(100 + Math.max(0, (this.level - 1)) * 0.75 * classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-                Math.round(100 + Math.max(0, (this.level - 1)) * 3.2 * classStats.hp * classModifiers.hp * raceModifiers.hp * personalityModifiers.hp),
-                Math.round(100 + Math.max(0, (this.level - 1)) * 0.75 * classStats.mp * classModifiers.mp * raceModifiers.mp * personalityModifiers.mp),
-                Math.round(10 * classStats.spd * classModifiers.spd * raceModifiers.spd * personalityModifiers.spd),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK),
-                Math.round(10 + Math.max(0, (this.level - 1)) * 0.32 * classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF),                
-                0, // TODO fireATK
-                0, // TODO fireDEF
-                0, // lTODO ightATK
-                0, // TODO lightDEF
-                0, // TODO darkATK
-                0, // TODO darkDEF
+                CLASS_BASE_STATS[className].hp,
+                CLASS_BASE_STATS[className].mp,
+                CLASS_BASE_STATS[className].hp,
+                CLASS_BASE_STATS[className].mp,
+                CLASS_BASE_STATS[className].spd,
+                CLASS_BASE_STATS[className].physicalATK,
+                CLASS_BASE_STATS[className].physicalDEF,
+                CLASS_BASE_STATS[className].magicATK,
+                CLASS_BASE_STATS[className].magicDEF,
+                0, // fireATK
+                0, // fireDEF
+                0, // lightATK
+                0, // lightDEF
+                0, // darkATK
+                0, // darkDEF
                 this.status
             );
         } else {
@@ -220,11 +239,31 @@ class Character {
             this.buffs.push(buff);
             this.updateStatus(buff, 'add');
         }
+        console.log(`Applied buff ${buff.type}: +${buff.value}. New status value:`, this.status[buff.type]);
+        console.log("Current Status: ", this.status);
+        this.stats.applyBoost();
+    }
+
+    applyDebuff(debuff) {
+        const existingDebuff = this.debuffs.find(d => d.type === debuff.type);
+        if (existingDebuff) {
+            existingDebuff.duration = Math.max(existingDebuff.duration, debuff.duration);
+        } else {
+            this.debuffs.push(debuff);
+            this.updateStatus(debuff, 'add');
+        }
+        console.log("Current Status: ", this.status);
+        this.stats.applyBoost();
     }
 
     removeBuff(buff) {
         this.buffs = this.buffs.filter(b => b.type !== buff.type);
         this.updateStatus(buff, 'subtract');
+    }
+
+    removeDebuff(debuff) {
+        this.debuffs = this.debuffs.filter(d => d !== debuff);
+        this.updateStatus(debuff, 'subtract');
     }
 
     clearAllDebuffs() {
@@ -234,24 +273,28 @@ class Character {
         this.debuffs = [];
     }
 
+    heal(amount) {
+        this.stats.hp = Math.min(this.stats.hp + amount, this.stats.hpMax);
+    }
+
     updateStatus(buff, operation) {
-        if (!buff) {
-            console.error('No buff provided for updateStatus.');
+        if (buff.type === 'speed') {
+            if (operation === 'add') {
+                this.stats.spd += buff.value;
+            } else if (operation === 'subtract') {
+                this.stats.spd -= buff.value;
+            }
             return;
         }
-        const { type, value } = buff;
-
-        if (this.status.hasOwnProperty(type)) {
-            if (operation === 'add') {
-                this.status[type] += value;
-            } else if (operation === 'subtract') {
-                this.status[type] -= value;
-            }
-        } else {
-            console.error(`Invalid status key: ${type}`);
+        if (!this.status.hasOwnProperty(buff.type)) {
+            console.error(`Invalid status key: ${buff.type}`);
+            return;
         }
-
-        this.stats.applyBoost();
+        if (operation === 'add') {
+            this.status[buff.type] += buff.value;
+        } else if (operation === 'subtract') {
+            this.status[buff.type] -= buff.value;
+        }
     }
 
     applyStatBonus(effectType, value) {
@@ -341,7 +384,41 @@ class Character {
 
     increaseCharacterXp(amount) {
         this.xp += amount;
-        this.level = calculateLevelFromXp(this.xp);
+
+        let newLevel = calculateLevelFromXp(this.xp);
+
+        if (newLevel > this.level) {
+            this.level = newLevel;
+            this.handleLevelUp();
+        }
+    }
+
+    handleLevelUp() {
+        const newBaseHP = 100 + (this.level - 1) * 3.2;
+        const newBaseMP = 100 + (this.level - 1) * 0.75;
+        const newBaseAtk = 10 + (this.level - 1) * 0.32;
+        const newBaseDef = 10 + (this.level - 1) * 0.32;
+
+        const className = Object.keys(Class).find(key => Class[key] === this.classId);
+        const raceName = Object.keys(Race).find(key => Race[key] === this.raceId);
+        const personalityName = Object.keys(Personality).find(key => Personality[key] === this.personalityId);
+
+        const classMods = CLASS_BASE_STAT_MODIFIERS[className];
+        const raceMods = RACE_BASE_STAT_MODIFIERS[raceName];
+        const personalityMods = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
+
+        this.stats.hpMax = Math.round(newBaseHP * classMods.hp * raceMods.hp);
+        this.stats.mpMax = Math.round(newBaseMP * classMods.mp * raceMods.mp);
+
+        this.stats.hp = this.stats.hpMax;
+        this.stats.mp = this.stats.mpMax;
+
+        this.stats.physicalATK = Math.round(newBaseAtk * classMods.physicalATK * raceMods.physicalATK * personalityMods.physicalATK);
+        this.stats.physicalDEF = Math.round(newBaseDef * classMods.physicalDEF * raceMods.physicalDEF * personalityMods.physicalDEF);
+        this.stats.magicATK = Math.round(newBaseAtk * classMods.magicATK * raceMods.magicATK * personalityMods.magicATK);
+        this.stats.magicDEF = Math.round(newBaseDef * classMods.magicDEF * raceMods.magicDEF * personalityMods.magicDEF);
+
+        console.log(`Level Up: New level ${this.level}. New stats: HP ${this.stats.hpMax}, MP ${this.stats.mpMax}, PHY ATK ${this.stats.physicalATK}, PHY DEF ${this.stats.physicalDEF}, MAG ATK ${this.stats.magicATK}, MAG DEF ${this.stats.magicDEF}`);
     }
 }
 
@@ -361,6 +438,8 @@ class CharacterManager {
 
         this.characters = new Map();
         this.activeCharacters = new Map();
+        this.charEnemyEncounters = new Map(); // { characterId -> { enemyId -> encounterCount } }
+
         CharacterManager.instance = this;
     }
 
@@ -393,25 +472,69 @@ class CharacterManager {
         return characters.find(character => character.id === Number(activeCharacterId));
     }
 
-    reviveCharacter(userId) {
+    reviveCharacter(userId, regionId) {
         const character = this.getActiveCharacter(userId);
         if (character) {
             character.stats.hp = character.stats.hpMax / 2;
             character.stats.mp = character.stats.mpMax / 2;
 
-            const reviveRegionId = 0;
-            const reviveLocationId = 4;
-            const reviveRoomId = 0;
+            let reviveRegionId;
+            let reviveLocationId;
+            let reviveRoomId;
+
+            if (regionId === 0) {
+
+                reviveRegionId = 0;
+                reviveLocationId = 4;
+                reviveRoomId = 0;
+
+            } else if (regionId === 1) {
+
+                reviveRegionId = 1;
+                reviveLocationId = 5;
+                reviveRoomId = 0;
+
+            } else if (regionId === 2) {
+
+                reviveRegionId = 2;
+                reviveLocationId = 4;
+                reviveRoomId = 0;
+
+            } else if (regionId === 3) {
+
+                reviveRegionId = 3;
+                reviveLocationId = 0;
+                reviveRoomId = 0;
+
+            }
 
             const playerMoveManager = PlayerMovementManager.getInstance();
             playerMoveManager.setLocation(userId, character.id, reviveRegionId, reviveLocationId, reviveRoomId);
         }
     }
+
+    trackEnemy(characterId, enemyId) {
+        if (!this.charEnemyEncounters.has(characterId)) {
+            this.charEnemyEncounters.set(characterId, new Map());
+        }
+        const encounterCounts = this.charEnemyEncounters.get(characterId);
+        encounterCounts.set(enemyId, (encounterCounts.get(enemyId) || 0) + 1);
+    }
+
+    getEnemyEncounterCount(characterId, enemyId) {
+        const encounterCounts = this.charEnemyEncounters.get(characterId);
+        return encounterCounts ? encounterCounts.get(enemyId) || 0 : 0;
+    }
+
+    isFirstEncounterWithBoss(characterId, enemyId) {
+        const currentCount = this.getEnemyEncounterCount(characterId, enemyId);
+        return currentCount === 0;
+    }
 }
 
 class CombatSession {
-    constructor(characters) {
-        this.characters = characters;
+    constructor() {
+        this.characters = [];
         this.currentRound = 1;
         this.active = true;
     }
@@ -422,7 +545,9 @@ class CombatSession {
     }
 
     endCombat() {
+        this.characters = [];
         this.active = false;
+        this.currentRound = 1;
         this.clearAllEffects();
     }
 

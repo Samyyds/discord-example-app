@@ -5,8 +5,8 @@ import { Class, Race, Personality } from '../data/enums.js';
 import { AbilityManager } from '../manager/ability_manager.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { PlayerMovementManager } from '../manager/player_movement_manager.js';
-import { Character, CharacterManager } from '../manager/character_manager.js';
-import { sendErrorMessage } from "../util/util.js";
+import { Character, CharacterManager, StatContainer, StatusContainer, CLASS_BASE_STATS, CLASS_BASE_STAT_MODIFIERS, RACE_BASE_STAT_MODIFIERS, PERSONALITY_BASE_STAT_MODIFIERS } from '../manager/character_manager.js';
+import { sendErrorMessage, getClassName, getRaceName } from "../util/util.js";
 
 //let currentCharacterId = 0;
 
@@ -15,9 +15,10 @@ const createCommand = async (interaction) => {
         const charName = interaction.options.getString('character-name');
         const className = interaction.options.getString('class-name').toUpperCase();
         const raceName = interaction.options.getString('race-name').toUpperCase();
+        const personalityName = interaction.options.getString('personality-name').toUpperCase();
 
-        if (!(className in Class) || !(raceName in Race)) {
-            return await sendErrorMessage(interaction, 'Invalid class or race name.');
+        if (!(className in Class) || !(raceName in Race) || !(personalityName in Personality)) {
+            return await sendErrorMessage(interaction, 'Invalid class, race or personality name.');
         }
 
         const userId = interaction.user.id;
@@ -32,16 +33,16 @@ const createCommand = async (interaction) => {
             return;
         }
 
-        const character = await createCharacter(userId, charName, className, raceName);
+        const character = await createCharacter(userId, charName, className, raceName, personalityName);
 
         const characterManager = CharacterManager.getInstance();
         characterManager.addCharacter(userId, character);
         characterManager.setActiveCharacter(userId, character.id);
 
         let embed = new EmbedBuilder()
-            .setTitle("Huzzah! Your hero has emerged into the realm, ready for adventure!")
+            .setTitle(`${charName}, the ${personalityName.toLowerCase()} ${raceName.toLowerCase()} ${className.replace(/_/g, ' ').toLowerCase()}, ventures into the world to write their legacy.`)
             .setColor(0x00AE86)
-            .setDescription(`The tale of ${charName}, the valiant ${className.toLowerCase()} of the ${raceName.toLowerCase()} race begins!`);
+            .setDescription(`Your story begins on the island of Moku'ah...`);
         await interaction.reply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
@@ -50,21 +51,52 @@ const createCommand = async (interaction) => {
     }
 };
 
-async function createCharacter(userId, name, className, raceName, personality = 'NO_PERSONALITY') {
+async function createCharacter(userId, name, className, raceName, personalityName) {
    
     let currentCharacterId = await getNextCharacterId();
     //currentCharacterId ++;
 
+    const classModifiers = CLASS_BASE_STAT_MODIFIERS[className];
+    const raceModifiers = RACE_BASE_STAT_MODIFIERS[raceName];
+    const personalityModifiers = PERSONALITY_BASE_STAT_MODIFIERS[personalityName];
+
+    const finalHpModifier = 1 - (1 - raceModifiers.hp) - 0.1 + (classModifiers.hp - 1);
+    const finalMpModifier = 1 - (1 - raceModifiers.mp) - 0.1 + (classModifiers.mp - 1);
+    const finalSpdModifier = 1 - (1 - raceModifiers.spd) - (1 - personalityModifiers.spd) + (classModifiers.spd - 1);
+
+    const classStats = CLASS_BASE_STATS[className];
+
     const character = new Character(
         currentCharacterId,
         name,
-        0,
+        0, 
         Class[className],
         Race[raceName],
-        Personality[personality],
-        0,
+        Personality[personalityName],
+        0, 
+        [], 
+        1, 
         [],
-        1
+        50 
+    );
+
+    character.stats.hpMax = Math.round(classStats.hp * finalHpModifier);
+    character.stats.mpMax = Math.round(classStats.mp * finalMpModifier);
+    character.stats.hp = character.stats.hpMax;
+    character.stats.mp = character.stats.mpMax; 
+    character.stats.spd = Math.round(classStats.spd * finalSpdModifier);
+
+    character.stats.physicalATK = Math.round(
+        classStats.physicalATK * classModifiers.physicalATK * raceModifiers.physicalATK * personalityModifiers.physicalATK
+    );
+    character.stats.physicalDEF = Math.round(
+        classStats.physicalDEF * classModifiers.physicalDEF * raceModifiers.physicalDEF * personalityModifiers.physicalDEF
+    );
+    character.stats.magicATK = Math.round(
+        classStats.magicATK * classModifiers.magicATK * raceModifiers.magicATK * personalityModifiers.magicATK
+    );
+    character.stats.magicDEF = Math.round(
+        classStats.magicDEF * classModifiers.magicDEF * raceModifiers.magicDEF * personalityModifiers.magicDEF
     );
 
     const abilityManager = AbilityManager.getInstance();
@@ -97,7 +129,7 @@ const switchCommand = async (interaction) => {
     if (activeCharacter) {
         selectMenu.addOptions({
             label: `${activeCharacter.name} (Active)`,
-            description: `Level: ${activeCharacter.level}, Class: ${activeCharacter.classId}, Race: ${activeCharacter.raceId} `,
+            description: `Level: ${activeCharacter.level}, Class: ${getClassName(activeCharacter.classId)}, Race: ${getRaceName(activeCharacter.raceId)} `,
             value: activeCharacter.id.toString()
         });
     }
@@ -105,7 +137,7 @@ const switchCommand = async (interaction) => {
     otherCharacters.forEach(character => {
         selectMenu.addOptions({
             label: `${character.name} (Inactive)`,
-            description: `Level: ${character.level}, Class: ${character.classId}, Race: ${character.raceId} `,
+            description: `Level: ${character.level}, Class: ${getClassName(character.classId)}, Race: ${getRaceName(character.raceId)} `,
             value: character.id.toString()
         });
     });

@@ -99,7 +99,7 @@ class QuestManager {
     //     const template = this.getQuestTemplateById(questId);
     //     return template ? new Quest(template) : null;
     // }
-    createQuestInstance(questId, userId, characterId) {
+    createQuestInstance(userId, characterId, questId) {
         const template = this.getQuestTemplateById(questId);
         return template ? new Quest(template, saveCharacterQuests, userId, characterId) : null;
     }
@@ -149,7 +149,7 @@ class QuestManager {
         let charQuests = this.getCharQuests(userId, characterId);
         let quest = charQuests.find(q => q.id === questId);
         if (!quest) {
-            quest = this.createQuestInstance(questId, userId, characterId);
+            quest = this.createQuestInstance(userId, characterId, questId);
             this.addCharQuest(userId, characterId, quest);
             quest.start();
         } else {
@@ -168,7 +168,7 @@ class QuestManager {
 
     startNextQuest(userId, characterId, nextQuestId) {
         if (!this.hasQuest(userId, characterId, nextQuestId)) {
-            const nextQuest = this.createQuestInstance(nextQuestId, userId, characterId);
+            const nextQuest = this.createQuestInstance(userId, characterId, nextQuestId);
             if (nextQuest) {
                 this.addCharQuest(userId, characterId, nextQuest);
                 nextQuest.start();

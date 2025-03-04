@@ -24,7 +24,9 @@ const characterCommand = new SlashCommandBuilder()
           .setRequired(true)
           .addChoices(
             { name: 'Warrior', value: 'WARRIOR' },
-            { name: 'Mage', value: 'MAGE' }
+            { name: 'Mage', value: 'MAGE' },
+            { name: 'Bard', value: 'BARD' },
+            { name: 'Witch Doctor', value: 'WITCH_DOCTOR' }
           ))
       .addStringOption(option =>
         option.setName('race-name')
@@ -36,6 +38,37 @@ const characterCommand = new SlashCommandBuilder()
             { name: 'Kui', value: 'KUI' }
             // { name: 'Minotaur', value: 'MINOTAUR' },
             // { name: 'Ulfur', value: 'ULFUR' }
+          ))
+      .addStringOption(option =>
+        option.setName('personality-name')
+          .setDescription('Personality of your character.')
+          .setRequired(true)
+          .addChoices(
+            { name: 'Stoic', value: 'STOIC' },
+            { name: 'Greedy', value: 'GREEDY' },
+            { name: 'Nerdy', value: 'NERDY' },
+            { name: 'Passionate', value: 'PASSIONATE' },
+            { name: 'Horny', value: 'HORNY' },
+            { name: 'Brawny', value: 'BRAWNY' },
+            { name: 'Cheeky', value: 'CHEEKY' },
+            { name: 'Feisty', value: 'FEISTY' },
+            { name: 'Hothead', value: 'HOTHEAD' },
+            { name: 'Aggressive', value: 'AGGRESSIVE' },
+            { name: 'Thicc', value: 'THICC' },
+            { name: 'Peaceful', value: 'PEACEFUL' },
+            { name: 'Adaptable', value: 'ADAPTABLE' },
+            { name: 'Bougie', value: 'BOUGIE' },
+            { name: 'Stout', value: 'STOUT' },
+            { name: 'Cunning', value: 'CUNNING' },
+            { name: 'Hilarious', value: 'HILARIOUS' },
+            { name: 'Vindictive', value: 'VINDICTIVE' },
+            { name: 'Erratic', value: 'ERRATIC' },
+            { name: 'Ambitious', value: 'AMBITIOUS' },
+            { name: 'Thoughtful', value: 'THOUGHTFUL' },
+            { name: 'Serene', value: 'SERENE' },
+            { name: 'Cocky', value: 'COCKY' },
+            { name: 'Traditional', value: 'TRADITIONAL' },
+            { name: 'Mysterious', value: 'MYSTERIOUS' }
           )))
   .addSubcommand(subcommand =>
     subcommand
@@ -52,7 +85,8 @@ const lookCommand = new SlashCommandBuilder()
   .addStringOption(option =>
     option.setName('object')
       .setDescription('The object/person you want to inspect.')
-      .setRequired(false)//optional
+      .setRequired(false)
+      .setAutocomplete(true)
   );
 
 const takeCommand = new SlashCommandBuilder()
@@ -66,15 +100,13 @@ const takeCommand = new SlashCommandBuilder()
 
 const goCommand = new SlashCommandBuilder()
   .setName('go')
-  .setDescription('Where do you want to go?')
+  .setDescription('Move within the current region or explore the dungeon.')
   .addStringOption(option =>
-    option.setName('region')
-      .setDescription('Enter the name of the region you want to go to.')
-      .setRequired(true))
-  .addStringOption(option =>
-    option.setName('location')
-      .setDescription('Enter the name of the location you want to go to.')
-      .setRequired(true));
+    option.setName('destination')
+      .setDescription('Select where you want to go')
+      .setAutocomplete(true)
+      .setRequired(true)
+  );
 
 const moveCommand = new SlashCommandBuilder()
   .setName('move')
@@ -87,6 +119,18 @@ const moveCommand = new SlashCommandBuilder()
         { name: 'up', value: 1 },
         { name: 'down', value: 0 }
       ));
+
+
+const travelCommand = new SlashCommandBuilder()
+  .setName('travel')
+  .setDescription('Travel between regions.')
+  .addStringOption(option =>
+    option
+      .setName('region')
+      .setDescription('Select the region to travel to.')
+      .setAutocomplete(true)
+      .setRequired(true)
+  );
 
 const mapCommand = new SlashCommandBuilder()
   .setName('map')
@@ -170,11 +214,33 @@ const useCommand = new SlashCommandBuilder()
 
 const talkCommand = new SlashCommandBuilder()
   .setName('talk')
-  .setDescription('Talk to a NPC.')
+  .setDescription('Talk to an NPC.')
   .addStringOption(option =>
-    option.setName('npc_name')
+    option.setName('npc')
       .setDescription('The name of the NPC you want to talk to.')
-      .setRequired(true));
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
+
+const buyCommand = new SlashCommandBuilder()
+  .setName('buy')
+  .setDescription('Purchase items from the shop.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The name of the object you want to buy.')
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
+
+const sellCommand = new SlashCommandBuilder()
+  .setName('sell')
+  .setDescription('Sell items to the shop.')
+  .addStringOption(option =>
+    option.setName('object')
+      .setDescription('The name of the object you want to sell.')
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
 
 const unequipCommand = new SlashCommandBuilder()
   .setName('unequip')
@@ -194,11 +260,13 @@ const equipCommand = new SlashCommandBuilder()
 
 const attackCommand = new SlashCommandBuilder()
   .setName('attack')
-  .setDescription('Launch an attack! Prove your strength against the adversaries.')
+  .setDescription('Attack an enemy in the current room.')
   .addStringOption(option =>
-    option.setName('enemy-name')
-      .setDescription('The name of the enemy you want to have a fight with')
-      .setRequired(true));
+    option.setName('enemy')
+      .setDescription('The name of the enemy you want to attack.')
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
 
 const recipeCommand = new SlashCommandBuilder()
   .setName('recipe')
@@ -243,7 +311,10 @@ const guildCommands =
     recipeCommand.toJSON(),
     questCommand.toJSON(),
     startCommand.toJSON(),
-    helpCommand.toJSON()
+    helpCommand.toJSON(),
+    travelCommand.toJSON(),
+    buyCommand.toJSON(),
+    sellCommand.toJSON()
   ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);

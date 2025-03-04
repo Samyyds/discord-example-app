@@ -11,10 +11,13 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+import { Regions, MokuahLocations, NyraLocations, IsfjallLocations, TheTrenchLocations } from './data/enums.js';
 import { TutorialManager } from "./manager/tutorial_manager.js";
 import { charactercommands } from './commands/commands_character.js';
 import { subCommands } from "./commands/command_sub.js";
 import { CharacterManager } from './manager/character_manager.js';
+import { PlayerMovementManager } from "./manager/player_movement_manager.js";
+import { RegionManager } from "./manager/region_manager.js";
 import { goCommands } from './commands/command_go.js';
 import { moveCommands } from './commands/command_move.js';
 import { mapCommands } from './commands/command_map.js';
@@ -37,6 +40,9 @@ import { brewCommands } from "./commands/command_brew.js";
 import { questCommands } from "./commands/command_quest.js";
 import { startCommands } from "./commands/command_start.js";
 import { helpCommands } from "./commands/command_help.js";
+import { travelCommands } from "./commands/command_travel.js";
+import { buyCommands } from "./commands/command_buy.js";
+import { sellCommands } from "./commands/command_sell.js";
 import { handleInventoryInteraction } from './handler/inventory_handler.js';
 import { handleCharacterInteraction } from "./handler/character_handler.js";
 import { handleAttackInteraction } from "./handler/attack_handler.js";
@@ -44,9 +50,25 @@ import { handleRecipeInteraction } from "./handler/recipe_handler.js";
 import { handleTalkInteraction } from "./handler/talk_handler.js";
 import { handleQuestInteraction } from "./handler/quest_handler.js";
 import { handleStartGameInteraction } from "./handler/startGame_handler.js";
+import { handleGoAutocomplete } from "./handler/go_autoComplete.js";
+import { handleLookAutocomplete } from "./handler/look_autoComplete.js";
+import { handleAttackAutocomplete } from "./handler/attack_autoComplete.js";
 import { smithCommands } from './commands/command_smith.js';
 import { fishCommands } from "./commands/command_fish.js";
+import { handleTravelAutocomplete } from './handler/travel_autoComplete.js';
+import { handleTalkAutocomplete } from "./handler/talk_autoComplete.js";
+import { handleBuyAutocomplete } from "./handler/buy_autoComplete.js";
+import { handleSellAutocomplete } from "./handler/sell_autoComplete.js";
+import { handleTutorialNextButtonInteraction } from "./handler/next_handler.js";
+import { sendWelcomeMessage } from "./util/util.js";
 
+
+const regionToLocations = {
+  MOKUAH: MokuahLocations,
+  NYRA: NyraLocations,
+  ISFJALL: IsfjallLocations,
+  THE_TRENCH: TheTrenchLocations,
+};
 // Create and configure the Discord client
 const client = new Client({
   intents:
@@ -164,6 +186,54 @@ client.on(Events.InteractionCreate, async interaction => {
 
   client.emit('commandExecuted', interaction);
 
+  if (interaction.isAutocomplete()) {
+    const focusedOption = interaction.options.getFocused(true);
+
+    if (interaction.commandName === 'go') {
+      if (focusedOption.name === 'destination') {
+        await handleGoAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'travel') {
+      if (focusedOption.name === 'region') {
+        await handleTravelAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'look') {
+      if (focusedOption.name === 'object') {
+        await handleLookAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'attack') {
+      if (focusedOption.name === 'enemy') {
+        await handleAttackAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'talk') {
+      if (focusedOption.name === 'npc') {
+        await handleTalkAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'buy') {
+      if (focusedOption.name === 'object') {
+        await handleBuyAutocomplete(interaction);
+      }
+    }
+
+    if (interaction.commandName === 'sell') {
+      if (focusedOption.name === 'object') {
+        await handleSellAutocomplete(interaction);
+      }
+    }
+
+    return;
+  }
+
   if (interaction.isStringSelectMenu()) {
     const userId = interaction.user.id;
     const charRepo = CharacterManager.getInstance();
@@ -188,6 +258,15 @@ client.on(Events.InteractionCreate, async interaction => {
         await interaction.reply({ embeds: [embed], ephemeral: true });
       }
     }
+
+    // if (customId === 'travel_region_select') {
+    //   await handleTravelInteraction(interaction);
+    // }
+
+    // if(customId === 'destination-selection'){
+    //   await handleGoInteraction(interaction);
+    // }
+
     return;
   }
 
@@ -200,9 +279,11 @@ client.on(Events.InteractionCreate, async interaction => {
 
     if (tutorial && tutorial.isInTutorial()) {
       const expectedCommandId = tutorial.getCurrentCommandId();
-      console.log(`interaction.commandId: ${interaction.commandId}`);
-      console.log(`expectedCommandId: ${expectedCommandId}`);
-      if (interaction.commandId !== expectedCommandId) {
+      console.log(`Tutorial currentStep: ${tutorial.currentStep}`);
+      console.log(`Current step:`, tutorial.steps[tutorial.currentStep]);
+      console.log(`Expected command id: ${expectedCommandId}`);
+      console.log(`Interaction command id: ${interaction.commandId}`);
+      if (expectedCommandId && interaction.commandId !== expectedCommandId) {
         await interaction.reply({
           content: "It seems you've entered an incorrect command. Please use the correct command to continue the tutorial.",
           ephemeral: true
@@ -219,8 +300,8 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       switch (commandName) {
         case "go":
-          commandHandler = goCommands[commandName];
-          break;
+          await goCommands[commandName](interaction);
+          return;
         case "move":
           commandHandler = moveCommands[commandName];
           break;
@@ -287,6 +368,15 @@ client.on(Events.InteractionCreate, async interaction => {
         case "help":
           commandHandler = helpCommands[commandName];
           break;
+        case "travel":
+          await travelCommands[commandName](interaction);
+          return;
+        case "buy":
+          await buyCommands[commandName](interaction);
+          return;
+        case "sell":
+          await sellCommands[commandName](interaction);
+          return;
         default:
           const subCommandName = interaction.options.getSubcommand();
           commandHandler = compoundCommand[commandName]?.[subCommandName];
@@ -309,7 +399,7 @@ client.on(Events.InteractionCreate, async interaction => {
       await handleCharacterInteraction(interaction);
     } else if (interaction.customId.startsWith('attack_')) {
       await handleAttackInteraction(interaction);
-    } else if (interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_')) {
+    } else if (interaction.customId.startsWith('next_') || interaction.customId.startsWith('prev_') || interaction.customId.startsWith('skill_')) {
       await handleRecipeInteraction(interaction);
     } else if (interaction.customId.startsWith('talk_')) {
       await handleTalkInteraction(interaction);
@@ -317,7 +407,19 @@ client.on(Events.InteractionCreate, async interaction => {
       handleQuestInteraction(interaction);
     } else if (interaction.customId.startsWith('start_')) {
       handleStartGameInteraction(interaction);
+    } else if(interaction.customId.startsWith('tutorial_next')){
+      handleTutorialNextButtonInteraction(interaction);
     }
+    // else if (interaction.customId === 'tutorial_next') {
+    //   const tutorial = TutorialManager.getInstance().getTutorialForUser(interaction.user.id);
+    //   if (tutorial) {
+    //     tutorial.interaction = interaction;
+    //     tutorial.currentStep++;
+    //     tutorial.processStep();
+    //   } else {
+    //     await interaction.reply({ content: "No active tutorial found.", ephemeral: true });
+    //   }
+    // }
     else {
       console.log('Unrecognized button interaction:', interaction.customId);
       await interaction.reply({ content: "I'm not sure what this button is for!", ephemeral: true });

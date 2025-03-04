@@ -23,7 +23,7 @@ const lookCommand = async (interaction) => {
         if (!room) {
             return await sendErrorMessage(interaction, `Room not found for regionId ${regionId}, locationId ${locationId}, roomId ${roomId}`);
         }
-        const enemies = room.getEnemies();
+        const enemies = room.getEnemies().filter(enemy => enemy.isTarget.size === 0);
         const nodes = room.getNodes();
         const items = room.getItems();
         const npcs = room.getNPCs();
@@ -44,12 +44,10 @@ const lookCommand = async (interaction) => {
                 description += `${item.description}\n`;
             } else if (npc) {
                 description += `${npc.description}\n`;
-            }
-            else {
+            } else {
                 description = `No '${objectName}' found.`;
             }
         } else {
-
             if (roomId === 0) {
                 const location = regionManager.getLocationById(regionId, locationId);
                 description += location.description ? `${location.description}\n\n` : '';
@@ -93,13 +91,11 @@ const lookCommand = async (interaction) => {
             embed.setDescription('There is nothing to see here.');
         }
         await interaction.reply({ embeds: [embed], ephemeral: true });
-    }
-
-    catch (error) {
+    } catch (error) {
         console.error('Error in lookCommand:', error);
         await interaction.reply({ content: `An error occurred: ${error.message}`, ephemeral: true });
     }
-}
+};
 
 export const lookCommands = {
     look: lookCommand
