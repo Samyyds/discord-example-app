@@ -91,7 +91,7 @@ async function uploadUpdatedCharactersData() {
       console.log(`读取到 ${characters.length} 条记录`);
   
       const sql = `
-        INSERT INTO dummy_characters
+        INSERT INTO mm_characters
         (user_id, id, name, level, class_id, race_id, personality_id, xp, battle_bar, loot_quality, abilities, stats, skills, status, gold, region_id, location_id, room_id, quests)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
       `;
