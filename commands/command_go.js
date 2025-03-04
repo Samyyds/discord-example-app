@@ -19,6 +19,10 @@ const goCommand = async (interaction) => {
         const curLocation = playerMoveManager.getLocation(interaction.user.id, activeCharacter.id);
         const destination = interaction.options.getString('destination');
 
+        if (!destination) {
+            return await sendErrorMessage(interaction, 'You must select a destination to go!');
+        }
+
         const currentRegion = regionManager.getRegionById(curLocation.regionId);
         const currentLocation = currentRegion.getLocation(curLocation.locationId);
         const currentRoom = currentLocation.getRoom(curLocation.roomId);
